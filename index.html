@@ -1720,9 +1720,6 @@ async function vrProcess(){
     }
 
     /* Smoothed crop position — updated from timeline */
-    var smoothCropX = 0.5;
-    var smoothCropY = 0.5;
-    var LERP = 0.35; /* higher = more responsive tracking */
 
     /* Play + rAF — no seek, no lag */
     procVid.currentTime = 0;
@@ -1750,28 +1747,25 @@ async function vrProcess(){
         /* Interpolate face position at current playback time */
         if(faceTimeline.length > 0){
           var ct = procVid.currentTime;
-          /* Find surrounding keyframes */
           var lo = null, hi = null;
           for(var i = 0; i < faceTimeline.length; i++){
             if(faceTimeline[i].t <= ct) lo = faceTimeline[i];
             if(faceTimeline[i].t >= ct && !hi) hi = faceTimeline[i];
           }
-          var targetX = 0.5, targetY = 0.5;
+          var fx = 0.5, fy = 0.5;
           if(lo && hi && lo !== hi){
-            /* Linear interpolation between two keyframes */
+            /* Linear interpolation between keyframes — smooth and accurate */
             var span = hi.t - lo.t;
-            var alpha = span > 0 ? (ct - lo.t) / span : 0;
-            targetX = lo.x + (hi.x - lo.x) * alpha;
-            targetY = lo.y + (hi.y - lo.y) * alpha;
+            var alpha = span > 0 ? Math.min(1, (ct - lo.t) / span) : 0;
+            fx = lo.x + (hi.x - lo.x) * alpha;
+            fy = lo.y + (hi.y - lo.y) * alpha;
           } else if(lo){
-            targetX = lo.x; targetY = lo.y;
+            fx = lo.x; fy = lo.y;
           } else if(hi){
-            targetX = hi.x; targetY = hi.y;
+            fx = hi.x; fy = hi.y;
           }
-          /* Smooth lerp toward target — eliminates jitter and direction flips */
-          smoothCropX += (targetX - smoothCropX) * LERP;
-          smoothCropY += (targetY - smoothCropY) * LERP;
-          crop = vrCalcCropAt(srcW, srcH, ratio, smoothCropX, smoothCropY);
+          /* Use interpolated position directly — no extra lerp to avoid overshoot */
+          crop = vrCalcCropAt(srcW, srcH, ratio, fx, fy);
         }
 
         /* Safety clamp — ensure crop stays within source bounds */
