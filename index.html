@@ -1696,45 +1696,83 @@ async function vrProcess(){
     var crop = vrCalcCrop(srcW, srcH, ratio); /* initial crop */
 
 
-    /* Seek-based render — reliable, uses AI face coords per frame */
-    var FPS        = 15; /* 15fps output — fast and smooth enough for social media */
-    var INTERVAL   = 1 / FPS;
-    var totalFrames = Math.ceil(dur * FPS);
-    var frameIdx   = 0;
+    /* Build a time-sorted array of face positions for smooth interpolation */
+    var faceTimeline = [];
+    if(Object.keys(faceMap).length > 0){
+      var serverFPS = 30;
+      Object.keys(faceMap).forEach(function(fi){
+        faceTimeline.push({ t: parseInt(fi) / serverFPS, x: faceMap[fi].x, y: faceMap[fi].y });
+      });
+      faceTimeline.sort(function(a,b){ return a.t - b.t; });
+    }
 
-    /* Pre-build a fast lookup: time -> crop */
+    /* Smoothed crop position — updated from timeline */
+    var smoothCropX = 0.5;
+    var smoothCropY = 0.5;
+    var LERP = 0.08; /* low = very smooth, high = snappy */
+
+    /* Play + rAF — no seek, no lag */
+    procVid.currentTime = 0;
+    await new Promise(function(res){
+      procVid.onseeked = function(){ procVid.onseeked = null; res(); };
+      setTimeout(res, 1500);
+    });
+
     recorder.start();
     progLbl.textContent = 'Converting... 0%';
 
-    function waitForSeeked(){
-      return new Promise(function(res){
-        var done = false;
-        function onS(){ if(done) return; done=true; procVid.removeEventListener('seeked',onS); res(); }
-        procVid.addEventListener('seeked', onS);
-        setTimeout(function(){ if(done) return; done=true; procVid.removeEventListener('seeked',onS); res(); }, 800);
-      });
-    }
+    procVid.muted = true;
+    procVid.playbackRate = 1;
+    try{ await procVid.play(); } catch(e){ throw new Error('Playback blocked. Use Chrome or Edge.'); }
 
-    while(frameIdx <= totalFrames){
-      var t = Math.min(frameIdx * INTERVAL, dur);
-      procVid.currentTime = t;
-      await waitForSeeked();
+    await new Promise(function(resolve){
+      var rafId;
+      function loop(){
+        if(procVid.ended || procVid.currentTime >= dur - 0.04){
+          ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+          ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+          cancelAnimationFrame(rafId); resolve(); return;
+        }
 
-      /* Get face-aware crop for this frame */
-      var serverFrame = Math.round(t * 30); /* server used 30fps indexing */
-      crop = vrCropForFrame(serverFrame, srcW, srcH, ratio, faceMap);
+        /* Interpolate face position at current playback time */
+        if(faceTimeline.length > 0){
+          var ct = procVid.currentTime;
+          /* Find surrounding keyframes */
+          var lo = null, hi = null;
+          for(var i = 0; i < faceTimeline.length; i++){
+            if(faceTimeline[i].t <= ct) lo = faceTimeline[i];
+            if(faceTimeline[i].t >= ct && !hi) hi = faceTimeline[i];
+          }
+          var targetX = 0.5, targetY = 0.5;
+          if(lo && hi && lo !== hi){
+            /* Linear interpolation between two keyframes */
+            var span = hi.t - lo.t;
+            var alpha = span > 0 ? (ct - lo.t) / span : 0;
+            targetX = lo.x + (hi.x - lo.x) * alpha;
+            targetY = lo.y + (hi.y - lo.y) * alpha;
+          } else if(lo){
+            targetX = lo.x; targetY = lo.y;
+          } else if(hi){
+            targetX = hi.x; targetY = hi.y;
+          }
+          /* Smooth lerp toward target — eliminates jitter and direction flips */
+          smoothCropX += (targetX - smoothCropX) * LERP;
+          smoothCropY += (targetY - smoothCropY) * LERP;
+          crop = vrCalcCropAt(srcW, srcH, ratio, smoothCropX, smoothCropY);
+        }
 
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, outW, outH);
-      ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+        ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
 
-      var pct = Math.min(18 + Math.round((frameIdx / totalFrames) * 78), 97);
-      progBar.style.width = pct + '%';
-      progLbl.textContent = (Object.keys(faceMap).length > 0 ? 'AI tracking... ' : 'Converting... ') + pct + '%';
+        var pct = Math.min(18 + Math.round((procVid.currentTime / dur) * 78), 97);
+        progBar.style.width = pct + '%';
+        progLbl.textContent = (faceTimeline.length > 0 ? 'AI tracking... ' : 'Converting... ') + pct + '%';
+        rafId = requestAnimationFrame(loop);
+      }
+      rafId = requestAnimationFrame(loop);
+    });
 
-      frameIdx++;
-    }
-
+    procVid.pause();
     await new Promise(function(r){ setTimeout(r, 500); });
     recorder.stop(); await doneP;
 
@@ -1760,7 +1798,6 @@ async function vrProcess(){
 
 /* Get crop box for a specific frame using server face data */
 function vrCropForFrame(frameIdx, srcW, srcH, ratio, faceMap){
-  /* Look for face data within +-3 frames */
   var face = faceMap[frameIdx] || faceMap[frameIdx-1] || faceMap[frameIdx+1] ||
              faceMap[frameIdx-2] || faceMap[frameIdx+2] ||
              faceMap[frameIdx-3] || faceMap[frameIdx+3];
