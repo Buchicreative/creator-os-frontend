@@ -1688,11 +1688,23 @@ async function vrProcess(){
     var srcH = procVid.videoHeight;
     if(!srcW || !srcH) throw new Error('Could not read video dimensions.');
 
-    /* Output dimensions */
+    /* Output dimensions — derive both from the primary axis so ratio is exact */
     var outW, outH;
-    if(ratio <= 1){ outH = resObj.h; outW = Math.round(outH * ratio); }
-    else           { outW = resObj.w; outH = Math.round(outW / ratio); }
-    if(outW % 2 !== 0) outW--; if(outH % 2 !== 0) outH--;
+    if(ratio <= 1){
+      /* Portrait/square — height is primary */
+      outH = resObj.h;
+      outW = Math.round(outH * ratio);
+      if(outW % 2 !== 0) outW--;
+      outH = Math.round(outW / ratio); /* recalc height from even outW */
+      if(outH % 2 !== 0) outH--;
+    } else {
+      /* Landscape — width is primary */
+      outW = resObj.w;
+      outH = Math.round(outW / ratio);
+      if(outH % 2 !== 0) outH--;
+      outW = Math.round(outH * ratio);
+      if(outW % 2 !== 0) outW--;
+    }
 
     /* Canvas + recorder setup */
     var canvas = document.createElement('canvas');
@@ -1714,6 +1726,7 @@ async function vrProcess(){
 
     /* Build a time-sorted array of face positions for smooth interpolation */
     /* Build timeline using actual FPS from server response */
+    VR._lastFx = undefined; VR._lastFy = undefined;
     var faceTimeline = [];
     if(Object.keys(faceMap).length > 0 && VR._trackFPS){
       var serverFPS = VR._trackFPS; /* actual video FPS returned by server */
@@ -1758,19 +1771,26 @@ async function vrProcess(){
             if(faceTimeline[i].t <= ct) lo = faceTimeline[i];
             if(faceTimeline[i].t >= ct && !hi) hi = faceTimeline[i];
           }
-          var fx = 0.5, fy = 0.5;
+          /* Default: hold last known position to avoid jump cuts */
+          var fx = (VR._lastFx !== undefined) ? VR._lastFx : 0.5;
+          var fy = (VR._lastFy !== undefined) ? VR._lastFy : 0.5;
+
           if(lo && hi && lo !== hi){
-            /* Linear interpolation between keyframes — smooth and accurate */
+            /* Between two keyframes — linear interpolation */
             var span = hi.t - lo.t;
             var alpha = span > 0 ? Math.min(1, (ct - lo.t) / span) : 0;
             fx = lo.x + (hi.x - lo.x) * alpha;
             fy = lo.y + (hi.y - lo.y) * alpha;
           } else if(lo){
+            /* Past last keyframe — hold last detected position */
             fx = lo.x; fy = lo.y;
           } else if(hi){
+            /* Before first detection — use first detected position */
             fx = hi.x; fy = hi.y;
           }
-          /* Use interpolated position directly — no extra lerp to avoid overshoot */
+
+          /* Store for next frame so gaps don't snap to center */
+          VR._lastFx = fx; VR._lastFy = fy;
           crop = vrCalcCropAt(srcW, srcH, ratio, fx, fy);
         }
 
