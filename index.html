@@ -308,6 +308,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 .vr-plan-notice svg{width:15px;height:15px;stroke:var(--accent2);fill:none;stroke-width:2;flex-shrink:0;}
 .vr-plan-notice a{color:var(--accent2);font-weight:700;text-decoration:underline;cursor:pointer;}
 
+/* PASSWORD FIELD */
+.pw-wrap{position:relative;}
+.pw-wrap .form-input{padding-right:2.8rem;}
+.pw-toggle{position:absolute;right:0.85rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;display:flex;align-items:center;transition:color 0.2s;}
+.pw-toggle:hover{color:var(--text);}
+.pw-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.pw-strength{margin-top:0.4rem;height:4px;border-radius:2px;background:var(--border);overflow:hidden;}
+.pw-strength-bar{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;width:0%;}
+.pw-hint{font-size:0.7rem;margin-top:0.3rem;min-height:1rem;transition:color 0.2s;}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -350,7 +360,15 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
     </button>
     <div class="modal-divider">or continue with email</div>
     <div class="form-group"><label>Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
-    <div class="form-group"><label>Password</label><input type="password" class="form-input" placeholder="Your password"></div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="li-password" class="form-input" placeholder="Your password">
+        <button type="button" class="pw-toggle" onclick="pwToggle('li-password',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
     <button class="modal-btn" onclick="doLogin()">Log In &#x2192;</button>
     <div class="modal-switch">No account? <a onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
   </div>
@@ -367,9 +385,29 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
       Sign up with Google
     </button>
     <div class="modal-divider">or sign up with email</div>
-    <div class="form-group"><label>Full Name</label><input type="text" class="form-input" placeholder="Your name"></div>
-    <div class="form-group"><label>Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
-    <div class="form-group"><label>Password</label><input type="password" class="form-input" placeholder="Min. 8 characters"></div>
+    <div class="form-group"><label>Full Name</label><input type="text" id="su-name" class="form-input" placeholder="Your name"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="su-email" class="form-input" placeholder="you@example.com"></div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="su-password" class="form-input" placeholder="Min. 8 characters" oninput="pwStrength(this,'su-strength-bar','su-hint')">
+        <button type="button" class="pw-toggle" onclick="pwToggle('su-password',this)" tabindex="-1">
+          <svg id="su-eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="pw-strength"><div class="pw-strength-bar" id="su-strength-bar"></div></div>
+      <div class="pw-hint" id="su-hint"></div>
+    </div>
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="su-confirm" class="form-input" placeholder="Re-enter your password" oninput="pwConfirmCheck(this,'su-password','su-confirm-hint')">
+        <button type="button" class="pw-toggle" onclick="pwToggle('su-confirm',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="pw-hint" id="su-confirm-hint"></div>
+    </div>
     <button class="modal-btn" onclick="doSignup()">Create Free Account &#x2192;</button>
     <div class="modal-switch">Have an account? <a onclick="switchModal('signupModal','loginModal')">Log in</a></div>
   </div>
@@ -1155,9 +1193,68 @@ function googleAuth(){
     .catch(function(){ showToast('Google sign-in coming soon.'); });
 }
 
+/* PASSWORD UTILITIES */
+function pwToggle(inputId, btn){
+  var inp = document.getElementById(inputId);
+  if(!inp) return;
+  var show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  /* Swap eye icon */
+  btn.querySelector('svg').innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+function pwStrength(inp, barId, hintId){
+  var val  = inp.value;
+  var bar  = document.getElementById(barId);
+  var hint = document.getElementById(hintId);
+  if(!bar || !hint) return;
+
+  var score = 0;
+  var tips  = [];
+
+  if(val.length >= 8)  score++; else tips.push('at least 8 characters');
+  if(val.length >= 12) score++;
+  if(/[A-Z]/.test(val)) score++; else tips.push('an uppercase letter');
+  if(/[0-9]/.test(val)) score++; else tips.push('a number');
+  if(/[^A-Za-z0-9]/.test(val)) score++; else tips.push('a symbol (!@#$...)');
+
+  var pct    = Math.round((score / 5) * 100);
+  var colors = ['#ff5f56','#febc2e','#febc2e','#5cf0d0','#28c840'];
+  var labels = ['Too weak','Weak','Fair','Strong','Very strong'];
+
+  bar.style.width      = pct + '%';
+  bar.style.background = colors[Math.min(score, 4)];
+
+  if(val.length === 0){
+    hint.textContent = ''; hint.style.color = 'var(--muted)';
+  } else if(score < 3 && tips.length){
+    hint.textContent = 'Add ' + tips[0] + ' for a stronger password.';
+    hint.style.color = 'var(--muted)';
+  } else {
+    hint.textContent = labels[Math.min(score, 4)] + ' password.';
+    hint.style.color = colors[Math.min(score, 4)];
+  }
+}
+
+function pwConfirmCheck(inp, origId, hintId){
+  var orig = document.getElementById(origId);
+  var hint = document.getElementById(hintId);
+  if(!orig || !hint) return;
+  if(inp.value.length === 0){ hint.textContent = ''; return; }
+  if(inp.value === orig.value){
+    hint.textContent = 'Passwords match.';
+    hint.style.color = '#28c840';
+  } else {
+    hint.textContent = 'Passwords do not match.';
+    hint.style.color = '#ff5f56';
+  }
+}
+
 async function doLogin(){
   var email = document.querySelector('#loginModal .form-input[type=email]').value.trim();
-  var pass  = document.querySelector('#loginModal .form-input[type=password]').value;
+  var pass  = document.getElementById('li-password') ? document.getElementById('li-password').value : document.querySelector('#loginModal .form-input[type=password]').value;
   if(!email||!pass){ showToast('Please enter email and password.'); return; }
   var btn = document.querySelector('#loginModal .modal-btn');
   btn.textContent = 'Logging in...'; btn.disabled = true;
@@ -1173,11 +1270,13 @@ async function doLogin(){
 }
 
 async function doSignup(){
-  var name  = document.querySelector('#signupModal .form-input[type=text]').value.trim();
-  var email = document.querySelector('#signupModal .form-input[type=email]').value.trim();
-  var pass  = document.querySelector('#signupModal .form-input[type=password]').value;
+  var name    = document.getElementById('su-name')    ? document.getElementById('su-name').value.trim()    : document.querySelector('#signupModal .form-input[type=text]').value.trim();
+  var email   = document.getElementById('su-email')   ? document.getElementById('su-email').value.trim()   : document.querySelector('#signupModal .form-input[type=email]').value.trim();
+  var pass    = document.getElementById('su-password') ? document.getElementById('su-password').value      : document.querySelector('#signupModal .form-input[type=password]').value;
+  var confirm = document.getElementById('su-confirm')  ? document.getElementById('su-confirm').value       : pass;
   if(!name||!email||!pass){ showToast('Please fill all fields.'); return; }
   if(pass.length < 8){ showToast('Password must be at least 8 characters.'); return; }
+  if(pass !== confirm){ showToast('Passwords do not match.'); return; }
   var btn = document.querySelector('#signupModal .modal-btn');
   btn.textContent = 'Creating...'; btn.disabled = true;
   try {
@@ -1466,31 +1565,53 @@ async function vrProcess(){
   var progBar  = document.getElementById('vr-progress-bar');
   var progLbl  = document.getElementById('vr-progress-label');
 
-  /* Create a brand-new video element for processing — fresh context, no prior errors */
-  var procVid = document.createElement('video');
-  procVid.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;';
-  procVid.preload = 'auto';
-  procVid.muted = true;
-  document.body.appendChild(procVid);
-
   btn.disabled = true; VR.outputBlob = null;
   document.getElementById('vr-download-btn').style.display = 'none';
-  progWrap.classList.add('show'); progBar.style.width = '3%'; progLbl.textContent = 'Setting up...';
-  await new Promise(function(r){ setTimeout(r, 80); });
+  progWrap.classList.add('show');
+  progBar.style.width = '3%';
+  progLbl.textContent = 'Setting up...';
+
+  /* Create a VISIBLE video element — browsers throttle off-screen video */
+  var procVid = document.createElement('video');
+  procVid.style.cssText = 'position:fixed;bottom:0;right:0;width:1px;height:1px;opacity:0.01;z-index:-1;';
+  procVid.muted    = true;
+  procVid.preload  = 'auto';
+  procVid.playsInline = true;
+  document.body.appendChild(procVid);
 
   try {
     var ratio  = VR.ratioMap[VR.format];
     var resObj = VR.resMap[VR.res];
-    var dur    = procVid.duration || 9999;
+
+    /* Load the file */
+    progLbl.textContent = 'Loading video...';
+    await new Promise(function(resolve){
+      procVid.onloadedmetadata = function(){ procVid.onloadedmetadata = null; resolve(); };
+      procVid.onerror = function(){ resolve(); };
+      procVid.src = VR.objectURL;
+      procVid.load();
+      setTimeout(resolve, 8000);
+    });
+
+    var dur  = procVid.duration || 0;
+    var srcW = procVid.videoWidth;
+    var srcH = procVid.videoHeight;
+    if(!srcW || !srcH){ throw new Error('Could not read video dimensions. Try a different file.'); }
+
+    /* Output dimensions */
     var outW, outH;
     if(ratio <= 1){ outH = resObj.h; outW = Math.round(outH * ratio); }
     else           { outW = resObj.w; outH = Math.round(outW / ratio); }
     if(outW % 2 !== 0) outW--; if(outH % 2 !== 0) outH--;
-    var crop = vrCalcCrop(procVid.videoWidth, procVid.videoHeight, ratio); /* updated per-frame by face detector */
+
+    var crop = vrCalcCrop(srcW, srcH, ratio);
+
+    /* Output canvas */
     var canvas = document.createElement('canvas');
     canvas.width = outW; canvas.height = outH;
-    var ctx = canvas.getContext('2d', {alpha:false});
-    /* Try MP4 first — Chrome 130+ and Edge support it natively */
+    var ctx = canvas.getContext('2d', { alpha: false });
+
+    /* Pick MIME — MP4 first */
     var mimes = [
       'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
       'video/mp4;codecs=avc1',
@@ -1499,107 +1620,93 @@ async function vrProcess(){
       'video/webm;codecs=vp8',
       'video/webm'
     ];
-    var mime = mimes.find(function(m){
-      try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; }
-    }) || 'video/webm';
-    console.log('[VR] Recording with MIME type:', mime);
-    var stream   = canvas.captureStream(30);
-    var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
-    var chunks = []; recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
-    var doneRes; var doneP = new Promise(function(r){ doneRes=r; }); recorder.onstop = doneRes;
-    progLbl.textContent = 'Loading video...'; progBar.style.width = '5%';
-    /* Load the file into our fresh process video element */
-    await new Promise(function(resolve){
-      /* Never reject — onerror on blob URLs is unreliable.
-         Resolve on any positive signal OR after timeout. */
-      procVid.onerror       = function(){ console.warn('[VR] procVid onerror ignored, continuing'); setTimeout(resolve, 500); };
-      procVid.oncanplay     = function(){ procVid.oncanplay = null; resolve(); };
-      procVid.onloadeddata  = function(){ procVid.onloadeddata = null; resolve(); };
-      procVid.onloadedmetadata = function(){ procVid.onloadedmetadata = null; resolve(); };
-      procVid.src = VR.objectURL;
-      procVid.load();
-      setTimeout(resolve, 6000); /* hard timeout fallback */
-    });
-    progLbl.textContent = 'Seeking...';
-    await new Promise(function(resolve){
-      function onS(){ procVid.removeEventListener('seeked',onS); resolve(); }
-      procVid.addEventListener('seeked', onS);
-      procVid.currentTime = 0;
-      setTimeout(function(){ procVid.removeEventListener('seeked',onS); resolve(); }, 2000);
-    });
-    /* Seek-based frame extraction — most reliable approach.
-       We step through the video frame by frame, draw each frame
-       to canvas, then advance. This works even with off-screen video. */
+    var mime = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
+    console.log('[VR] MIME:', mime);
+
+    /* Face detection setup */
     VR_lastFaceX = null; VR_lastFaceY = null;
     vrInitFaceDetector();
-
-    var FPS      = 30;
-    var INTERVAL = 1 / FPS; /* seconds per frame */
-    var totalFrames = Math.ceil(dur * FPS);
-    var frameIdx    = 0;
-    var FACE_EVERY  = 6;
-
-    /* Face detection canvas */
     var faceCanvas = document.createElement('canvas');
-    faceCanvas.width  = Math.round(procVid.videoWidth  / 4);
-    faceCanvas.height = Math.round(procVid.videoHeight / 4);
+    faceCanvas.width  = Math.round(srcW / 4);
+    faceCanvas.height = Math.round(srcH / 4);
     var faceCtx = faceCanvas.getContext('2d');
+    var frameIdx = 0;
 
-    /* Start recorder — we'll feed frames manually via seeked events */
-    recorder.start();
+    /* MediaRecorder from canvas */
+    var stream   = canvas.captureStream(30);
+    var recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VR.bitrateMap[VR.res] });
+    var chunks   = [];
+    recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
+    var doneRes; var doneP = new Promise(function(r){ doneRes = r; }); recorder.onstop = doneRes;
+
+    /* Seek to beginning */
+    progLbl.textContent = 'Seeking to start...'; progBar.style.width = '8%';
+    procVid.currentTime = 0;
+    await new Promise(function(resolve){
+      procVid.onseeked = function(){ procVid.onseeked = null; resolve(); };
+      setTimeout(resolve, 2000);
+    });
+
+    /* Draw first frame before starting recorder */
+    ctx.fillStyle = '#000'; ctx.fillRect(0,0,outW,outH);
+    ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+
+    recorder.start(100);
     progLbl.textContent = 'Converting... 0%';
 
-    function waitSeeked(vid){
-      return new Promise(function(res){
-        function onS(){ vid.removeEventListener('seeked', onS); res(); }
-        vid.addEventListener('seeked', onS);
-        /* Safety timeout per frame */
-        setTimeout(function(){ vid.removeEventListener('seeked', onS); res(); }, 500);
-      });
-    }
+    /* Play the video and capture frames in rAF loop.
+       Video is opacity:0.01 so browser does NOT throttle it. */
+    try { await procVid.play(); } catch(e){ throw new Error('Playback blocked. Try Chrome or Edge.'); }
 
-    /* Step through every frame */
-    while(frameIdx <= totalFrames){
-      var t = frameIdx * INTERVAL;
-      if(t > dur) t = dur;
+    await new Promise(function(resolve){
+      var rafId;
+      function loop(){
+        if(procVid.ended || procVid.currentTime >= dur - 0.04){
+          /* Draw final frame */
+          ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+          ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+          cancelAnimationFrame(rafId); resolve(); return;
+        }
 
-      procVid.currentTime = t;
-      await waitSeeked(procVid);
+        frameIdx++;
 
-      /* Draw frame to canvas */
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, outW, outH);
-      ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+        /* Face detection every 8 frames */
+        if(VR_faceSupported && frameIdx % 8 === 0){
+          faceCtx.drawImage(procVid, 0, 0, faceCanvas.width, faceCanvas.height);
+          vrSmartCrop(faceCanvas, srcW, srcH, ratio).then(function(fc){ crop = fc; }).catch(function(){});
+        }
 
-      /* Face detection every N frames */
-      if(VR_faceSupported && frameIdx % FACE_EVERY === 0){
-        faceCtx.drawImage(procVid, 0, 0, faceCanvas.width, faceCanvas.height);
-        var newCrop = await vrSmartCrop(faceCanvas, procVid.videoWidth, procVid.videoHeight, ratio).catch(function(){ return crop; });
-        crop = newCrop;
+        ctx.fillStyle = '#000'; ctx.fillRect(0,0,outW,outH);
+        ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+
+        var pct = Math.min(8 + Math.round((procVid.currentTime / dur) * 88), 97);
+        progBar.style.width = pct + '%';
+        progLbl.textContent = (VR_faceSupported ? 'Smart tracking... ' : 'Converting... ') + pct + '%';
+        rafId = requestAnimationFrame(loop);
       }
+      rafId = requestAnimationFrame(loop);
+    });
 
-      /* Update progress */
-      var pct = Math.min(4 + Math.round((frameIdx / totalFrames) * 93), 97);
-      progBar.style.width = pct + '%';
-      progLbl.textContent = 'Converting... ' + pct + '%';
-
-      frameIdx++;
-    }
-
-    /* Small pause to let recorder flush last frames */
-    await new Promise(function(r){ setTimeout(r, 500); });
+    procVid.pause();
+    await new Promise(function(r){ setTimeout(r, 600); });
     recorder.stop(); await doneP;
-    VR.outputBlob = new Blob(chunks, {type:mime});
-    if(!VR.outputBlob || VR.outputBlob.size < 500) throw new Error('Output empty. Try Chrome or Edge.');
-    progBar.style.width = '100%'; progLbl.textContent = 'Done! Click Download to save.';
+
+    VR.outputBlob = new Blob(chunks, { type: mime });
+    if(!VR.outputBlob || VR.outputBlob.size < 1000) throw new Error('Output is empty. Please try again.');
+
+    progBar.style.width = '100%';
+    progLbl.textContent = 'Done! Click Download to save.';
     document.getElementById('vr-download-btn').style.display = 'inline-flex';
-    btn.disabled = false; showToast('Converted! Click Download.');
+    btn.disabled = false;
+    showToast('Video converted! Click Download.');
+
   } catch(err){
     console.error('[VR]', err);
-    progLbl.textContent = 'Error: ' + (err.message||err);
+    progLbl.textContent = 'Error: ' + (err.message || err);
     progBar.style.width = '0%';
-    showToast('Error: ' + (err.message||String(err)));
+    showToast('Error: ' + (err.message || String(err)));
     btn.disabled = false;
+  } finally {
     try{ document.body.removeChild(procVid); }catch(e){}
   }
 }
