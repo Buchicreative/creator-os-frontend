@@ -859,7 +859,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 'use strict';
 
 /* CONFIG */
-var API_BASE   = 'https://creator-os-backend-production-4a65.up.railway.app';
+var API_BASE          = 'https://creator-os-backend-production-4a65.up.railway.app';
+var FACE_TRACKER_URL  = 'https://creator-os-face-tracker-production.up.railway.app'; /* set after deploy */
 var OPENAI_KEY = ''; /* Moved to backend — no longer needed in frontend */
 
 /* ── AUTH STATE ── */
@@ -1539,11 +1540,12 @@ function vrLoadScriptMP(src){
 function vrInitFaceDetector(){
   if(VR_faceChecked) return;
   VR_faceChecked = true;
-  /* Face tracking placeholder — future Pro feature via backend */
   var badge = document.getElementById('vr-face-badge');
   if(badge){
-    badge.textContent  = 'Smart Crop: Center';
-    badge.style.color  = 'var(--muted)';
+    badge.textContent   = 'AI Face Tracking: Server';
+    badge.style.background   = 'rgba(92,240,208,0.15)';
+    badge.style.color        = 'var(--accent3)';
+    badge.style.borderColor  = 'rgba(92,240,208,0.3)';
   }
 }
 
@@ -1589,20 +1591,57 @@ async function vrProcess(){
   progBar.style.width = '3%';
   progLbl.textContent = 'Setting up...';
 
-  /* Create a VISIBLE video element — browsers throttle off-screen video */
+  /* Create visible video element — opacity:0.01 prevents throttling */
   var procVid = document.createElement('video');
   procVid.style.cssText = 'position:fixed;bottom:0;right:0;width:1px;height:1px;opacity:0.01;z-index:-1;';
-  procVid.muted    = true;
-  procVid.preload  = 'auto';
-  procVid.playsInline = true;
+  procVid.muted = true; procVid.preload = 'auto'; procVid.playsInline = true;
   document.body.appendChild(procVid);
+
+  var faceMap = {}; /* frame index -> {x, y} */
 
   try {
     var ratio  = VR.ratioMap[VR.format];
     var resObj = VR.resMap[VR.res];
 
-    /* Load the file */
+    /* Step 1 — Upload video to face tracker service */
+    progLbl.textContent = 'Analysing faces on server...';
+    progBar.style.width = '8%';
+
+    try {
+      var formData = new FormData();
+      formData.append('video', VR.file);
+      formData.append('sample_rate', '2'); /* analyse every 2nd frame */
+
+      var trackRes = await fetch(FACE_TRACKER_URL + '/track', {
+        method : 'POST',
+        body   : formData,
+      });
+
+      if(trackRes.ok){
+        var trackData = await trackRes.json();
+        if(trackData.frames){
+          trackData.frames.forEach(function(f){
+            if(f.x !== null && f.y !== null){
+              faceMap[f.frame] = { x: f.x, y: f.y };
+            }
+          });
+          console.log('[VR] Face tracking: ' + trackData.face_frames + '/' + trackData.total_frames + ' frames with face');
+          var badge = document.getElementById('vr-face-badge');
+          if(badge && trackData.face_frames > 0){
+            badge.textContent = 'AI Tracking: ' + trackData.face_frames + ' frames tracked';
+          }
+        }
+      } else {
+        console.warn('[VR] Face tracker returned error — using center crop');
+      }
+    } catch(trackErr){
+      console.warn('[VR] Face tracker unavailable — using center crop:', trackErr.message);
+    }
+
+    /* Step 2 — Load video for rendering */
     progLbl.textContent = 'Loading video...';
+    progBar.style.width = '15%';
+
     await new Promise(function(resolve){
       procVid.onloadedmetadata = function(){ procVid.onloadedmetadata = null; resolve(); };
       procVid.onerror = function(){ resolve(); };
@@ -1614,7 +1653,7 @@ async function vrProcess(){
     var dur  = procVid.duration || 0;
     var srcW = procVid.videoWidth;
     var srcH = procVid.videoHeight;
-    if(!srcW || !srcH){ throw new Error('Could not read video dimensions. Try a different file.'); }
+    if(!srcW || !srcH) throw new Error('Could not read video dimensions.');
 
     /* Output dimensions */
     var outW, outH;
@@ -1622,77 +1661,64 @@ async function vrProcess(){
     else           { outW = resObj.w; outH = Math.round(outW / ratio); }
     if(outW % 2 !== 0) outW--; if(outH % 2 !== 0) outH--;
 
-    var crop = vrCalcCrop(srcW, srcH, ratio);
-
-    /* Output canvas */
+    /* Canvas + recorder setup */
     var canvas = document.createElement('canvas');
     canvas.width = outW; canvas.height = outH;
     var ctx = canvas.getContext('2d', { alpha: false });
 
-    /* Pick MIME — MP4 first */
-    var mimes = [
-      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
-      'video/mp4;codecs=avc1',
-      'video/mp4',
-      'video/webm;codecs=vp9',
-      'video/webm;codecs=vp8',
-      'video/webm'
-    ];
-    var mime = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
-    console.log('[VR] MIME:', mime);
+    var mimes = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+    var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
 
-    /* Face detection setup — await MediaPipe load for Pro users */
-    VR_lastFaceX = null; VR_lastFaceY = null;
-    VR_faceChecked = false; /* reset so it re-checks plan on each convert */
-    var frameIdx = 0;
-
-    /* MediaRecorder from canvas */
     var stream   = canvas.captureStream(30);
     var recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VR.bitrateMap[VR.res] });
     var chunks   = [];
     recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
     var doneRes; var doneP = new Promise(function(r){ doneRes = r; }); recorder.onstop = doneRes;
 
-    /* Seek to beginning */
-    progLbl.textContent = 'Seeking to start...'; progBar.style.width = '8%';
+    /* Seek to start */
+    progLbl.textContent = 'Starting conversion...';
+    progBar.style.width = '18%';
     procVid.currentTime = 0;
     await new Promise(function(resolve){
       procVid.onseeked = function(){ procVid.onseeked = null; resolve(); };
       setTimeout(resolve, 2000);
     });
 
-    /* Draw first frame before starting recorder */
+    /* Draw first frame */
+    var crop = vrCropForFrame(0, srcW, srcH, ratio, faceMap);
     ctx.fillStyle = '#000'; ctx.fillRect(0,0,outW,outH);
     ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
 
     recorder.start(100);
-    progLbl.textContent = 'Converting... 0%';
+    progLbl.textContent = 'Converting with AI tracking... 0%';
 
-    /* Play the video and capture frames in rAF loop.
-       Video is opacity:0.01 so browser does NOT throttle it. */
     try { await procVid.play(); } catch(e){ throw new Error('Playback blocked. Try Chrome or Edge.'); }
+
+    /* Render loop — uses server face coordinates per frame */
+    var frameIdx = 0;
+    var FPS      = 30;
+    var smoothX  = null;
+    var smoothY  = null;
 
     await new Promise(function(resolve){
       var rafId;
       function loop(){
         if(procVid.ended || procVid.currentTime >= dur - 0.04){
-          /* Draw final frame */
           ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
           ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
           cancelAnimationFrame(rafId); resolve(); return;
         }
 
-        frameIdx++;
+        frameIdx = Math.round(procVid.currentTime * FPS);
+        crop = vrCropForFrame(frameIdx, srcW, srcH, ratio, faceMap);
 
-        /* Face detection every 3 frames for smooth Pro tracking */
-
-
-        ctx.fillStyle = '#000'; ctx.fillRect(0,0,outW,outH);
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
         ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
 
-        var pct = Math.min(8 + Math.round((procVid.currentTime / dur) * 88), 97);
+        var pct = Math.min(18 + Math.round((procVid.currentTime / dur) * 78), 97);
         progBar.style.width = pct + '%';
-        progLbl.textContent = 'Converting... ' + pct + '%';
+        var hasFace = faceMap[frameIdx] ? 'AI tracking... ' : 'Converting... ';
+        progLbl.textContent = hasFace + pct + '%';
         rafId = requestAnimationFrame(loop);
       }
       rafId = requestAnimationFrame(loop);
@@ -1709,7 +1735,7 @@ async function vrProcess(){
     progLbl.textContent = 'Done! Click Download to save.';
     document.getElementById('vr-download-btn').style.display = 'inline-flex';
     btn.disabled = false;
-    showToast('Video converted! Click Download.');
+    showToast('Video converted with AI face tracking!');
 
   } catch(err){
     console.error('[VR]', err);
@@ -1721,6 +1747,17 @@ async function vrProcess(){
     try{ document.body.removeChild(procVid); }catch(e){}
   }
 }
+
+/* Get crop box for a specific frame using server face data */
+function vrCropForFrame(frameIdx, srcW, srcH, ratio, faceMap){
+  /* Look for face data within +-3 frames */
+  var face = faceMap[frameIdx] || faceMap[frameIdx-1] || faceMap[frameIdx+1] ||
+             faceMap[frameIdx-2] || faceMap[frameIdx+2] ||
+             faceMap[frameIdx-3] || faceMap[frameIdx+3];
+  if(!face) return vrCalcCrop(srcW, srcH, ratio);
+  return vrCalcCropAt(srcW, srcH, ratio, face.x, face.y);
+}
+
 
 function vrDownload(){
   if(!VR.outputBlob){ showToast('Nothing to download yet.'); return; }
