@@ -1513,65 +1513,19 @@ function vrDrawPreview(){
     var tmpC = document.createElement('canvas');
     tmpC.width = vid.videoWidth; tmpC.height = vid.videoHeight;
     tmpC.getContext('2d').drawImage(vid, 0, 0);
-    vrSmartCrop(tmpC, vid.videoWidth, vid.videoHeight, ratio).then(function(c){
-      ctx.fillStyle = '#111'; ctx.fillRect(0,0,preW,preH);
-      ctx.drawImage(vid, c.x, c.y, c.w, c.h, 0, 0, preW, preH);
-    });
+    var c = vrCalcCrop(vid.videoWidth, vid.videoHeight, ratio);
+    ctx.drawImage(vid, c.x, c.y, c.w, c.h, 0, 0, preW, preH);
   } else {
     var c = vrCalcCrop(vid.videoWidth, vid.videoHeight, ratio);
     ctx.drawImage(vid, c.x, c.y, c.w, c.h, 0, 0, preW, preH);
   }
 }
 
-/* ══════════════════════════════════════════════════
-   AI FACE TRACKING — TensorFlow.js BlazeFace
-   Works in all browsers, promise-based, accurate.
-══════════════════════════════════════════════════ */
-
-var VR_blazeModel    = null;
-var VR_tfLoaded      = false;
-var VR_tfLoading     = false;
-var VR_lastFaceX     = null;
-var VR_lastFaceY     = null;
-var VR_SMOOTH        = 0.2;
+/* ── CROP UTILITIES ── */
+var VR_lastFaceX = null;
+var VR_lastFaceY = null;
 var VR_faceSupported = false;
 var VR_faceChecked   = false;
-
-async function vrLoadBlazeFace(){
-  if(VR_tfLoaded || VR_tfLoading) return VR_tfLoaded;
-  VR_tfLoading = true;
-  try {
-    /* Load TF.js + BlazeFace from CDN */
-    await vrLoadScriptMP('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js');
-    await vrLoadScriptMP('https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js');
-
-    if(typeof blazeface === 'undefined') throw new Error('BlazeFace not loaded');
-
-    var badge = document.getElementById('vr-face-badge');
-    if(badge){ badge.textContent = 'AI Tracking: Warming up...'; }
-
-    VR_blazeModel    = await blazeface.load();
-    VR_tfLoaded      = true;
-    VR_tfLoading     = false;
-    VR_faceSupported = true;
-
-    if(badge){
-      badge.textContent  = 'AI Face Tracking: ON';
-      badge.style.background  = 'rgba(92,240,208,0.15)';
-      badge.style.color       = 'var(--accent3)';
-      badge.style.borderColor = 'rgba(92,240,208,0.3)';
-    }
-    console.log('[VR] BlazeFace loaded OK');
-    return true;
-  } catch(err){
-    console.warn('[VR] BlazeFace load failed:', err.message);
-    VR_tfLoading     = false;
-    VR_faceSupported = false;
-    var badge = document.getElementById('vr-face-badge');
-    if(badge){ badge.textContent = 'Smart Crop: Center'; badge.style.color = 'var(--muted)'; }
-    return false;
-  }
-}
 
 function vrLoadScriptMP(src){
   return new Promise(function(resolve, reject){
@@ -1582,69 +1536,20 @@ function vrLoadScriptMP(src){
   });
 }
 
-/* Detect face in a canvas frame — returns {x,y} normalised (0-1) or null */
-async function vrDetectFace(canvas){
-  if(!VR_faceSupported || !VR_blazeModel) return null;
-  try {
-    var predictions = await VR_blazeModel.estimateFaces(canvas, false);
-    if(!predictions || predictions.length === 0) return null;
-
-    /* Pick the face with the highest probability */
-    var best = predictions.reduce(function(a, b){
-      return (a.probability[0] || 0) >= (b.probability[0] || 0) ? a : b;
-    });
-
-    /* BlazeFace returns topLeft and bottomRight */
-    var tl = best.topLeft;     /* [x, y] */
-    var br = best.bottomRight; /* [x, y] */
-
-    var faceCX = ((tl[0] + br[0]) / 2) / canvas.width;
-    var faceCY = ((tl[1] + br[1]) / 2) / canvas.height;
-
-    /* Bias slightly upward to include full head */
-    faceCY = Math.max(0, faceCY - 0.04);
-
-    return { x: faceCX, y: faceCY };
-  } catch(e){
-    return null;
-  }
-}
-
-/* Smart crop — lerp toward detected face, drift to center if no face */
-async function vrSmartCrop(canvas, srcW, srcH, tgtRatio){
-  var centerCrop = vrCalcCrop(srcW, srcH, tgtRatio);
-  if(!VR_faceSupported || !VR_blazeModel) return centerCrop;
-
-  var detected = await vrDetectFace(canvas);
-
-  if(!detected){
-    /* Drift back toward center */
-    if(VR_lastFaceX !== null){
-      VR_lastFaceX += (0.5 - VR_lastFaceX) * VR_SMOOTH;
-      VR_lastFaceY += (0.5 - VR_lastFaceY) * VR_SMOOTH;
-      if(Math.abs(VR_lastFaceX - 0.5) < 0.005) { VR_lastFaceX = null; VR_lastFaceY = null; }
-    }
-  } else {
-    if(VR_lastFaceX === null){
-      VR_lastFaceX = detected.x;
-      VR_lastFaceY = detected.y;
-    } else {
-      VR_lastFaceX += (detected.x - VR_lastFaceX) * VR_SMOOTH;
-      VR_lastFaceY += (detected.y - VR_lastFaceY) * VR_SMOOTH;
-    }
-  }
-
-  if(VR_lastFaceX === null) return centerCrop;
-  return vrCalcCropAt(srcW, srcH, tgtRatio, VR_lastFaceX, VR_lastFaceY);
-}
-
-async function vrInitFaceDetector(){
+function vrInitFaceDetector(){
   if(VR_faceChecked) return;
   VR_faceChecked = true;
+  /* Face tracking placeholder — future Pro feature via backend */
   var badge = document.getElementById('vr-face-badge');
-  if(badge){ badge.textContent = 'AI Tracking: Loading...'; badge.style.color = 'var(--muted)'; }
-  /* Open to all users for testing — restrict to Pro/Team later */
-  await vrLoadBlazeFace();
+  if(badge){
+    badge.textContent  = 'Smart Crop: Center';
+    badge.style.color  = 'var(--muted)';
+  }
+}
+
+/* Smart crop — uses center crop for now */
+function vrSmartCropSync(srcW, srcH, tgtRatio){
+  return vrCalcCrop(srcW, srcH, tgtRatio);
 }
 
 function vrCalcCrop(srcW, srcH, tgtRatio){
@@ -1739,16 +1644,6 @@ async function vrProcess(){
     /* Face detection setup — await MediaPipe load for Pro users */
     VR_lastFaceX = null; VR_lastFaceY = null;
     VR_faceChecked = false; /* reset so it re-checks plan on each convert */
-    if(true){ /* temporarily open to all users */
-      progLbl.textContent = 'Loading AI face tracker...';
-      await vrInitFaceDetector();
-    } else {
-      vrInitFaceDetector(); /* non-blocking for free users */
-    }
-    var faceCanvas = document.createElement('canvas');
-    faceCanvas.width  = Math.round(srcW / 4);
-    faceCanvas.height = Math.round(srcH / 4);
-    var faceCtx = faceCanvas.getContext('2d');
     var frameIdx = 0;
 
     /* MediaRecorder from canvas */
@@ -1790,17 +1685,14 @@ async function vrProcess(){
         frameIdx++;
 
         /* Face detection every 3 frames for smooth Pro tracking */
-        if(VR_faceSupported && frameIdx % 3 === 0){
-          faceCtx.drawImage(procVid, 0, 0, faceCanvas.width, faceCanvas.height);
-          vrSmartCrop(faceCanvas, srcW, srcH, ratio).then(function(fc){ crop = fc; }).catch(function(){});
-        }
+
 
         ctx.fillStyle = '#000'; ctx.fillRect(0,0,outW,outH);
         ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
 
         var pct = Math.min(8 + Math.round((procVid.currentTime / dur) * 88), 97);
         progBar.style.width = pct + '%';
-        progLbl.textContent = (VR_faceSupported ? 'AI tracking... ' : 'Converting... ') + pct + '%';
+        progLbl.textContent = 'Converting... ' + pct + '%';
         rafId = requestAnimationFrame(loop);
       }
       rafId = requestAnimationFrame(loop);
