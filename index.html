@@ -331,6 +331,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
   .input-row .cdd{flex:1;min-width:0;}
 }
 </style>
+<!-- FFmpeg.wasm for WebM to MP4 conversion -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.10/ffmpeg.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -1548,11 +1550,88 @@ async function vrProcess(){
   }
 }
 
-function vrDownload(){
+async function vrDownload(){
   if(!VR.outputBlob){ showToast('Nothing to download yet.'); return; }
-  var ext  = VR.outputBlob.type.includes('mp4') ? 'mp4' : 'webm';
+
+  var downloadBtn = document.getElementById('vr-download-btn');
+  var progWrap    = document.getElementById('vr-progress-wrap');
+  var progBar     = document.getElementById('vr-progress-bar');
+  var progLbl     = document.getElementById('vr-progress-label');
+
+  /* If already MP4 just download directly */
+  if(VR.outputBlob.type.includes('mp4')){
+    vrDirectDownload(VR.outputBlob, 'mp4'); return;
+  }
+
+  /* Convert WebM to MP4 using FFmpeg.wasm */
+  if(typeof FFmpeg === 'undefined' || !FFmpeg.createFFmpeg){
+    /* FFmpeg not loaded — download as WebM with explanation */
+    showToast('Downloading as WebM. Open in VLC or Chrome to play.');
+    vrDirectDownload(VR.outputBlob, 'webm'); return;
+  }
+
+  downloadBtn.disabled = true;
+  downloadBtn.textContent = 'Converting to MP4...';
+  progWrap.classList.add('show');
+  progBar.style.width = '10%';
+  progLbl.textContent = 'Converting to MP4 for universal playback...';
+
+  try {
+    var ffmpeg = FFmpeg.createFFmpeg({
+      log: false,
+      progress: function(p){
+        var pct = Math.min(10 + Math.round(p.ratio * 85), 95);
+        progBar.style.width = pct + '%';
+        progLbl.textContent = 'Converting to MP4... ' + pct + '%';
+      }
+    });
+
+    await ffmpeg.load();
+
+    /* Write WebM blob to FFmpeg virtual filesystem */
+    var webmData = new Uint8Array(await VR.outputBlob.arrayBuffer());
+    ffmpeg.FS('writeFile', 'input.webm', webmData);
+
+    /* Convert to MP4 with H.264 — universally compatible */
+    await ffmpeg.run(
+      '-i', 'input.webm',
+      '-c:v', 'libx264',
+      '-preset', 'fast',
+      '-crf', '23',
+      '-c:a', 'aac',
+      '-movflags', '+faststart',
+      'output.mp4'
+    );
+
+    /* Read output and download */
+    var mp4Data = ffmpeg.FS('readFile', 'output.mp4');
+    var mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
+
+    /* Cleanup FFmpeg filesystem */
+    try { ffmpeg.FS('unlink', 'input.webm'); } catch(e){}
+    try { ffmpeg.FS('unlink', 'output.mp4'); } catch(e){}
+
+    progBar.style.width = '100%';
+    progLbl.textContent = 'Done! Downloading MP4...';
+
+    vrDirectDownload(mp4Blob, 'mp4');
+    showToast('Downloaded as MP4. Ready for any platform.');
+
+  } catch(err){
+    console.error('[VR] FFmpeg conversion error:', err);
+    /* Fallback to WebM if conversion fails */
+    showToast('MP4 conversion failed. Downloading as WebM.');
+    vrDirectDownload(VR.outputBlob, 'webm');
+    progLbl.textContent = 'Downloaded as WebM.';
+  } finally {
+    downloadBtn.disabled = false;
+    downloadBtn.textContent = 'Download';
+  }
+}
+
+function vrDirectDownload(blob, ext){
   var name = 'creatoros-' + VR.format.replace(':','-') + '-' + VR.res + '.' + ext;
-  var url  = URL.createObjectURL(VR.outputBlob);
+  var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a'); a.href=url; a.download=name;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
