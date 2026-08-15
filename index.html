@@ -322,6 +322,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 .upgrade-popup-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
 .upgrade-popup-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
 
+/* VR TOGGLE */
+#vr-tracking-toggle:checked + #vr-toggle-track { background: var(--accent); }
+#vr-tracking-toggle:checked ~ #vr-toggle-knob  { transform: translateX(18px); }
+
 /* PASSWORD FIELD */
 .pw-wrap{position:relative;}
 .pw-wrap .form-input{padding-right:2.8rem;}
@@ -638,8 +642,17 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
                 <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
                 <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
               </div>
-              <div style="display:flex;align-items:center;gap:0.5rem;margin:0.5rem 0;">
-                <div id="vr-face-badge" style="font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:var(--surface);">Smart Crop: Checking...</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
+                <div>
+                  <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.1rem;">AI Face Tracking</div>
+                  <div id="vr-face-badge" style="font-size:0.72rem;color:var(--muted);">Auto-follows subject as they move</div>
+                </div>
+                <!-- Toggle switch -->
+                <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex-shrink:0;">
+                  <input type="checkbox" id="vr-tracking-toggle" style="opacity:0;width:0;height:0;position:absolute;" onchange="vrToggleTracking(this.checked)">
+                  <span id="vr-toggle-track" style="position:absolute;inset:0;background:var(--border);border-radius:24px;transition:background 0.25s;"></span>
+                  <span id="vr-toggle-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></span>
+                </label>
               </div>
               <div class="vr-preview-wrap" id="vr-preview-wrap">
                 <div class="settings-label" style="margin-bottom:0.45rem;">Preview</div>
@@ -1414,7 +1427,7 @@ function switchPanel(name){
 }
 
 /* ═══ VIDEO RESIZE ═══ */
-var VR={plan:'free',file:null,objectURL:null,format:'9:16',res:'720p',outputBlob:null,maxFreeSecs:180,resMap:{'720p':{w:1280,h:720},'1080p':{w:1920,h:1080},'2k':{w:2560,h:1440},'4k':{w:3840,h:2160}},ratioMap:{'9:16':9/16,'1:1':1,'4:5':4/5,'16:9':16/9},bitrateMap:{'720p':3000000,'1080p':6000000,'2k':12000000,'4k':25000000}};
+var VR={plan:'free',file:null,objectURL:null,format:'9:16',res:'720p',outputBlob:null,maxFreeSecs:180,trackingEnabled:false,resMap:{'720p':{w:1280,h:720},'1080p':{w:1920,h:1080},'2k':{w:2560,h:1440},'4k':{w:3840,h:2160}},ratioMap:{'9:16':9/16,'1:1':1,'4:5':4/5,'16:9':16/9},bitrateMap:{'720p':3000000,'1080p':6000000,'2k':12000000,'4k':25000000}};
 
 function vrInitDrop(){
   var zone=document.getElementById('vr-upload-zone');
@@ -1537,6 +1550,22 @@ function vrLoadScriptMP(src){
   });
 }
 
+function vrToggleTracking(enabled){
+  VR.trackingEnabled = enabled;
+  var badge  = document.getElementById('vr-face-badge');
+  var track  = document.getElementById('vr-toggle-track');
+  var knob   = document.getElementById('vr-toggle-knob');
+  if(enabled){
+    if(badge){ badge.textContent = 'AI tracking ON — server will analyse faces'; badge.style.color = 'var(--accent3)'; }
+    if(track) track.style.background = 'var(--accent)';
+    if(knob)  knob.style.transform   = 'translateX(18px)';
+  } else {
+    if(badge){ badge.textContent = 'Auto-follows subject as they move'; badge.style.color = 'var(--muted)'; }
+    if(track) track.style.background = 'var(--border)';
+    if(knob)  knob.style.transform   = 'translateX(0)';
+  }
+}
+
 function vrInitFaceDetector(){
   if(VR_faceChecked) return;
   VR_faceChecked = true;
@@ -1633,7 +1662,8 @@ async function vrProcess(){
     var ratio  = VR.ratioMap[VR.format];
     var resObj = VR.resMap[VR.res];
 
-    /* Step 1 — Upload video to face tracker service */
+    /* Step 1 — Upload video to face tracker (only if user enabled it) */
+    if(VR.trackingEnabled){
     progLbl.textContent = 'Analysing faces on server...';
     progBar.style.width = '8%';
 
@@ -1670,6 +1700,7 @@ async function vrProcess(){
     } catch(trackErr){
       console.warn('[VR] Face tracker unavailable — using center crop:', trackErr.message);
     }
+    } /* end if(VR.trackingEnabled) */
 
     /* Step 2 — Load video for rendering */
     progLbl.textContent = 'Loading video...';
@@ -1909,6 +1940,10 @@ function vrReset(){
   document.getElementById('vr-plan-notice').classList.remove('show');
   document.getElementById('vr-process-btn').disabled         = false;
   document.getElementById('vr-file-input').value             = '';
+  /* Reset tracking toggle */
+  var tog = document.getElementById('vr-tracking-toggle');
+  if(tog) tog.checked = false;
+  vrToggleTracking(false);
   document.getElementById('vr-canvas-out-label').textContent = 'Output (9:16)';
   document.getElementById('vr-progress-bar').style.width     = '0%';
   document.getElementById('vr-progress-label').textContent   = '';
