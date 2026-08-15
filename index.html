@@ -1624,7 +1624,7 @@ async function vrProcess(){
   /* Create visible video element — opacity:0.01 prevents throttling */
   var procVid = document.createElement('video');
   procVid.style.cssText = 'position:fixed;bottom:0;right:0;width:1px;height:1px;opacity:0.01;z-index:-1;';
-  procVid.muted = true; procVid.preload = 'auto'; procVid.playsInline = true;
+  procVid.muted = false; procVid.preload = 'auto'; procVid.playsInline = true; procVid.volume = 0;
   document.body.appendChild(procVid);
 
   var faceMap = {}; /* frame index -> {x, y} */
@@ -1714,7 +1714,30 @@ async function vrProcess(){
     var mimes = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
 
-    var stream   = canvas.captureStream(30);
+    /* Capture canvas video + original audio together */
+    var canvasStream = canvas.captureStream(30);
+    var stream;
+
+    try {
+      /* Extract audio from the video element using Web Audio API */
+      var audioCtx    = new (window.AudioContext || window.webkitAudioContext)();
+      var source      = audioCtx.createMediaElementSource(procVid);
+      var destination = audioCtx.createMediaStreamDestination();
+      /* Connect: source -> destination (for recording) AND source -> speakers (muted via procVid.muted) */
+      source.connect(destination);
+      /* Do NOT connect to audioCtx.destination — we don't want to hear it during processing */
+
+      /* Merge canvas video track + audio track into one stream */
+      var audioTrack = destination.stream.getAudioTracks()[0];
+      var videoTrack = canvasStream.getVideoTracks()[0];
+      stream = new MediaStream([videoTrack, audioTrack]);
+      console.log('[VR] Audio track added to recording stream');
+    } catch(audioErr){
+      /* Fallback: video only if audio capture fails */
+      console.warn('[VR] Could not capture audio:', audioErr.message, '— recording video only');
+      stream = canvasStream;
+    }
+
     var recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VR.bitrateMap[VR.res] });
     var chunks   = [];
     recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
@@ -1750,7 +1773,7 @@ async function vrProcess(){
     recorder.start();
     progLbl.textContent = 'Converting... 0%';
 
-    procVid.muted = true;
+    procVid.volume = 0; /* silent playback — audio captured via Web Audio API */
     procVid.playbackRate = 1;
     try{ await procVid.play(); } catch(e){ throw new Error('Playback blocked. Use Chrome or Edge.'); }
 
