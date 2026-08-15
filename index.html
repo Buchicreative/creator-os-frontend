@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creator OS — Turn Ideas Into Content in Minutes</title>
+<title>Creator OS | Turn Ideas Into Content in Minutes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
@@ -359,7 +359,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
   <div class="modal">
     <button class="modal-close" onclick="closeModal('signupModal')">&#x2715;</button>
     <h2>Create account</h2>
-    <p class="modal-sub">Start creating content in minutes &#8212; free forever</p>
+    <p class="modal-sub">Start creating content in minutes, free forever</p>
     <button class="btn-google" onclick="googleAuth()">
       <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
       Sign up with Google
@@ -407,9 +407,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 
     <!-- LOGGED OUT STATE -->
     <div id="hero-loggedout">
-      <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System &#8212; Now Live</div>
+      <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System, Now Live</div>
       <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
-      <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content &#8212; powered by AI.</p>
+      <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content. All powered by AI.</p>
       <div class="hero-actions">
         <button class="btn-hero" onclick="openModal('signupModal')">Start Creating Free &#x2192;</button>
         <a href="javascript:void(0)" onclick="navScrollTo(event,'how')" class="btn-hero-ghost">
@@ -426,8 +426,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
-      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan &#8212; <a onclick="openModal('signupModal')" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
-      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span> &#128075;</h1>
+      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="openModal('signupModal')" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
+      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
         <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
@@ -546,7 +546,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
               <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
               <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
               <p>Drag &amp; drop your landscape video here</p>
-              <span>or click to browse &mdash; MP4, MOV, WebM</span>
+              <span>or click to browse. MP4, MOV, WebM supported</span>
             </div>
             <div class="vr-meta" id="vr-meta" style="display:none;">
               <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/></svg><strong id="vr-fname">—</strong></div>
@@ -614,7 +614,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
     </div>
     <div class="how-steps">
       <div class="step-card reveal"><span class="step-num">01</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Get AI-Powered Ideas</h3><p>Tell us your niche and platform. We generate 8 scroll-stopping, curiosity-driven ideas tailored to you instantly.</p></div>
-      <div class="step-card reveal"><span class="step-num">02</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>Generate Content</h3><p>Pick an idea, choose your format — script, carousel, caption, or thread. AI writes it in your tone in seconds.</p></div>
+      <div class="step-card reveal"><span class="step-num">02</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>Generate Content</h3><p>Pick an idea, choose your format: script, carousel, caption, or thread. AI writes it in your tone in seconds.</p></div>
       <div class="step-card reveal"><span class="step-num">03</span><div class="step-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" style="stroke:var(--accent3)"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Repurpose Everywhere</h3><p>Turn one piece of content into a thread, reel script, carousel, LinkedIn post, and email. Maximum reach, minimum effort.</p></div>
     </div>
   </div>
@@ -646,11 +646,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
       <div class="workflow-text reveal">
         <span class="section-tag">Your Workflow</span>
         <h2>Built for the Creator<br>Who Won't Slow Down</h2>
-        <p>Creator OS is not just a tool — it's a daily habit. Log in, generate, create, publish. Repeat.</p>
+        <p>Creator OS is more than a tool. It's a daily habit. Log in, generate, create, publish. Repeat.</p>
         <ul class="workflow-list">
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Personalized to your niche and tone</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile — create anywhere, anytime</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile. Create anywhere, anytime</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Save, edit, copy and export in one click</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by the latest GPT-4o AI model</li>
         </ul>
@@ -716,7 +716,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts, Captions &amp; Carousels</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full repurposing engine</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize — unlimited + 2K/4K</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize, unlimited + 2K/4K</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
           <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Team collaboration</li>
         </ul>
@@ -848,7 +848,7 @@ function updateAuthUI(){
     var planBadge = document.getElementById('hero-plan-badge');
     var statPlan  = document.getElementById('stat-plan');
 
-    if(heroGreet) heroGreet.innerHTML = greeting + ', <span id="hero-username" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + escHtml(name) + '</span> &#128075;';
+    if(heroGreet) heroGreet.innerHTML = greeting + ', <span id="hero-username" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + escHtml(name) + '</span>';
 
     var subs = [
       'What are you creating today?',
@@ -862,13 +862,13 @@ function updateAuthUI(){
     /* Plan badge */
     if(planBadge && statPlan){
       if(plan === 'pro'){
-        planBadge.innerHTML = '<span class="badge-dot"></span> Pro Plan &#8212; Unlimited Access &#10024;';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Pro Plan. Unlimited Access &#10024;';
         statPlan.textContent = 'Pro';
       } else if(plan === 'team'){
-        planBadge.innerHTML = '<span class="badge-dot"></span> Team Plan &#8212; Unlimited Access &#10024;';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Team Plan. Unlimited Access &#10024;';
         statPlan.textContent = 'Team';
       } else {
-        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan &#8212; <a onclick="openModal(&quot;signupModal&quot;)" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a onclick="openModal(&quot;signupModal&quot;)" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
         statPlan.textContent = 'Free';
       }
     }
@@ -1259,7 +1259,7 @@ function vrHandleFile(file){
     document.getElementById('vr-dur').textContent = vrFmtTime(dur);
     document.getElementById('vr-dim').textContent = vid.videoWidth + 'x' + vid.videoHeight;
     if(VR.plan === 'free' && dur > VR.maxFreeSecs){
-      document.getElementById('vr-plan-msg').innerHTML = 'Free plan: your video is <strong>'+vrFmtTime(dur)+'</strong> &#8212; max is 3:00. <a style="cursor:pointer;color:var(--accent2);font-weight:700;" onclick="openModal(&quot;signupModal&quot;)">Upgrade to Pro</a> for unlimited.';
+      document.getElementById('vr-plan-msg').innerHTML = 'Free plan: your video is <strong>'+vrFmtTime(dur)+'</strong>. Max is 3:00. <a style="cursor:pointer;color:var(--accent2);font-weight:700;" onclick="openModal(&quot;signupModal&quot;)">Upgrade to Pro</a> for unlimited.';
       document.getElementById('vr-plan-notice').classList.add('show');
       document.getElementById('vr-process-btn').disabled = true;
     }
