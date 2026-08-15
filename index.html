@@ -1650,6 +1650,9 @@ async function vrProcess(){
       if(trackRes.ok){
         var trackData = await trackRes.json();
         if(trackData.frames){
+          /* Store actual video FPS from server so timeline mapping is correct */
+          VR._trackFPS = trackData.fps || 30;
+          console.log('[VR] Server FPS:', VR._trackFPS, 'Total frames:', trackData.total_frames);
           trackData.frames.forEach(function(f){
             if(f.x !== null && f.y !== null){
               faceMap[f.frame] = { x: f.x, y: f.y };
@@ -1710,13 +1713,16 @@ async function vrProcess(){
 
 
     /* Build a time-sorted array of face positions for smooth interpolation */
+    /* Build timeline using actual FPS from server response */
     var faceTimeline = [];
-    if(Object.keys(faceMap).length > 0){
-      var serverFPS = 30;
+    if(Object.keys(faceMap).length > 0 && VR._trackFPS){
+      var serverFPS = VR._trackFPS; /* actual video FPS returned by server */
       Object.keys(faceMap).forEach(function(fi){
         faceTimeline.push({ t: parseInt(fi) / serverFPS, x: faceMap[fi].x, y: faceMap[fi].y });
       });
       faceTimeline.sort(function(a,b){ return a.t - b.t; });
+      console.log('[VR] faceTimeline built: ' + faceTimeline.length + ' entries at ' + serverFPS + 'fps');
+      console.log('[VR] First 3:', JSON.stringify(faceTimeline.slice(0,3)));
     }
 
     /* Smoothed crop position — updated from timeline */
