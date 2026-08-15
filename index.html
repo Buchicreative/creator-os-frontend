@@ -1561,6 +1561,23 @@ function vrCalcCrop(srcW, srcH, tgtRatio){
   return {x:x,y:y,w:w,h:h};
 }
 
+/* Crop centered on a specific normalised point (cx, cy in 0-1) */
+function vrCalcCropAt(srcW, srcH, tgtRatio, cx, cy){
+  var srcRatio = srcW / srcH;
+  var w, h, x, y;
+  if(tgtRatio < srcRatio){
+    h = srcH; w = Math.round(srcH * tgtRatio);
+    x = Math.round(cx * srcW - w / 2);
+    x = Math.max(0, Math.min(srcW - w, x)); y = 0;
+  } else {
+    w = srcW; h = Math.round(srcW / tgtRatio);
+    x = 0;
+    y = Math.round(cy * srcH - h / 2);
+    y = Math.max(0, Math.min(srcH - h, y));
+  }
+  return { x:x, y:y, w:w, h:h };
+}
+
 function vrSelectFormat(el, fmt){
   if(el.classList.contains('locked')) return;
   document.querySelectorAll('#vr-format-grid .vr-option-card').forEach(function(c){c.classList.remove('selected');});
