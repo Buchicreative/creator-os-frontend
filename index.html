@@ -434,11 +434,26 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
   <button class="mobile-close" onclick="toggleMenu()">&#x2715;</button>
+
+  <!-- Logged in: show user name -->
+  <div id="mob-user-name" style="display:none;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;"></div>
+
   <a onclick="toggleMenu();navScrollTo(event,'how')">How it Works</a>
   <a onclick="toggleMenu();navScrollTo(event,'features')">Features</a>
   <a onclick="toggleMenu();navScrollTo(event,'pricing')">Pricing</a>
   <a onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
-  <button class="btn-hero" style="margin-top:1rem;" onclick="toggleMenu();openModal('signupModal')">Start Creating Free &#x2192;</button>
+
+  <!-- Logged out buttons -->
+  <div id="mob-loggedout-btns" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
+    <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('signupModal')">Start Creating Free &#x2192;</button>
+    <button class="btn-hero-ghost" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('loginModal')">Log In</button>
+  </div>
+
+  <!-- Logged in buttons -->
+  <div id="mob-loggedin-btns" style="display:none;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
+    <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();navScrollTo(event,'app-section')">Go to Dashboard &#x2192;</button>
+    <button class="btn-hero-ghost" style="width:80%;justify-content:center;border-color:rgba(252,92,125,0.3);color:var(--accent2);" onclick="toggleMenu();doLogout()">Log Out</button>
+  </div>
 </div>
 
 <!-- HERO -->
@@ -950,6 +965,17 @@ function updateAuthUI(){
     var g2 = h2 < 12 ? 'Good morning' : h2 < 17 ? 'Good afternoon' : 'Good evening';
     gr.textContent = g2 + (loggedIn ? ', ' + name : ', Creator');
   }
+
+  /* ── Mobile menu auth state ── */
+  var mobUser    = document.getElementById('mob-user-name');
+  var mobOut     = document.getElementById('mob-loggedout-btns');
+  var mobIn      = document.getElementById('mob-loggedin-btns');
+  if(mobUser){
+    mobUser.style.display = loggedIn ? 'block' : 'none';
+    mobUser.textContent   = loggedIn ? name : '';
+  }
+  if(mobOut) mobOut.style.display = loggedIn ? 'none'  : 'flex';
+  if(mobIn)  mobIn.style.display  = loggedIn ? 'flex'  : 'none';
 }
 
 /* GREETING */
