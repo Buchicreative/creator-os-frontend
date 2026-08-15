@@ -1691,23 +1691,8 @@ async function vrInitFaceDetector(){
 
   var badge = document.getElementById('vr-face-badge');
 
-  /* Only available for Pro/Team */
-  if(AUTH.plan === 'free' || !AUTH.token){
-    VR_faceSupported = false;
-    if(badge){
-      badge.textContent    = 'AI Tracking: Pro only';
-      badge.style.cursor   = 'pointer';
-      badge.onclick = function(){
-      openUpgradePopup(
-        'Pro Feature: AI Face Tracking',
-        'AI Face Tracking automatically keeps your subject in frame as they move. It runs a neural network on every frame so the crop follows the person, not just the center. Available on Pro and Team plans.'
-      );
-    };
-    }
-    return;
-  }
-
-  /* Pro/Team — load MediaPipe */
+  /* Open to all users for testing — restrict to Pro/Team later */
+  /* Load MediaPipe */
   if(badge){
     badge.textContent   = 'AI Tracking: Loading...';
     badge.style.color   = 'var(--muted)';
@@ -1807,7 +1792,7 @@ async function vrProcess(){
     /* Face detection setup — await MediaPipe load for Pro users */
     VR_lastFaceX = null; VR_lastFaceY = null;
     VR_faceChecked = false; /* reset so it re-checks plan on each convert */
-    if(AUTH.plan !== 'free' && AUTH.token){
+    if(true){ /* temporarily open to all users */
       progLbl.textContent = 'Loading AI face tracker...';
       await vrInitFaceDetector();
     } else {
