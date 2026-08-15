@@ -332,7 +332,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 }
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ffmpeg/0.12.10/ffmpeg.min.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
 
@@ -1558,75 +1558,83 @@ async function vrDownload(){
   var progBar     = document.getElementById('vr-progress-bar');
   var progLbl     = document.getElementById('vr-progress-label');
 
-  /* If already MP4 just download directly */
-  if(VR.outputBlob.type.includes('mp4')){
-    vrDirectDownload(VR.outputBlob, 'mp4'); return;
-  }
-
-  /* Convert WebM to MP4 using FFmpeg.wasm */
-  if(typeof FFmpeg === 'undefined' || !FFmpeg.createFFmpeg){
-    /* FFmpeg not loaded — download as WebM with explanation */
-    showToast('Downloading as WebM. Open in VLC or Chrome to play.');
-    vrDirectDownload(VR.outputBlob, 'webm'); return;
-  }
-
   downloadBtn.disabled = true;
-  downloadBtn.textContent = 'Converting to MP4...';
+  downloadBtn.textContent = 'Preparing...';
   progWrap.classList.add('show');
-  progBar.style.width = '10%';
-  progLbl.textContent = 'Converting to MP4 for universal playback...';
+  progBar.style.width = '5%';
+  progLbl.textContent = 'Loading MP4 converter...';
 
   try {
-    var ffmpeg = FFmpeg.createFFmpeg({
+    /* Dynamically load FFmpeg.wasm v0.11.6 from unpkg */
+    await vrLoadScript('https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js');
+    await vrLoadScript('https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js');
+
+    if(typeof createFFmpeg === 'undefined'){
+      throw new Error('FFmpeg could not be loaded');
+    }
+
+    var ffmpeg = createFFmpeg({
+      corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
       log: false,
       progress: function(p){
-        var pct = Math.min(10 + Math.round(p.ratio * 85), 95);
+        var pct = Math.min(15 + Math.round((p.ratio||0) * 80), 95);
         progBar.style.width = pct + '%';
         progLbl.textContent = 'Converting to MP4... ' + pct + '%';
       }
     });
 
+    progBar.style.width = '10%';
+    progLbl.textContent = 'Loading FFmpeg engine...';
     await ffmpeg.load();
 
-    /* Write WebM blob to FFmpeg virtual filesystem */
+    progBar.style.width = '15%';
+    progLbl.textContent = 'Processing video...';
+
     var webmData = new Uint8Array(await VR.outputBlob.arrayBuffer());
     ffmpeg.FS('writeFile', 'input.webm', webmData);
 
-    /* Convert to MP4 with H.264 — universally compatible */
     await ffmpeg.run(
-      '-i', 'input.webm',
-      '-c:v', 'libx264',
-      '-preset', 'fast',
-      '-crf', '23',
-      '-c:a', 'aac',
+      '-i',        'input.webm',
+      '-c:v',      'libx264',
+      '-preset',   'ultrafast',
+      '-crf',      '23',
+      '-c:a',      'aac',
       '-movflags', '+faststart',
       'output.mp4'
     );
 
-    /* Read output and download */
     var mp4Data = ffmpeg.FS('readFile', 'output.mp4');
     var mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
 
-    /* Cleanup FFmpeg filesystem */
     try { ffmpeg.FS('unlink', 'input.webm'); } catch(e){}
     try { ffmpeg.FS('unlink', 'output.mp4'); } catch(e){}
 
     progBar.style.width = '100%';
-    progLbl.textContent = 'Done! Downloading MP4...';
-
+    progLbl.textContent = 'Done! Saved as MP4.';
     vrDirectDownload(mp4Blob, 'mp4');
-    showToast('Downloaded as MP4. Ready for any platform.');
+    showToast('Downloaded as MP4. Plays everywhere.');
 
   } catch(err){
-    console.error('[VR] FFmpeg conversion error:', err);
-    /* Fallback to WebM if conversion fails */
-    showToast('MP4 conversion failed. Downloading as WebM.');
+    console.warn('[VR] MP4 conversion failed:', err.message);
+    progBar.style.width = '100%';
+    progLbl.textContent = 'Saved as WebM.';
     vrDirectDownload(VR.outputBlob, 'webm');
-    progLbl.textContent = 'Downloaded as WebM.';
+    showToast('Saved as WebM. Open in Chrome or VLC to play.');
   } finally {
     downloadBtn.disabled = false;
     downloadBtn.textContent = 'Download';
   }
+}
+
+/* Load an external script dynamically and wait for it */
+function vrLoadScript(src){
+  return new Promise(function(resolve, reject){
+    /* Don't load twice */
+    if(document.querySelector('script[src="'+src+'"]')){ resolve(); return; }
+    var s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
 }
 
 function vrDirectDownload(blob, ext){
