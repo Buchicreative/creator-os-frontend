@@ -1556,8 +1556,13 @@ function vrSmartCropSync(srcW, srcH, tgtRatio){
 
 function vrCalcCrop(srcW, srcH, tgtRatio){
   var srcRatio = srcW / srcH; var x,y,w,h;
-  if(tgtRatio < srcRatio){ h=srcH; w=Math.round(srcH*tgtRatio); x=Math.round((srcW-w)/2); y=0; }
-  else{ w=srcW; h=Math.round(srcW/tgtRatio); x=0; y=Math.round((srcH-h)/2); }
+  if(tgtRatio < srcRatio){
+    h=srcH; w=Math.round(srcH*tgtRatio); if(w%2!==0) w--;
+    x=Math.round((srcW-w)/2); y=0;
+  } else {
+    w=srcW; h=Math.round(srcW/tgtRatio); if(h%2!==0) h--;
+    x=0; y=Math.round((srcH-h)/2);
+  }
   return {x:x,y:y,w:w,h:h};
 }
 
@@ -1566,11 +1571,19 @@ function vrCalcCropAt(srcW, srcH, tgtRatio, cx, cy){
   var srcRatio = srcW / srcH;
   var w, h, x, y;
   if(tgtRatio < srcRatio){
-    h = srcH; w = Math.round(srcH * tgtRatio);
+    /* Source wider than target — crop sides, preserve full height */
+    h = srcH;
+    w = Math.round(h * tgtRatio);
+    /* Ensure even number for codec compatibility */
+    if(w % 2 !== 0) w--;
     x = Math.round(cx * srcW - w / 2);
-    x = Math.max(0, Math.min(srcW - w, x)); y = 0;
+    x = Math.max(0, Math.min(srcW - w, x));
+    y = 0;
   } else {
-    w = srcW; h = Math.round(srcW / tgtRatio);
+    /* Source taller than target — crop top/bottom, preserve full width */
+    w = srcW;
+    h = Math.round(w / tgtRatio);
+    if(h % 2 !== 0) h--;
     x = 0;
     y = Math.round(cy * srcH - h / 2);
     y = Math.max(0, Math.min(srcH - h, y));
@@ -1709,7 +1722,7 @@ async function vrProcess(){
     /* Smoothed crop position — updated from timeline */
     var smoothCropX = 0.5;
     var smoothCropY = 0.5;
-    var LERP = 0.08; /* low = very smooth, high = snappy */
+    var LERP = 0.35; /* higher = more responsive tracking */
 
     /* Play + rAF — no seek, no lag */
     procVid.currentTime = 0;
@@ -1760,6 +1773,10 @@ async function vrProcess(){
           smoothCropY += (targetY - smoothCropY) * LERP;
           crop = vrCalcCropAt(srcW, srcH, ratio, smoothCropX, smoothCropY);
         }
+
+        /* Safety clamp — ensure crop stays within source bounds */
+        crop.x = Math.max(0, Math.min(srcW - crop.w, crop.x));
+        crop.y = Math.max(0, Math.min(srcH - crop.h, crop.y));
 
         ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
         ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
