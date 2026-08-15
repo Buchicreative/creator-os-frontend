@@ -1692,40 +1692,46 @@ async function vrProcess(){
     recorder.start(100);
     progLbl.textContent = 'Converting with AI tracking... 0%';
 
-    try { await procVid.play(); } catch(e){ throw new Error('Playback blocked. Try Chrome or Edge.'); }
+    /* Seek-based render — reliable, uses AI face coords per frame */
+    var FPS        = 15; /* 15fps output — fast and smooth enough for social media */
+    var INTERVAL   = 1 / FPS;
+    var totalFrames = Math.ceil(dur * FPS);
+    var frameIdx   = 0;
 
-    /* Render loop — uses server face coordinates per frame */
-    var frameIdx = 0;
-    var FPS      = 30;
-    var smoothX  = null;
-    var smoothY  = null;
+    /* Pre-build a fast lookup: time -> crop */
+    recorder.start();
+    progLbl.textContent = 'Converting... 0%';
 
-    await new Promise(function(resolve){
-      var rafId;
-      function loop(){
-        if(procVid.ended || procVid.currentTime >= dur - 0.04){
-          ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
-          ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
-          cancelAnimationFrame(rafId); resolve(); return;
-        }
+    function waitForSeeked(){
+      return new Promise(function(res){
+        var done = false;
+        function onS(){ if(done) return; done=true; procVid.removeEventListener('seeked',onS); res(); }
+        procVid.addEventListener('seeked', onS);
+        setTimeout(function(){ if(done) return; done=true; procVid.removeEventListener('seeked',onS); res(); }, 800);
+      });
+    }
 
-        frameIdx = Math.round(procVid.currentTime * FPS);
-        crop = vrCropForFrame(frameIdx, srcW, srcH, ratio, faceMap);
+    while(frameIdx <= totalFrames){
+      var t = Math.min(frameIdx * INTERVAL, dur);
+      procVid.currentTime = t;
+      await waitForSeeked();
 
-        ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
-        ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+      /* Get face-aware crop for this frame */
+      var serverFrame = Math.round(t * 30); /* server used 30fps indexing */
+      crop = vrCropForFrame(serverFrame, srcW, srcH, ratio, faceMap);
 
-        var pct = Math.min(18 + Math.round((procVid.currentTime / dur) * 78), 97);
-        progBar.style.width = pct + '%';
-        var hasFace = faceMap[frameIdx] ? 'AI tracking... ' : 'Converting... ';
-        progLbl.textContent = hasFace + pct + '%';
-        rafId = requestAnimationFrame(loop);
-      }
-      rafId = requestAnimationFrame(loop);
-    });
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, outW, outH);
+      ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
 
-    procVid.pause();
-    await new Promise(function(r){ setTimeout(r, 600); });
+      var pct = Math.min(18 + Math.round((frameIdx / totalFrames) * 78), 97);
+      progBar.style.width = pct + '%';
+      progLbl.textContent = (Object.keys(faceMap).length > 0 ? 'AI tracking... ' : 'Converting... ') + pct + '%';
+
+      frameIdx++;
+    }
+
+    await new Promise(function(r){ setTimeout(r, 500); });
     recorder.stop(); await doneP;
 
     VR.outputBlob = new Blob(chunks, { type: mime });
