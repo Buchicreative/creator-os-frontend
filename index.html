@@ -1527,49 +1527,67 @@ async function vrProcess(){
       procVid.currentTime = 0;
       setTimeout(function(){ procVid.removeEventListener('seeked',onS); resolve(); }, 2000);
     });
-    recorder.start(100); progLbl.textContent = 'Converting... 0%';
-    procVid.muted = true;
-    try{ await procVid.play(); } catch(pe){ recorder.stop(); await doneP; throw new Error('Playback blocked. Use Chrome or Edge.'); }
-    /* Init face detection for this conversion */
+    /* Seek-based frame extraction — most reliable approach.
+       We step through the video frame by frame, draw each frame
+       to canvas, then advance. This works even with off-screen video. */
     VR_lastFaceX = null; VR_lastFaceY = null;
     vrInitFaceDetector();
 
-    /* Small canvas for face detection (quarter resolution for speed) */
+    var FPS      = 30;
+    var INTERVAL = 1 / FPS; /* seconds per frame */
+    var totalFrames = Math.ceil(dur * FPS);
+    var frameIdx    = 0;
+    var FACE_EVERY  = 6;
+
+    /* Face detection canvas */
     var faceCanvas = document.createElement('canvas');
     faceCanvas.width  = Math.round(procVid.videoWidth  / 4);
     faceCanvas.height = Math.round(procVid.videoHeight / 4);
-    var faceCtx   = faceCanvas.getContext('2d');
-    var frameIdx  = 0;
-    var FACE_EVERY = 6; /* run face detection every 6 frames */
+    var faceCtx = faceCanvas.getContext('2d');
 
-    await new Promise(function(resolve){
-      var rafId;
-      function loop(){
-        if(procVid.ended || procVid.currentTime >= dur - 0.05){
-          ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
-          ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
-          cancelAnimationFrame(rafId); resolve(); return;
-        }
+    /* Start recorder — we'll feed frames manually via seeked events */
+    recorder.start();
+    progLbl.textContent = 'Converting... 0%';
 
-        frameIdx++;
+    function waitSeeked(vid){
+      return new Promise(function(res){
+        function onS(){ vid.removeEventListener('seeked', onS); res(); }
+        vid.addEventListener('seeked', onS);
+        /* Safety timeout per frame */
+        setTimeout(function(){ vid.removeEventListener('seeked', onS); res(); }, 500);
+      });
+    }
 
-        /* Async face detect every N frames — updates crop without blocking */
-        if(VR_faceSupported && frameIdx % FACE_EVERY === 0){
-          faceCtx.drawImage(procVid, 0, 0, faceCanvas.width, faceCanvas.height);
-          vrSmartCrop(faceCanvas, procVid.videoWidth, procVid.videoHeight, ratio).then(function(fc){ crop = fc; });
-        }
+    /* Step through every frame */
+    while(frameIdx <= totalFrames){
+      var t = frameIdx * INTERVAL;
+      if(t > dur) t = dur;
 
-        ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
-        ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
-        var pct = Math.min(4 + Math.round((procVid.currentTime/dur)*93), 97);
-        progBar.style.width = pct + '%';
-        progLbl.textContent = (VR_faceSupported ? 'Smart tracking... ' : 'Converting... ') + pct + '%';
-        rafId = requestAnimationFrame(loop);
+      procVid.currentTime = t;
+      await waitSeeked(procVid);
+
+      /* Draw frame to canvas */
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, outW, outH);
+      ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+
+      /* Face detection every N frames */
+      if(VR_faceSupported && frameIdx % FACE_EVERY === 0){
+        faceCtx.drawImage(procVid, 0, 0, faceCanvas.width, faceCanvas.height);
+        var newCrop = await vrSmartCrop(faceCanvas, procVid.videoWidth, procVid.videoHeight, ratio).catch(function(){ return crop; });
+        crop = newCrop;
       }
-      rafId = requestAnimationFrame(loop);
-    });
-    procVid.pause();
-    await new Promise(function(r){ setTimeout(r,400); });
+
+      /* Update progress */
+      var pct = Math.min(4 + Math.round((frameIdx / totalFrames) * 93), 97);
+      progBar.style.width = pct + '%';
+      progLbl.textContent = 'Converting... ' + pct + '%';
+
+      frameIdx++;
+    }
+
+    /* Small pause to let recorder flush last frames */
+    await new Promise(function(r){ setTimeout(r, 500); });
     recorder.stop(); await doneP;
     VR.outputBlob = new Blob(chunks, {type:mime});
     if(!VR.outputBlob || VR.outputBlob.size < 500) throw new Error('Output empty. Try Chrome or Edge.');
