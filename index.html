@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator OS — Turn Ideas Into Content in Minutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050508;--surface:#0d0d14;--surface2:#141420;--border:rgba(255,255,255,0.07);--accent:#7c5cfc;--accent2:#fc5c7d;--accent3:#5cf0d0;--text:#f0eeff;--muted:#8885a8;--glow:rgba(124,92,252,0.35);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:72px;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;overflow-x:hidden;line-height:1.6;}
+h1,h2,h3,h4,h5{font-family:'Outfit',sans-serif;line-height:1.15;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.4;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+
+/* BLOBS */
+.blobs{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.blob{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.15;animation:blobFloat 12s ease-in-out infinite;}
+.blob1{width:600px;height:600px;background:var(--accent);top:-200px;left:-100px;}
+.blob2{width:500px;height:500px;background:var(--accent2);bottom:-150px;right:-100px;animation-delay:-4s;}
+.blob3{width:400px;height:400px;background:var(--accent3);top:40%;left:40%;animation-delay:-8s;}
+@keyframes blobFloat{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.05);}66%{transform:translate(-30px,20px)scale(0.95);}}
+
+/* ANIMATIONS - visible by default, animate in when JS adds .animated */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes dotPulse{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+@keyframes modalIn{from{opacity:0;transform:scale(0.93) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+/* Reveal — elements are VISIBLE by default. JS adds .anim for smooth entrance */
+.reveal{transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* CUSTOM DROPDOWN */
+.cdd{position:relative;user-select:none;}
+.cdd-trigger{display:flex;align-items:center;justify-content:space-between;gap:0.5rem;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.85rem;border-radius:8px;font-size:0.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color 0.2s;min-width:120px;white-space:nowrap;}
+.cdd-trigger:hover,.cdd-trigger.open{border-color:var(--accent);}
+.cdd-trigger svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.2s;flex-shrink:0;}
+.cdd-trigger.open svg{transform:rotate(180deg);stroke:var(--accent);}
+.cdd-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:100%;background:var(--surface2);border:1px solid rgba(124,92,252,0.25);border-radius:10px;overflow:hidden;z-index:600;box-shadow:0 16px 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity 0.18s,transform 0.18s;}
+.cdd-menu.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.cdd-option{padding:0.65rem 0.9rem;font-size:0.85rem;color:var(--muted);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.5rem;white-space:nowrap;}
+.cdd-option:hover{background:rgba(124,92,252,0.1);color:var(--text);}
+.cdd-option.selected{color:var(--accent);background:rgba(124,92,252,0.08);}
+.cdd-option.selected::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:auto;flex-shrink:0;}
+
+/* LOADING */
+.ai-loading{display:none;align-items:center;gap:0.75rem;padding:1.25rem 1rem;color:var(--muted);font-size:0.85rem;}
+.ai-loading.show{display:flex;}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+.typing-dots{display:flex;gap:4px;}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:dotPulse 1.2s ease-in-out infinite;}
+.typing-dots span:nth-child(2){animation-delay:0.2s;}
+.typing-dots span:nth-child(3){animation-delay:0.4s;}
+
+/* BUTTONS */
+.copy-btn{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(124,92,252,0.1);border:1px solid rgba(124,92,252,0.2);color:var(--accent);padding:0.35rem 0.75rem;border-radius:6px;cursor:pointer;font-size:0.72rem;font-weight:600;transition:all 0.2s;}
+.copy-btn:hover{background:rgba(124,92,252,0.2);}
+.copy-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.save-btn{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(92,240,208,0.08);border:1px solid rgba(92,240,208,0.25);color:var(--accent3);padding:0.35rem 0.75rem;border-radius:6px;cursor:pointer;font-size:0.72rem;font-weight:600;transition:all 0.2s;}
+.save-btn:hover{background:rgba(92,240,208,0.15);}
+.save-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.output-actions{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem;}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--muted);padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.875rem;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text);}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;border:none;padding:0.55rem 1.3rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.875rem;font-weight:500;transition:all 0.3s;box-shadow:0 0 20px var(--glow);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 30px var(--glow);}
+.btn-hero{background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;border:none;padding:0.9rem 2.2rem;border-radius:12px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;box-shadow:0 0 40px var(--glow);}
+.btn-hero:hover{transform:translateY(-3px);box-shadow:0 8px 50px var(--glow);}
+.btn-hero-ghost{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:0.9rem 2.2rem;border-radius:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;transition:all 0.3s;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;}
+.btn-hero-ghost:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+.nav-logo{font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;cursor:pointer;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{display:flex;gap:0.75rem;align-items:center;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
+
+/* HERO */
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:8rem 2rem 4rem;text-align:center;}
+.hero-content{max-width:800px;}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,92,252,0.12);border:1px solid rgba(124,92,252,0.3);padding:0.4rem 1rem;border-radius:50px;font-size:0.8rem;color:#a98fff;margin-bottom:2rem;animation:fadeUp 0.6s ease both;}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:pulse 2s ease-in-out infinite;}
+.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:1.5rem;animation:fadeUp 0.6s 0.1s ease both;}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:gradientShift 4s ease infinite;}
+.hero-sub{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--muted);max-width:560px;margin:0 auto 2.5rem;font-weight:300;animation:fadeUp 0.6s 0.2s ease both;line-height:1.7;}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.6s 0.3s ease both;}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:4rem;animation:fadeUp 0.6s 0.4s ease both;}
+.stat{text-align:center;}
+.stat-num{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-label{font-size:0.8rem;color:var(--muted);}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:6rem 2rem;scroll-margin-top:72px;}
+.container{max-width:1100px;margin:0 auto;}
+.section-tag{display:inline-block;font-size:0.75rem;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
+.section-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:1.25rem;line-height:1.1;}
+.section-desc{font-size:1.05rem;color:var(--muted);max-width:540px;line-height:1.7;font-weight:300;}
+.center{text-align:center;}.center .section-desc{margin:0 auto;}
+
+/* APP PREVIEW */
+.app-preview{background:var(--surface2);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin-top:4rem;box-shadow:0 40px 120px rgba(0,0,0,0.6),0 0 60px var(--glow);}
+.app-bar{background:var(--surface);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--border);}
+.app-dots{display:flex;gap:6px;}
+.app-dot{width:10px;height:10px;border-radius:50%;}
+.app-dot:nth-child(1){background:#ff5f56;}.app-dot:nth-child(2){background:#febc2e;}.app-dot:nth-child(3){background:#28c840;}
+.app-url{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.75rem;font-size:0.75rem;color:var(--muted);text-align:center;max-width:260px;margin:0 auto;}
+.app-body{display:grid;grid-template-columns:200px 1fr;min-height:520px;}
+.app-sidebar{background:rgba(0,0,0,0.3);border-right:1px solid var(--border);padding:1.25rem 0.75rem;}
+.sidebar-logo{font-family:'Outfit',sans-serif;font-size:0.95rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem;padding-left:0.5rem;}
+.sidebar-item{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.7rem;border-radius:8px;font-size:0.82rem;color:var(--muted);margin-bottom:0.2rem;cursor:pointer;transition:all 0.2s;user-select:none;}
+.sidebar-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sidebar-item:hover,.sidebar-item.active{background:rgba(124,92,252,0.12);color:var(--text);}
+.sidebar-item.active{color:var(--accent);}
+.app-main{position:relative;overflow:hidden;}
+.app-panel{padding:1.25rem;position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity 0.25s,transform 0.25s;transform:translateY(8px);overflow-y:auto;}
+.app-panel.active{opacity:1;pointer-events:all;transform:translateY(0);position:relative;}
+.app-greeting{font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.5rem;}
+.app-sub-text{font-size:0.78rem;color:var(--muted);margin-bottom:1.25rem;}
+.quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1.25rem;}
+.qa-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 0.5rem;cursor:pointer;transition:all 0.2s;text-align:center;}
+.qa-btn:hover{border-color:var(--accent);background:rgba(124,92,252,0.08);}
+.qa-btn svg{width:18px;height:18px;margin:0 auto 0.35rem;display:block;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.qa-btn .qa-label{font-size:0.7rem;color:var(--muted);font-weight:500;}
+.trending-label{font-size:0.7rem;color:var(--muted);margin-bottom:0.6rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+.idea-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.9rem;margin-bottom:0.45rem;font-size:0.8rem;color:var(--text);display:flex;align-items:center;gap:0.5rem;transition:all 0.2s;cursor:pointer;}
+.idea-item:hover{border-color:var(--accent);background:rgba(124,92,252,0.06);}
+.idea-dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);flex-shrink:0;}
+.idea-tag{margin-left:auto;font-size:0.62rem;padding:0.18rem 0.45rem;border-radius:4px;font-weight:600;background:rgba(124,92,252,0.15);color:var(--accent);flex-shrink:0;}
+.panel-title{font-family:'Outfit',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.9rem;}
+.input-row{display:flex;gap:0.5rem;margin-bottom:0.9rem;align-items:center;flex-wrap:wrap;}
+.app-input{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.app-input:focus{border-color:var(--accent);}
+.app-input::placeholder{color:var(--muted);}
+.app-btn-sm{background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;border:none;padding:0.55rem 1rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:'Outfit',sans-serif;white-space:nowrap;transition:all 0.2s;}
+.app-btn-sm:hover{opacity:0.85;}.app-btn-sm:disabled{opacity:0.4;cursor:not-allowed;}
+.output-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.9rem;font-size:0.8rem;color:var(--text);line-height:1.75;min-height:70px;}
+.out-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:600;margin-bottom:0.45rem;}
+.format-tabs{display:flex;gap:0.35rem;margin-bottom:0.9rem;flex-wrap:wrap;}
+.format-tab{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:0.35rem 0.7rem;border-radius:6px;cursor:pointer;font-size:0.75rem;font-weight:500;transition:all 0.2s;}
+.format-tab.active,.format-tab:hover{background:rgba(124,92,252,0.15);border-color:var(--accent);color:var(--text);}
+.row-gap{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-bottom:0.6rem;}
+.empty-state{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:0.82rem;line-height:1.8;}
+.empty-state svg{width:32px;height:32px;margin:0 auto 0.6rem;display:block;stroke:var(--muted);fill:none;stroke-width:1.5;opacity:0.35;}
+.settings-label{display:block;font-size:0.7rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.4rem;}
+.settings-row{margin-bottom:0.9rem;}
+
+/* HOW IT WORKS */
+.how-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3.5rem;}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.25rem 1.75rem;position:relative;overflow:hidden;transition:transform 0.3s,border-color 0.3s;}
+.step-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,92,252,0.05),transparent);opacity:0;transition:opacity 0.3s;}
+.step-card:hover{transform:translateY(-6px);border-color:rgba(124,92,252,0.3);}
+.step-card:hover::before{opacity:1;}
+.step-num{font-family:'Outfit',sans-serif;font-size:3.5rem;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0.2;position:absolute;top:1.25rem;right:1.25rem;}
+.step-icon-wrap{width:44px;height:44px;border-radius:12px;background:rgba(124,92,252,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.step-icon-wrap svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.step-card h3{font-size:1.15rem;font-weight:700;margin-bottom:0.65rem;}
+.step-card p{color:var(--muted);font-size:0.9rem;line-height:1.7;}
+
+/* FEATURES */
+#features{background:var(--surface);}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:3.5rem;}
+.feat-card{background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:1.75rem;transition:all 0.3s;position:relative;overflow:hidden;}
+.feat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:scaleX(0);transition:transform 0.4s;}
+.feat-card:hover::after{transform:scaleX(1);}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(124,92,252,0.2);}
+.feat-icon-wrap{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+.feat-icon-wrap svg{width:20px;height:20px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.feat-card h3{font-size:1.05rem;font-weight:700;margin-bottom:0.5rem;}
+.feat-card p{color:var(--muted);font-size:0.88rem;line-height:1.65;}
+
+/* WORKFLOW */
+.workflows{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3.5rem;align-items:center;}
+.workflow-text h2{font-size:clamp(1.7rem,3.5vw,2.4rem);letter-spacing:-0.03em;margin-bottom:1rem;}
+.workflow-text p{color:var(--muted);line-height:1.7;margin-bottom:1.25rem;font-size:0.95rem;}
+.workflow-list{list-style:none;}
+.workflow-list li{display:flex;align-items:flex-start;gap:0.7rem;padding:0.55rem 0;font-size:0.93rem;color:var(--muted);border-bottom:1px solid var(--border);}
+.workflow-list li:last-child{border:none;}
+.check-icon{width:19px;height:19px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.check-icon svg{width:9px;height:9px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.workflow-visual{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.75rem;}
+.flow-step{display:flex;align-items:center;gap:0.9rem;padding:0.9rem;background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:0.65rem;transition:all 0.3s;}
+.flow-step:hover{border-color:var(--accent);transform:translateX(4px);}
+.flow-step-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.flow-step-icon svg{width:17px;height:17px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.flow-step-text h4{font-size:0.88rem;font-weight:600;margin-bottom:0.15rem;}
+.flow-step-text p{font-size:0.76rem;color:var(--muted);}
+.flow-arrow{text-align:center;color:var(--accent);font-size:0.9rem;margin:0.1rem 0;opacity:0.4;}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3.5rem;}
+.testi-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.75rem;transition:all 0.3s;}
+.testi-card:hover{transform:translateY(-4px);border-color:rgba(124,92,252,0.2);}
+.testi-stars{color:#febc2e;font-size:0.85rem;margin-bottom:0.9rem;letter-spacing:2px;}
+.testi-quote{font-size:0.93rem;color:var(--text);line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:0.7rem;}
+.testi-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;font-family:'Outfit',sans-serif;flex-shrink:0;}
+.testi-name{font-size:0.88rem;font-weight:600;}
+.testi-role{font-size:0.76rem;color:var(--muted);}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3.5rem;}
+.price-card{background:var(--surface2);border:1px solid var(--border);border-radius:24px;padding:2.25rem 1.75rem;transition:all 0.3s;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.price-card.featured{border-color:var(--accent);background:linear-gradient(160deg,rgba(124,92,252,0.08),var(--surface2));box-shadow:0 0 60px rgba(124,92,252,0.15);}
+.price-badge{position:absolute;top:1.25rem;right:1.25rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.62rem;font-weight:700;padding:0.28rem 0.7rem;border-radius:50px;letter-spacing:0.05em;text-transform:uppercase;}
+.price-name{font-family:'Outfit',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.65rem;color:var(--muted);}
+.price-amount{font-family:'Outfit',sans-serif;font-size:2.75rem;font-weight:800;line-height:1;letter-spacing:-0.04em;margin-bottom:0.2rem;}
+.price-period{font-size:0.8rem;color:var(--muted);margin-bottom:1.75rem;}
+.price-features{list-style:none;margin-bottom:1.75rem;flex:1;}
+.price-features li{display:flex;align-items:center;gap:0.55rem;font-size:0.85rem;padding:0.45rem 0;border-bottom:1px solid var(--border);color:var(--muted);}
+.price-features li:last-child{border:none;}
+.price-features li svg{width:13px;height:13px;flex-shrink:0;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.tick svg{stroke:var(--accent3);}.cross{opacity:0.4;}.cross svg{stroke:#ff5f56;}
+
+/* CTA */
+.cta-section{text-align:center;padding:7rem 2rem;position:relative;overflow:hidden;}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(124,92,252,0.2),transparent 70%);pointer-events:none;}
+.cta-section h2{font-size:clamp(2rem,5vw,3.5rem);letter-spacing:-0.03em;margin-bottom:1.25rem;}
+.cta-section p{color:var(--muted);font-size:1.05rem;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto;}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem 2rem 2rem;position:relative;z-index:1;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;max-width:1100px;margin:0 auto 3rem;}
+.footer-brand p{color:var(--muted);font-size:0.875rem;margin-top:0.75rem;line-height:1.7;max-width:260px;}
+.footer-col h4{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem;}
+.footer-col ul{list-style:none;}
+.footer-col ul li a{color:var(--muted);text-decoration:none;font-size:0.875rem;display:block;padding:0.3rem 0;transition:color 0.2s;}
+.footer-col ul li a:hover{color:var(--text);}
+.footer-bottom{max-width:1100px;margin:0 auto;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-bottom p{font-size:0.78rem;color:var(--muted);}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.78);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid rgba(124,92,252,0.2);border-radius:24px;padding:2.25rem 2rem 2rem;width:100%;max-width:420px;position:relative;animation:modalIn 0.3s ease;box-shadow:0 40px 80px rgba(0,0,0,0.5),0 0 60px rgba(124,92,252,0.1);margin:auto;}
+.modal-close{position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.modal-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
+.modal h2{font-size:1.5rem;font-weight:800;margin-bottom:0.3rem;letter-spacing:-0.02em;}
+.modal-sub{color:var(--muted);font-size:0.88rem;margin-bottom:1.25rem;}
+.form-group{margin-bottom:0.85rem;}
+.form-group label{display:block;font-size:0.7rem;font-weight:600;margin-bottom:0.4rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.7rem 1rem;border-radius:10px;font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.form-input:focus{border-color:var(--accent);}
+.form-input::placeholder{color:var(--muted);}
+.modal-btn{width:100%;margin-top:0.5rem;padding:0.85rem;font-size:1rem;font-family:'Outfit',sans-serif;font-weight:700;border-radius:12px;cursor:pointer;border:none;background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;box-shadow:0 0 30px var(--glow);transition:all 0.3s;}
+.modal-btn:hover{transform:translateY(-2px);box-shadow:0 6px 40px var(--glow);}
+.modal-divider{display:flex;align-items:center;gap:0.75rem;margin:1rem 0;color:var(--muted);font-size:0.76rem;}
+.modal-divider::before,.modal-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.modal-switch{text-align:center;margin-top:1rem;font-size:0.83rem;color:var(--muted);}
+.modal-switch a{color:var(--accent);text-decoration:none;font-weight:600;cursor:pointer;}
+.modal-switch a:hover{text-decoration:underline;}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.13);color:var(--text);padding:0.78rem 1rem;border-radius:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;transition:all 0.25s;}
+.btn-google:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.22);transform:translateY(-1px);}
+.btn-google svg{width:18px;height:18px;flex-shrink:0;}
+
+/* MOBILE MENU */
+.mobile-menu{display:none;position:fixed;inset:0;z-index:999;background:rgba(5,5,8,0.97);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:2rem;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-family:'Outfit',sans-serif;font-size:1.8rem;font-weight:700;color:var(--text);text-decoration:none;transition:color 0.2s;cursor:pointer;}
+.mobile-menu a:hover{color:var(--accent);}
+.mobile-close{position:absolute;top:1.5rem;right:1.5rem;background:rgba(255,255,255,0.06);border:none;color:var(--text);font-size:1.2rem;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* VIDEO RESIZE */
+.vr-upload-zone{border:2px dashed var(--border);border-radius:14px;padding:2.25rem 1.5rem;text-align:center;cursor:pointer;transition:all 0.25s;position:relative;background:var(--surface);}
+.vr-upload-zone:hover,.vr-upload-zone.drag{border-color:var(--accent);background:rgba(124,92,252,0.05);}
+.vr-upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.vr-upload-zone svg{width:32px;height:32px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin:0 auto 0.65rem;display:block;opacity:0.7;}
+.vr-upload-zone p{font-size:0.83rem;color:var(--muted);}
+.vr-upload-zone span{font-size:0.75rem;color:var(--accent);font-weight:600;}
+.vr-meta{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.9rem;margin:0.65rem 0;font-size:0.8rem;display:flex;gap:0.9rem;flex-wrap:wrap;align-items:center;}
+.vr-meta-item{display:flex;align-items:center;gap:0.35rem;color:var(--muted);}
+.vr-meta-item strong{color:var(--text);}
+.vr-meta-item svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.vr-options-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin:0.65rem 0;}
+.vr-option-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 0.9rem;cursor:pointer;transition:all 0.2s;position:relative;}
+.vr-option-card:hover:not(.locked){border-color:var(--accent);}
+.vr-option-card.selected{border-color:var(--accent);background:rgba(124,92,252,0.08);}
+.vr-option-card.locked{opacity:0.45;cursor:not-allowed;}
+.vr-opt-title{font-size:0.82rem;font-weight:700;font-family:'Outfit',sans-serif;margin-bottom:0.12rem;}
+.vr-opt-desc{font-size:0.7rem;color:var(--muted);}
+.vr-pro-badge{position:absolute;top:0.45rem;right:0.45rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.56rem;font-weight:700;padding:0.12rem 0.4rem;border-radius:50px;letter-spacing:0.04em;text-transform:uppercase;}
+.vr-preview-wrap{display:none;margin-top:0.9rem;}
+.vr-preview-wrap.show{display:block;}
+.vr-canvases{display:flex;gap:0.9rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:0.9rem;}
+.vr-canvas-box{flex:1;min-width:100px;text-align:center;}
+.vr-canvas-box label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;display:block;margin-bottom:0.35rem;}
+.vr-canvas-box canvas{border-radius:8px;border:1px solid var(--border);max-width:100%;background:#000;}
+.vr-progress-wrap{margin:0.65rem 0;display:none;}
+.vr-progress-wrap.show{display:block;}
+.vr-progress-bar-bg{background:var(--surface);border:1px solid var(--border);border-radius:50px;height:7px;overflow:hidden;}
+.vr-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:50px;transition:width 0.3s;width:0%;}
+.vr-progress-label{font-size:0.72rem;color:var(--muted);margin-top:0.3rem;text-align:center;}
+.vr-plan-notice{background:rgba(252,92,125,0.08);border:1px solid rgba(252,92,125,0.2);border-radius:10px;padding:0.7rem 0.9rem;font-size:0.78rem;color:var(--accent2);display:none;align-items:center;gap:0.55rem;margin:0.45rem 0;}
+.vr-plan-notice.show{display:flex;}
+.vr-plan-notice svg{width:15px;height:15px;stroke:var(--accent2);fill:none;stroke-width:2;flex-shrink:0;}
+.vr-plan-notice a{color:var(--accent2);font-weight:700;text-decoration:underline;cursor:pointer;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .workflows{grid-template-columns:1fr;}
+  .app-body{grid-template-columns:1fr;}
+  .app-sidebar{display:none;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .pricing-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:680px){
+  .pricing-grid{grid-template-columns:1fr;max-width:360px;margin-left:auto;margin-right:auto;}
+}
+@media(max-width:600px){
+  .hero h1{font-size:2.4rem;}
+  .quick-actions{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:1.5rem;}
+  section{padding:4rem 1.25rem;}
+  .input-row{gap:0.4rem;}
+  .input-row .cdd{flex:1;min-width:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="blobs"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">&#x2715;</button>
+    <h2>Welcome back</h2>
+    <p class="modal-sub">Log in to your Creator OS account</p>
+    <button class="btn-google" onclick="googleAuth()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <div class="modal-divider">or continue with email</div>
+    <div class="form-group"><label>Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" class="form-input" placeholder="Your password"></div>
+    <button class="modal-btn" onclick="doLogin()">Log In &#x2192;</button>
+    <div class="modal-switch">No account? <a onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('signupModal')">&#x2715;</button>
+    <h2>Create account</h2>
+    <p class="modal-sub">Start creating content in minutes &#8212; free forever</p>
+    <button class="btn-google" onclick="googleAuth()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Sign up with Google
+    </button>
+    <div class="modal-divider">or sign up with email</div>
+    <div class="form-group"><label>Full Name</label><input type="text" class="form-input" placeholder="Your name"></div>
+    <div class="form-group"><label>Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" class="form-input" placeholder="Min. 8 characters"></div>
+    <button class="modal-btn" onclick="doSignup()">Create Free Account &#x2192;</button>
+    <div class="modal-switch">Have an account? <a onclick="switchModal('signupModal','loginModal')">Log in</a></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Creator OS</a>
+  <ul class="nav-links">
+    <li><a onclick="navScrollTo(event,'how')">How it Works</a></li>
+    <li><a onclick="navScrollTo(event,'features')">Features</a></li>
+    <li><a onclick="navScrollTo(event,'pricing')">Pricing</a></li>
+    <li><a onclick="navScrollTo(event,'testimonials')">Reviews</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button id="nav-login-btn" class="btn-ghost" onclick="openModal('loginModal')">Log In</button>
+    <button id="nav-signup-btn" class="btn-primary" onclick="openModal('signupModal')">Start Free &#x2192;</button>
+    <span id="nav-user-name" style="display:none;color:var(--text);font-size:0.875rem;font-weight:500;"></span>
+    <button id="nav-logout-btn" style="display:none;" class="btn-ghost" onclick="doLogout()">Log Out</button>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMenu()">&#x2715;</button>
+  <a onclick="toggleMenu();navScrollTo(event,'how')">How it Works</a>
+  <a onclick="toggleMenu();navScrollTo(event,'features')">Features</a>
+  <a onclick="toggleMenu();navScrollTo(event,'pricing')">Pricing</a>
+  <a onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
+  <button class="btn-hero" style="margin-top:1rem;" onclick="toggleMenu();openModal('signupModal')">Start Creating Free &#x2192;</button>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System &#8212; Now Live</div>
+    <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
+    <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content &#8212; powered by AI.</p>
+    <div class="hero-actions">
+      <button class="btn-hero" onclick="openModal('signupModal')">Start Creating Free &#x2192;</button>
+      <a href="javascript:void(0)" onclick="navScrollTo(event,'how')" class="btn-hero-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        See How It Works
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">50K+</div><div class="stat-label">Creators</div></div>
+      <div class="stat"><div class="stat-num">2M+</div><div class="stat-label">Pieces Generated</div></div>
+      <div class="stat"><div class="stat-num">&lt;5min</div><div class="stat-label">Idea to Content</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- APP PREVIEW -->
+<section style="padding-top:0;padding-bottom:4rem;">
+  <div class="container">
+    <div class="app-preview reveal">
+      <div class="app-bar">
+        <div class="app-dots"><span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span></div>
+        <div class="app-url">app.creatorOS.io/dashboard</div>
+      </div>
+      <div class="app-body">
+        <!-- SIDEBAR -->
+        <div class="app-sidebar">
+          <div class="sidebar-logo">Creator OS</div>
+          <div class="sidebar-item active" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+          <div class="sidebar-item" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>Ideas</div>
+          <div class="sidebar-item" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Create</div>
+          <div class="sidebar-item" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repurpose</div>
+          <div class="sidebar-item" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Projects</div>
+          <div class="sidebar-item" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg>Video Resize</div>
+          <div class="sidebar-item" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+        </div>
+        <!-- PANELS -->
+        <div class="app-main">
+
+          <!-- DASHBOARD -->
+          <div class="app-panel active" id="panel-dashboard">
+            <div class="app-greeting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span id="greeting-text">Good morning, Creator</span></div>
+            <div class="app-sub-text">Here's your content workspace for today</div>
+            <div class="quick-actions">
+              <div class="qa-btn" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg><div class="qa-label">Generate Ideas</div></div>
+              <div class="qa-btn" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div class="qa-label">Create Content</div></div>
+              <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
+            </div>
+            <div class="trending-label">Trending Ideas</div>
+            <div class="idea-item" onclick="useIdea('5 mistakes new creators make in their first 90 days')"><span class="idea-dot"></span>5 mistakes new creators make in their first 90 days<span class="idea-tag">Script</span></div>
+            <div class="idea-item" onclick="useIdea('How I went from 0 to 10K followers in 90 days')"><span class="idea-dot"></span>How I went from 0 to 10K followers in 90 days<span class="idea-tag">Carousel</span></div>
+            <div class="idea-item" onclick="useIdea('The truth about passive income nobody talks about')"><span class="idea-dot"></span>The truth about passive income nobody talks about<span class="idea-tag">Thread</span></div>
+          </div>
+
+          <!-- IDEAS -->
+          <div class="app-panel" id="panel-ideas">
+            <div class="panel-title">Idea Generator</div>
+            <div class="input-row">
+              <input id="nicheInput" class="app-input" placeholder="Your niche (fitness, design, finance...)">
+              <div class="cdd" id="cdd-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
+              <button class="app-btn-sm" id="ideas-btn" onclick="generateIdeas()">Generate</button>
+            </div>
+            <div class="ai-loading" id="ideas-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Generating ideas...</div>
+            <div id="ideasOutput" class="output-box" style="min-height:180px;"><div class="out-label">Your Ideas</div><div style="color:var(--muted);font-size:0.8rem;">Enter your niche, choose a platform, and click Generate.</div></div>
+          </div>
+
+          <!-- CREATE -->
+          <div class="app-panel" id="panel-create">
+            <div class="panel-title">Content Creator</div>
+            <div class="format-tabs">
+              <div class="format-tab active" onclick="selectTab(this,'script')">Script</div>
+              <div class="format-tab" onclick="selectTab(this,'carousel')">Carousel</div>
+              <div class="format-tab" onclick="selectTab(this,'caption')">Caption</div>
+              <div class="format-tab" onclick="selectTab(this,'thread')">Thread</div>
+            </div>
+            <div class="input-row">
+              <input id="createIdeaInput" class="app-input" placeholder="Paste or type your content idea...">
+              <div class="cdd" id="cdd-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-tone')"><span id="cdd-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Conversational')">Conversational</div></div></div>
+              <button class="app-btn-sm" id="create-btn" onclick="generateContent()">Generate</button>
+            </div>
+            <div class="ai-loading" id="create-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Writing your content...</div>
+            <div id="createOutput" class="output-box" style="min-height:140px;"><div class="out-label" id="createOutputLabel">Script Output</div><div style="color:var(--muted);font-size:0.8rem;">Choose a format, enter an idea, pick a tone, and click Generate.</div></div>
+            <div class="output-actions" id="create-actions" style="display:none;">
+              <button class="copy-btn" onclick="copyOutput('createOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
+              <button class="save-btn" onclick="saveToProjects('createOutput','createIdeaInput')"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
+            </div>
+          </div>
+
+          <!-- REPURPOSE -->
+          <div class="app-panel" id="panel-repurpose">
+            <div class="panel-title">Content Repurposer</div>
+            <textarea id="repurposeInput" class="app-input" style="width:100%;resize:vertical;min-height:80px;margin-bottom:0.6rem;" placeholder="Paste your existing content here..."></textarea>
+            <div class="row-gap">
+              <div class="cdd" id="cdd-repurpose-target" style="flex:1;"><div class="cdd-trigger" onclick="toggleCdd('cdd-repurpose-target')" style="width:100%;"><span id="cdd-repurpose-target-val">Twitter / X Thread</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-repurpose-target-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-repurpose-target','Twitter / X Thread')">Twitter / X Thread</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','LinkedIn Post')">LinkedIn Post</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Instagram Caption')">Instagram Caption</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Reel Script')">Reel Script</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','YouTube Description')">YouTube Description</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Email Newsletter')">Email Newsletter</div></div></div>
+              <button class="app-btn-sm" id="repurpose-btn" onclick="repurposeContent()">Repurpose</button>
+            </div>
+            <div class="ai-loading" id="repurpose-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Repurposing...</div>
+            <div id="repurposeOutput" class="output-box" style="min-height:110px;"><div class="out-label">Repurposed Output</div><div style="color:var(--muted);font-size:0.8rem;">Paste content, pick a target format, then click Repurpose.</div></div>
+            <div class="output-actions" id="repurpose-actions" style="display:none;"><button class="copy-btn" onclick="copyOutput('repurposeOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button></div>
+          </div>
+
+          <!-- PROJECTS -->
+          <div class="app-panel" id="panel-projects">
+            <div class="panel-title">Saved Projects</div>
+            <div id="projects-list"><div class="empty-state" id="projects-empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>No saved projects yet.<br>Create content and save it here.</div></div>
+          </div>
+
+          <!-- VIDEO RESIZE -->
+          <div class="app-panel" id="panel-videoresize">
+            <div class="panel-title">Video Auto Resize</div>
+            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
+            <div class="vr-upload-zone" id="vr-upload-zone">
+              <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
+              <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+              <p>Drag &amp; drop your landscape video here</p>
+              <span>or click to browse &mdash; MP4, MOV, WebM</span>
+            </div>
+            <div class="vr-meta" id="vr-meta" style="display:none;">
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/></svg><strong id="vr-fname">—</strong></div>
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Duration: <strong id="vr-dur">—</strong></div>
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><strong id="vr-dim">—</strong></div>
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><strong id="vr-size">—</strong></div>
+            </div>
+            <div id="vr-options-wrap" style="display:none;">
+              <div class="settings-label" style="margin-bottom:0.45rem;">Output Format</div>
+              <div class="vr-options-grid" id="vr-format-grid">
+                <div class="vr-option-card selected" onclick="vrSelectFormat(this,'9:16')"><div class="vr-opt-title">9:16 Portrait</div><div class="vr-opt-desc">Reels, TikTok, Shorts</div></div>
+                <div class="vr-option-card" onclick="vrSelectFormat(this,'1:1')"><div class="vr-opt-title">1:1 Square</div><div class="vr-opt-desc">Instagram, Facebook</div></div>
+                <div class="vr-option-card" onclick="vrSelectFormat(this,'4:5')"><div class="vr-opt-title">4:5 Portrait</div><div class="vr-opt-desc">Instagram Feed</div></div>
+                <div class="vr-option-card" onclick="vrSelectFormat(this,'16:9')"><div class="vr-opt-title">16:9 Landscape</div><div class="vr-opt-desc">YouTube, Twitter</div></div>
+              </div>
+              <div class="settings-label" style="margin-top:0.65rem;margin-bottom:0.45rem;">Output Resolution</div>
+              <div class="vr-options-grid" id="vr-res-grid">
+                <div class="vr-option-card selected" onclick="vrSelectRes(this,'720p')"><div class="vr-opt-title">720p HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
+                <div class="vr-option-card" onclick="vrSelectRes(this,'1080p')"><div class="vr-opt-title">1080p Full HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
+                <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
+                <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin:0.5rem 0;">
+                <div id="vr-face-badge" style="font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:var(--surface);">Smart Crop: Checking...</div>
+              </div>
+              <div class="vr-preview-wrap" id="vr-preview-wrap">
+                <div class="settings-label" style="margin-bottom:0.45rem;">Preview</div>
+                <div class="vr-canvases">
+                  <div class="vr-canvas-box"><label>Original</label><canvas id="vr-canvas-orig" width="200" height="112"></canvas></div>
+                  <div class="vr-canvas-box"><label id="vr-canvas-out-label">Output (9:16)</label><canvas id="vr-canvas-out" width="63" height="112"></canvas></div>
+                </div>
+              </div>
+              <div class="vr-progress-wrap" id="vr-progress-wrap"><div class="vr-progress-bar-bg"><div class="vr-progress-bar" id="vr-progress-bar"></div></div><div class="vr-progress-label" id="vr-progress-label"></div></div>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.65rem;">
+                <button class="app-btn-sm" id="vr-process-btn" onclick="vrProcess()">Convert Video</button>
+                <button class="app-btn-sm" id="vr-download-btn" style="display:none;background:linear-gradient(135deg,var(--accent3),#3abf96);" onclick="vrDownload()">Download</button>
+                <button class="copy-btn" onclick="vrReset()" style="margin-top:0;"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg> Reset</button>
+              </div>
+            </div>
+            <div id="vr-video-container"></div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div class="app-panel" id="panel-settings">
+            <div class="panel-title">Profile &amp; Settings</div>
+            <div class="settings-row"><label class="settings-label">Your Niche</label><div class="cdd" id="cdd-settings-niche"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-niche')" style="width:100%;"><span id="cdd-settings-niche-val">Designer</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-niche-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-niche','Designer')">Designer</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Coach')">Coach</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Business Owner')">Business Owner</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Content Creator')">Content Creator</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Fitness')">Fitness</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Finance')">Finance</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Tech')">Tech</div></div></div></div>
+            <div class="settings-row"><label class="settings-label">Content Tone</label><div class="cdd" id="cdd-settings-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-tone')" style="width:100%;"><span id="cdd-settings-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Conversational')">Conversational</div></div></div></div>
+            <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','YouTube')">YouTube</div></div></div></div>
+            <button class="app-btn-sm" style="width:100%;margin-top:0.25rem;" onclick="saveSettings()">Save Settings</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">The Process</span>
+      <h2 class="section-title">From Idea to Published<br>in 3 Simple Steps</h2>
+      <p class="section-desc">No more staring at blank screens. Creator OS handles the heavy lifting so you can focus on your audience.</p>
+    </div>
+    <div class="how-steps">
+      <div class="step-card reveal"><span class="step-num">01</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Get AI-Powered Ideas</h3><p>Tell us your niche and platform. We generate 8 scroll-stopping, curiosity-driven ideas tailored to you instantly.</p></div>
+      <div class="step-card reveal"><span class="step-num">02</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>Generate Content</h3><p>Pick an idea, choose your format — script, carousel, caption, or thread. AI writes it in your tone in seconds.</p></div>
+      <div class="step-card reveal"><span class="step-num">03</span><div class="step-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" style="stroke:var(--accent3)"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Repurpose Everywhere</h3><p>Turn one piece of content into a thread, reel script, carousel, LinkedIn post, and email. Maximum reach, minimum effort.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">Capabilities</span>
+      <h2 class="section-title">Everything You Need<br>to Create Consistently</h2>
+      <p class="section-desc">Built for creators who are serious about growing their audience without burning out.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Idea Engine</h3><p>Never run out of content ideas. AI generates niche-specific, platform-optimized ideas that actually perform.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Script Generator</h3><p>Hook. Body. CTA. Full short-form video scripts written for maximum retention on any platform.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" stroke="var(--accent3)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div><h3>Carousel Creator</h3><p>7-slide Instagram carousels with punchy copy, structured to educate, get saved, and drive follows.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(254,188,46,0.1);"><svg viewBox="0 0 24 24" stroke="#febc2e"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Content Repurposer</h3><p>Paste any content. Get a Twitter thread, LinkedIn post, caption, reel script, and email newsletter back.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><h3>Content Workspace</h3><p>Save all your drafts and projects in one organized space. Never lose a piece of content again.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg></div><h3>Video Resizer</h3><p>Convert 16:9 landscape videos to 9:16, 1:1, or 4:5 for Reels, TikTok, and Shorts automatically.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section>
+  <div class="container">
+    <div class="workflows">
+      <div class="workflow-text reveal">
+        <span class="section-tag">Your Workflow</span>
+        <h2>Built for the Creator<br>Who Won't Slow Down</h2>
+        <p>Creator OS is not just a tool — it's a daily habit. Log in, generate, create, publish. Repeat.</p>
+        <ul class="workflow-list">
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Personalized to your niche and tone</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile — create anywhere, anytime</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Save, edit, copy and export in one click</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by the latest GPT-4o AI model</li>
+        </ul>
+      </div>
+      <div class="workflow-visual reveal">
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div><div class="flow-step-text"><h4>Pick a Niche &amp; Topic</h4><p>Designer · Coach · Business · Creator</p></div></div>
+        <div class="flow-arrow">&#x2193;</div>
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" stroke="var(--accent3)"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="flow-step-text"><h4>AI Generates Ideas</h4><p>8 curated, platform-specific ideas</p></div></div>
+        <div class="flow-arrow">&#x2193;</div>
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="flow-step-text"><h4>Choose Format &amp; Generate</h4><p>Script · Carousel · Caption · Thread</p></div></div>
+        <div class="flow-arrow">&#x2193;</div>
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(254,188,46,0.1);"><svg viewBox="0 0 24 24" stroke="#febc2e"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div><div class="flow-step-text"><h4>Copy, Save &amp; Publish</h4><p>Export or save to workspace</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" style="background:var(--surface);">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">Social Proof</span>
+      <h2 class="section-title">Creators Are Already Winning</h2>
+      <p class="section-desc">Join thousands of creators who've replaced hours of planning with minutes of creation.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"I used to spend 3 hours planning content for the week. Now I do it in 20 minutes. Absolutely game-changing for my business."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(124,92,252,0.2);color:var(--accent);">AK</div><div><div class="testi-name">Amara K.</div><div class="testi-role">Business Coach · 42K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The repurposing feature alone is worth every cent. I turn one video idea into 5 pieces of content. My engagement tripled."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(92,240,208,0.15);color:var(--accent3);">DO</div><div><div class="testi-name">David O.</div><div class="testi-role">Designer &amp; Creator · 18K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The AI actually sounds like me. I set my tone to bold and educational, and every script it writes just hits."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(252,92,125,0.15);color:var(--accent2);">SR</div><div><div class="testi-name">Sofia R.</div><div class="testi-role">Content Creator · 87K followers</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">Pricing</span>
+      <h2 class="section-title">Simple, Creator-First Pricing</h2>
+      <p class="section-desc">Start free, no card needed. Upgrade when you're ready to go unlimited.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- FREE -->
+      <div class="price-card reveal">
+        <div class="price-name">Free</div><div class="price-amount">$0</div><div class="price-period">forever free · no card needed</div>
+        <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 idea generations/day</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 3 content pieces/day</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Script &amp; Caption output</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize up to 3 mins</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save up to 10 projects</li>
+          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Carousel generator</li>
+          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Repurposing engine</li>
+        </ul>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="openModal('signupModal')">Get Started Free</button>
+      </div>
+      <!-- PRO -->
+      <div class="price-card featured reveal">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-name">Pro</div><div class="price-amount" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$19</div><div class="price-period">per month · billed monthly</div>
+        <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited idea generation</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts, Captions &amp; Carousels</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full repurposing engine</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize — unlimited + 2K/4K</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
+          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Team collaboration</li>
+        </ul>
+        <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="openModal('signupModal')">Upgrade to Pro &#x2192;</button>
+      </div>
+      <!-- TEAM -->
+      <div class="price-card reveal">
+        <div class="price-name">Team</div><div class="price-amount">$49</div><div class="price-period">per month · up to 5 seats</div>
+        <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Up to 5 team members</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Shared workspace &amp; projects</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Team brand voice settings</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Admin &amp; usage dashboard</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
+        </ul>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="openModal('signupModal')">Start Team Plan &#x2192;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div style="position:relative;z-index:1;">
+    <span class="section-tag">Ready?</span>
+    <h2>Start Creating.<br><span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Stop Overthinking.</span></h2>
+    <p>Join 50,000+ creators who wake up knowing exactly what to post.</p>
+    <button class="btn-hero" onclick="openModal('signupModal')">Get Started For Free &#x2192;</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Creator OS</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
+    <div class="footer-col"><h4>Product</h4><ul><li><a href="#">Idea Generator</a></li><li><a href="#">Script Writer</a></li><li><a href="#">Carousel Creator</a></li><li><a href="#">Repurposer</a></li><li><a href="#">Video Resizer</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Changelog</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>&#169; 2025 Creator OS. All rights reserved.</p>
+    <p>Made for creators who mean business.</p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+/* CONFIG */
+var API_BASE   = 'https://creator-os-backend-production-4a65.up.railway.app';
+var OPENAI_KEY = ''; /* Moved to backend — no longer needed in frontend */
+
+/* ── AUTH STATE ── */
+var AUTH = {
+  token   : localStorage.getItem('cos_token')   || null,
+  user    : JSON.parse(localStorage.getItem('cos_user') || 'null'),
+  plan    : localStorage.getItem('cos_plan')    || 'free',
+};
+
+/* ── API HELPER ── */
+async function apiCall(method, path, body){
+  var opts = {
+    method  : method,
+    headers : { 'Content-Type': 'application/json' },
+  };
+  if(AUTH.token) opts.headers['Authorization'] = 'Bearer ' + AUTH.token;
+  if(body)       opts.body = JSON.stringify(body);
+  var res  = await fetch(API_BASE + path, opts);
+  var data = await res.json();
+  if(!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+/* ── AUTH HELPERS ── */
+function saveAuth(data){
+  AUTH.token = data.access_token;
+  AUTH.user  = data.user;
+  AUTH.plan  = data.user.plan || 'free';
+  localStorage.setItem('cos_token', AUTH.token);
+  localStorage.setItem('cos_user',  JSON.stringify(AUTH.user));
+  localStorage.setItem('cos_plan',  AUTH.plan);
+  VR.plan = AUTH.plan;
+  updateAuthUI();
+}
+
+function clearAuth(){
+  AUTH.token = null; AUTH.user = null; AUTH.plan = 'free';
+  localStorage.removeItem('cos_token');
+  localStorage.removeItem('cos_user');
+  localStorage.removeItem('cos_plan');
+  VR.plan = 'free';
+  updateAuthUI();
+}
+
+function updateAuthUI(){
+  var loggedIn = !!AUTH.user;
+  /* Nav buttons */
+  var loginBtn  = document.getElementById('nav-login-btn');
+  var signupBtn = document.getElementById('nav-signup-btn');
+  var logoutBtn = document.getElementById('nav-logout-btn');
+  var userName  = document.getElementById('nav-user-name');
+  if(loginBtn)  loginBtn.style.display  = loggedIn ? 'none'         : 'inline-flex';
+  if(signupBtn) signupBtn.style.display = loggedIn ? 'none'         : 'inline-flex';
+  if(logoutBtn) logoutBtn.style.display = loggedIn ? 'inline-flex'  : 'none';
+  if(userName)  userName.style.display  = loggedIn ? 'inline-block' : 'none';
+  if(userName && AUTH.user) userName.textContent = AUTH.user.name || AUTH.user.email;
+  /* Greeting */
+  var gr = document.getElementById('greeting-text');
+  if(gr && AUTH.user) gr.textContent = gr.textContent.replace('Creator', AUTH.user.name || 'Creator');
+}
+
+/* GREETING */
+(function(){
+  var h = new Date().getHours();
+  var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var el = document.getElementById('greeting-text');
+  if(el) el.textContent = g + ', Creator';
+})();
+
+/* SCROLL REVEAL — mark ready after DOM load, so elements are visible by default */
+window.addEventListener('load', function(){
+  /* reveal handled in INIT block below */
+});
+
+/* NAV */
+window.addEventListener('scroll', function(){
+  var nav = document.getElementById('navbar');
+  if(nav) nav.style.padding = window.scrollY > 50 ? '0.6rem 2rem' : '1rem 2rem';
+}, { passive: true });
+
+function navScrollTo(e, id){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  var el = document.getElementById(id);
+  if(!el) return;
+  var navH = document.getElementById('navbar').offsetHeight;
+  var top = el.getBoundingClientRect().top + window.pageYOffset - navH - 8;
+  window.scrollTo({ top: top, behavior: 'smooth' });
+}
+
+/* DROPDOWNS */
+var cddValues = {};
+function toggleCdd(id){
+  var trigger = document.querySelector('#'+id+' .cdd-trigger');
+  var menu = document.querySelector('#'+id+' .cdd-menu');
+  var isOpen = menu.classList.contains('open');
+  closeCdds();
+  if(!isOpen){ menu.classList.add('open'); trigger.classList.add('open'); }
+}
+function closeCdds(){
+  document.querySelectorAll('.cdd-menu.open').forEach(function(m){
+    m.classList.remove('open');
+    if(m.previousElementSibling) m.previousElementSibling.classList.remove('open');
+  });
+}
+function selectCdd(id, value){
+  cddValues[id] = value;
+  var valEl = document.getElementById(id+'-val');
+  if(valEl) valEl.textContent = value;
+  var menu = document.getElementById(id+'-menu');
+  if(menu) menu.querySelectorAll('.cdd-option').forEach(function(o){ o.classList.toggle('selected', o.textContent.trim() === value); });
+  closeCdds();
+}
+document.addEventListener('click', function(e){ if(!e.target.closest('.cdd')) closeCdds(); });
+['cdd-platform','cdd-tone','cdd-repurpose-target','cdd-settings-niche','cdd-settings-tone','cdd-settings-platform'].forEach(function(id){
+  var sel = document.querySelector('#'+id+'-menu .cdd-option.selected');
+  if(sel) cddValues[id] = sel.textContent.trim();
+});
+
+/* OPENAI — now proxied through backend */
+async function callOpenAI(system, user){
+  /* system prompt is sent as context, user prompt as the query */
+  /* This function is kept for fallback compatibility but AI calls
+     now go through the specific backend endpoints */
+  throw new Error('Direct OpenAI calls disabled — use backend endpoints');
+}
+
+/* FALLBACKS */
+var ideasDB = {
+  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit — and how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days — here\'s what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
+  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead — my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
+  finance:['3 investing mistakes I made so you don\'t have to','How I paid off $20K debt in 18 months on a normal salary','The budget formula that actually works long-term','Why most people never build real wealth','Passive income: real vs hype','The savings habit nobody talks about','How I built a 6-month emergency fund in a year','5 money moves to make in your 20s'],
+  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting — my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
+};
+var fallbackTemplates = {
+  script:function(i){ return 'HOOK (0-3s):\n"'+i.split(' ').slice(0,6).join(' ')+'... most people get this completely wrong."\n\nBODY (3-30s):\n\u2192 Point 1: The mistake 90% of people make\n\u2192 Point 2: The strategy that actually works\n\u2192 Point 3: The one shift that changes everything\n\nCTA:\n"Follow for more. Save this \u2014 you\'ll need it."'; },
+  carousel:function(i){ return 'SLIDE 1 (Hook): '+i+'\n\nSLIDE 2: The problem most people ignore...\n\nSLIDE 3: Mistake #1 \u2014 doing it the hard way\n\nSLIDE 4: Mistake #2 \u2014 skipping the foundation\n\nSLIDE 5: Here\'s what actually works\n\nSLIDE 6: Step-by-step\n1. Start here\n2. Build this habit\n3. Track this metric\n\nSLIDE 7 (CTA): Follow for more. Save this.'; },
+  caption:function(i){ return i+'\n\nHere\'s the truth: most people skip this step.\n\nThe ones who figured it out? Different game entirely.\n\n\u21b3 Start with the fundamentals\n\u21b3 Be consistent, not perfect\n\u21b3 Measure what actually matters\n\nSave this. You\'ll thank yourself later.\n\n#creator #contentcreator #growyouraudience'; },
+  thread:function(i){ return '1/ '+i+'\n\nHere\'s the full breakdown:\n\n2/ Most people think it\'s about talent. It\'s not.\n\n3/ It\'s about this:\n\u2192 Show up before you feel ready\n\u2192 Build systems not motivation\n\u2192 Trust the compound effect\n\n4/ The three things that move the needle:\n\u2022 Foundation beats tactics\n\u2022 Consistency > perfection\n\u2022 Your voice is your moat\n\n5/ Most people skip step one. Don\'t.\n\n6/ Save this. Apply it. Tell me how it goes.'; }
+};
+var repurposeFallback = {
+  'Twitter / X Thread':function(c){ return '1/ '+c.split(' ').slice(0,10).join(' ')+'...\n\n2/ Here\'s why this matters.\n\n3/ Three things that change the game:\n\u2192 Foundation over tactics\n\u2192 Consistency compounds\n\u2192 Your voice is your moat\n\n4/ Most people skip step one. Don\'t.\n\n5/ Save this. Apply it today.'; },
+  'LinkedIn Post':function(c){ return 'I used to think success was about working harder.\n\nThen I learned something that changed everything.\n\n'+c.split(' ').slice(0,12).join(' ')+'...\n\n\u2022 The fundamentals are never boring\n\u2022 Consistency compounds in ways you can\'t predict\n\u2022 Your authentic voice is your biggest advantage\n\nWhat\'s your take? Drop it below \u2193'; },
+  'Instagram Caption':function(c){ return c.split(' ').slice(0,8).join(' ')+'...\n\nSave this if it resonates.\n\n#creator #contentcreation #growyourbrand'; },
+  'Reel Script':function(c){ return 'HOOK (0\u20133s):\n"'+c.split(' ').slice(0,6).join(' ')+'..."\n\nPOINT 1: Most people think it\'s about talent. Wrong.\nPOINT 2: It\'s about doing this one thing every day.\nREVEAL: [Show the strategy on screen]\nCTA: "Follow for more. Save this."'; },
+  'YouTube Description':function(c){ return c+'\n\nIn this video I break down everything you need to know.\n\nTimestamps:\n00:00 Intro\n01:30 The problem\n04:00 What actually works\n07:30 Breakdown\n\n#creator #contentcreation'; },
+  'Email Newsletter':function(c){ return 'Subject: '+c+'\n\nHey [First Name],\n\n'+c.split(' ').slice(0,12).join(' ')+' \u2014 and most people get it wrong.\n\n1. Foundation beats tactics\n2. Consistency is the only strategy that compounds\n3. Your voice is the one thing nobody can copy\n\nHit reply and tell me how it goes.\n\n\u2014 [Your Name]'; }
+};
+
+/* GENERATE IDEAS */
+async function generateIdeas(){
+  var niche = document.getElementById('nicheInput').value.trim();
+  var platform = cddValues['cdd-platform'] || 'Instagram';
+  if(!niche){ showToast('Please enter your niche first.'); return; }
+  var btn=document.getElementById('ideas-btn'), loading=document.getElementById('ideas-loading'), output=document.getElementById('ideasOutput');
+  btn.disabled=true; loading.classList.add('show'); output.innerHTML='';
+  try {
+    var ideas;
+    if(OPENAI_KEY){
+      var raw = await callOpenAI('You are a world-class content strategist for '+platform+' creators. Return ONLY a numbered list of ideas, no intro or explanation.','Generate 8 high-performing content ideas for a '+niche+' creator on '+platform+'. Each idea: complete headline, max 12 words. Numbered list only.');
+      ideas = raw.split('\n').filter(function(l){return l.trim();}).map(function(l){return l.replace(/^\d+[\.\)]\s*/,'').trim();}).filter(Boolean);
+    } else {
+      await delay(700);
+      var key = Object.keys(ideasDB).find(function(k){return niche.toLowerCase().includes(k);})||'default';
+      ideas = ideasDB[key];
+    }
+    renderIdeas(ideas, platform, niche);
+  } catch(e){
+    output.innerHTML='<div class="out-label">Error</div><div style="color:#ff5f56;font-size:0.8rem;">'+escHtml(e.message)+'</div>';
+  } finally { btn.disabled=false; loading.classList.remove('show'); }
+}
+function renderIdeas(ideas, platform, niche){
+  var output = document.getElementById('ideasOutput');
+  output.innerHTML='<div class="out-label">Ideas for '+escHtml(niche)+' on '+escHtml(platform)+'</div>';
+  ideas.slice(0,8).forEach(function(idea,i){
+    var d=document.createElement('div'); d.className='idea-item';
+    d.style.cssText='animation:fadeUp 0.3s '+(i*0.06)+'s ease both;opacity:0;';
+    d.innerHTML='<span class="idea-dot"></span>'+escHtml(idea)+'<span class="idea-tag">Use</span>';
+    d.onclick=function(){useIdea(idea);}; output.appendChild(d);
+  });
+}
+
+/* GENERATE CONTENT */
+var currentFormat = 'script';
+function selectTab(el, fmt){
+  document.querySelectorAll('.format-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active'); currentFormat=fmt;
+  var lbl=document.getElementById('createOutputLabel');
+  if(lbl) lbl.textContent=fmt.charAt(0).toUpperCase()+fmt.slice(1)+' Output';
+}
+async function generateContent(){
+  var idea=document.getElementById('createIdeaInput').value.trim();
+  var tone=cddValues['cdd-tone']||'Bold';
+  if(!idea){ showToast('Please enter a content idea first.'); return; }
+  var btn=document.getElementById('create-btn'), loading=document.getElementById('create-loading'), output=document.getElementById('createOutput'), actions=document.getElementById('create-actions');
+  btn.disabled=true; loading.classList.add('show'); actions.style.display='none'; output.innerHTML='';
+  var fmtInstr={script:'Write a high-retention short-form video script. Structure: HOOK (first 3s), BODY (3 points with arrows), CTA (last 3s). No fluff.',carousel:'Create a 7-slide Instagram carousel. Label each slide. SLIDE 1=hook, SLIDES 2-6=value, SLIDE 7=CTA.',caption:'Write an Instagram caption. Hook, value in short lines with arrows, CTA, 5 hashtags.',thread:'Write a Twitter/X thread of 6 tweets. 1/ as hook. Max 280 chars each. End with CTA.'};
+  try {
+    var result;
+    if(AUTH.token){
+      var resp = await apiCall('POST', '/ai/create', { idea: idea, format: currentFormat, tone: tone });
+      result = resp.content;
+    } else { await delay(700); result=fallbackTemplates[currentFormat](idea); }
+    output.innerHTML='<div class="out-label">'+currentFormat.charAt(0).toUpperCase()+currentFormat.slice(1)+' Output</div><div style="white-space:pre-wrap;font-size:0.8rem;line-height:1.75;">'+escHtml(result)+'</div>';
+    actions.style.display='flex';
+  } catch(e){
+    output.innerHTML='<div class="out-label">Error</div><div style="color:#ff5f56;font-size:0.8rem;">'+escHtml(e.message)+'</div>';
+  } finally { btn.disabled=false; loading.classList.remove('show'); }
+}
+
+/* REPURPOSE */
+async function repurposeContent(){
+  var content=document.getElementById('repurposeInput').value.trim();
+  var target=cddValues['cdd-repurpose-target']||'Twitter / X Thread';
+  if(!content){ showToast('Please paste your content first.'); return; }
+  var btn=document.getElementById('repurpose-btn'), loading=document.getElementById('repurpose-loading'), output=document.getElementById('repurposeOutput'), actions=document.getElementById('repurpose-actions');
+  btn.disabled=true; loading.classList.add('show'); actions.style.display='none';
+  var instr={'Twitter / X Thread':'Convert to a viral Twitter/X thread. 6 numbered tweets, max 280 chars each. Hook first, CTA last.','LinkedIn Post':'Convert to a professional LinkedIn post. Personal angle, short paragraphs, question at end.','Instagram Caption':'Convert to a punchy Instagram caption with hook, arrows, hashtags.','Reel Script':'Convert to a TikTok/Reel script: HOOK (3s), BODY (3 points), CTA (3s).','YouTube Description':'Convert to YouTube description with overview, timestamps, CTA.','Email Newsletter':'Convert to email newsletter: subject line, opener, numbered body, CTA.'};
+  try {
+    var result;
+    if(AUTH.token){
+      var resp = await apiCall('POST', '/ai/repurpose', { content: content, target: target });
+      result = resp.content;
+    } else { await delay(700); result=(repurposeFallback[target]||repurposeFallback['Twitter / X Thread'])(content); }
+    output.innerHTML='<div class="out-label">'+escHtml(target)+'</div><div style="white-space:pre-wrap;font-size:0.8rem;line-height:1.75;">'+escHtml(result)+'</div>';
+    actions.style.display='flex';
+  } catch(e){
+    output.innerHTML='<div class="out-label">Error</div><div style="color:#ff5f56;font-size:0.8rem;">'+escHtml(e.message)+'</div>';
+  } finally { btn.disabled=false; loading.classList.remove('show'); }
+}
+
+/* PROJECTS */
+var projects = [];
+try{ projects=JSON.parse(localStorage.getItem('cos_projects')||'[]'); }catch(e){ projects=[]; }
+function saveToProjects(outputId, titleId){
+  var content=document.getElementById(outputId)&&document.getElementById(outputId).innerText||'';
+  var title=document.getElementById(titleId)&&document.getElementById(titleId).value||'Untitled';
+  if(!content||content.length<10){ showToast('Nothing to save yet.'); return; }
+  if(AUTH.token){
+    apiCall('POST', '/projects', { title: title.slice(0,60), content: content, format: currentFormat })
+      .then(function(data){
+        projects.unshift({ id: data.project.id, title: data.project.title, content: data.project.content, format: data.project.format, date: new Date(data.project.created_at).toLocaleDateString() });
+        renderProjects(); showToast('Saved to Projects!');
+      })
+      .catch(function(e){ showToast(e.message); });
+  } else {
+    var p={id:Date.now(),title:title.slice(0,60),content:content,format:currentFormat,date:new Date().toLocaleDateString()};
+    projects.unshift(p);
+    try{localStorage.setItem('cos_projects',JSON.stringify(projects));}catch(e){}
+    renderProjects(); showToast('Saved to Projects!');
+  }
+}
+function deleteProject(id){
+  if(AUTH.token){
+    apiCall('DELETE', '/projects/'+id).catch(function(){});
+  }
+  projects=projects.filter(function(p){return p.id!==id;});
+  try{localStorage.setItem('cos_projects',JSON.stringify(projects));}catch(e){}
+  renderProjects();
+}
+function renderProjects(){
+  var list=document.getElementById('projects-list');
+  var empty=document.getElementById('projects-empty');
+  if(!list) return;
+  var items=list.querySelectorAll('.idea-item');
+  items.forEach(function(i){i.remove();});
+  if(!projects.length){ if(empty) empty.style.display='block'; return; }
+  if(empty) empty.style.display='none';
+  projects.forEach(function(p){
+    var d=document.createElement('div'); d.className='idea-item';
+    d.style.cssText='flex-direction:column;align-items:flex-start;gap:0.25rem;cursor:default;';
+    d.innerHTML='<div style="display:flex;align-items:center;gap:0.45rem;width:100%;"><span class="idea-dot"></span><span style="flex:1;font-weight:600;font-size:0.8rem;">'+escHtml(p.title)+'</span><span class="idea-tag">'+escHtml(p.format)+'</span><button onclick="deleteProject('+p.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.1rem 0.3rem;font-size:0.78rem;" onmouseover="this.style.color=\'#ff5f56\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715;</button></div><div style="font-size:0.7rem;color:var(--muted);padding-left:1rem;">'+escHtml(p.date)+'</div>';
+    list.appendChild(d);
+  });
+}
+
+/* UTILITY */
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function delay(ms){ return new Promise(function(r){setTimeout(r,ms);}); }
+function copyOutput(elId){
+  var el=document.getElementById(elId);
+  var lines=el&&el.innerText&&el.innerText.split('\n')||[];
+  var text=lines.slice(1).join('\n').trim();
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(function(){showToast('Copied!');}).catch(function(){
+    var ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0;';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Copied!');
+  });
+}
+function showToast(msg){
+  var t=document.getElementById('cos-toast');
+  if(!t){ t=document.createElement('div'); t.id='cos-toast'; t.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid rgba(124,92,252,0.35);color:var(--text);padding:0.7rem 1.5rem;border-radius:50px;font-size:0.83rem;font-family:\'DM Sans\',sans-serif;z-index:9000;transition:transform 0.3s,opacity 0.3s;opacity:0;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,0.4);pointer-events:none;'; document.body.appendChild(t); }
+  t.textContent=msg; t.style.transform='translateX(-50%) translateY(0)'; t.style.opacity='1';
+  clearTimeout(t._timer); t._timer=setTimeout(function(){ t.style.transform='translateX(-50%) translateY(80px)'; t.style.opacity='0'; },2600);
+}
+function saveSettings(){ showToast('Settings saved!'); }
+function useIdea(idea){ document.getElementById('createIdeaInput').value=idea; switchPanel('create'); }
+function googleAuth(){
+  apiCall('GET', '/auth/google')
+    .then(function(data){ window.location.href = data.url; })
+    .catch(function(){ showToast('Google sign-in coming soon.'); });
+}
+
+async function doLogin(){
+  var email = document.querySelector('#loginModal .form-input[type=email]').value.trim();
+  var pass  = document.querySelector('#loginModal .form-input[type=password]').value;
+  if(!email||!pass){ showToast('Please enter email and password.'); return; }
+  var btn = document.querySelector('#loginModal .modal-btn');
+  btn.textContent = 'Logging in...'; btn.disabled = true;
+  try {
+    var data = await apiCall('POST', '/auth/login', { email: email, password: pass });
+    saveAuth(data);
+    closeModal('loginModal');
+    showToast('Welcome back, ' + (data.user.name || data.user.email) + '!');
+    loadProjects();
+  } catch(e){
+    showToast(e.message);
+  } finally { btn.textContent = 'Log In →'; btn.disabled = false; }
+}
+
+async function doSignup(){
+  var name  = document.querySelector('#signupModal .form-input[type=text]').value.trim();
+  var email = document.querySelector('#signupModal .form-input[type=email]').value.trim();
+  var pass  = document.querySelector('#signupModal .form-input[type=password]').value;
+  if(!name||!email||!pass){ showToast('Please fill all fields.'); return; }
+  if(pass.length < 8){ showToast('Password must be at least 8 characters.'); return; }
+  var btn = document.querySelector('#signupModal .modal-btn');
+  btn.textContent = 'Creating...'; btn.disabled = true;
+  try {
+    var data = await apiCall('POST', '/auth/signup', { name: name, email: email, password: pass });
+    saveAuth(data);
+    closeModal('signupModal');
+    showToast('Welcome to Creator OS, ' + data.user.name + '!');
+    loadProjects();
+  } catch(e){
+    showToast(e.message);
+  } finally { btn.textContent = 'Create Free Account →'; btn.disabled = false; }
+}
+
+async function doLogout(){
+  try { await apiCall('POST', '/auth/logout'); } catch(e){}
+  clearAuth();
+  projects = [];
+  renderProjects();
+  showToast('Logged out.');
+}
+
+async function loadProjects(){
+  if(!AUTH.token) return;
+  try {
+    var data = await apiCall('GET', '/projects');
+    projects = data.projects.map(function(p){
+      return { id: p.id, title: p.title, content: p.content, format: p.format, date: new Date(p.created_at).toLocaleDateString() };
+    });
+    renderProjects();
+  } catch(e){ console.warn('Could not load projects:', e.message); }
+}
+
+/* MODALS */
+function openModal(id){ var el=document.getElementById(id); if(el){ el.classList.add('open'); document.body.style.overflow='hidden'; } }
+function closeModal(id){ var el=document.getElementById(id); if(el){ el.classList.remove('open'); document.body.style.overflow=''; } }
+function switchModal(a,b){ closeModal(a); openModal(b); }
+document.querySelectorAll('.modal-overlay').forEach(function(el){ el.addEventListener('click',function(e){ if(e.target===el) closeModal(el.id); }); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m){closeModal(m.id);}); });
+
+/* MOBILE MENU */
+function toggleMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
+
+/* PANELS */
+var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','settings'];
+function switchPanel(name){
+  document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.sidebar-item').forEach(function(s){s.classList.remove('active');});
+  var panel=document.getElementById('panel-'+name);
+  if(panel) panel.classList.add('active');
+  var idx=panelNames.indexOf(name);
+  var items=document.querySelectorAll('.sidebar-item');
+  if(idx>=0&&items[idx]) items[idx].classList.add('active');
+  if(name==='videoresize') setTimeout(vrInitDrop,50);
+}
+
+/* ═══ VIDEO RESIZE ═══ */
+var VR={plan:'free',file:null,objectURL:null,format:'9:16',res:'720p',outputBlob:null,maxFreeSecs:180,resMap:{'720p':{w:1280,h:720},'1080p':{w:1920,h:1080},'2k':{w:2560,h:1440},'4k':{w:3840,h:2160}},ratioMap:{'9:16':9/16,'1:1':1,'4:5':4/5,'16:9':16/9},bitrateMap:{'720p':3000000,'1080p':6000000,'2k':12000000,'4k':25000000}};
+
+function vrInitDrop(){
+  var zone=document.getElementById('vr-upload-zone');
+  if(!zone||zone._dropReady) return; zone._dropReady=true;
+  zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('drag');});
+  zone.addEventListener('dragleave',function(){zone.classList.remove('drag');});
+  zone.addEventListener('drop',function(e){e.preventDefault();zone.classList.remove('drag');var f=e.dataTransfer.files[0];if(f&&f.type.startsWith('video/')) vrHandleFile(f);else showToast('Please drop a video file.');});
+}
+
+function vrHandleFile(file){
+  if(!file) return;
+  VR.file = file;
+  VR.outputBlob = null;
+
+  /* Reset UI */
+  document.getElementById('vr-download-btn').style.display = 'none';
+  document.getElementById('vr-progress-wrap').classList.remove('show');
+  document.getElementById('vr-plan-notice').classList.remove('show');
+  document.getElementById('vr-meta').style.display = 'none';
+  document.getElementById('vr-options-wrap').style.display = 'none';
+  document.getElementById('vr-preview-wrap').classList.remove('show');
+  document.getElementById('vr-process-btn').disabled = false;
+  document.getElementById('vr-progress-bar').style.width = '0%';
+  if(VR.objectURL){ URL.revokeObjectURL(VR.objectURL); VR.objectURL = null; }
+
+  var mb = (file.size / 1048576).toFixed(1);
+  var fname = file.name.length > 26 ? file.name.slice(0,26)+'...' : file.name;
+
+  /* Show file info immediately — no video element needed */
+  document.getElementById('vr-fname').textContent = fname;
+  document.getElementById('vr-dur').textContent   = 'Click Convert to process';
+  document.getElementById('vr-dim').textContent   = 'Auto-detected';
+  document.getElementById('vr-size').textContent  = mb + ' MB';
+  document.getElementById('vr-meta').style.display         = 'flex';
+  document.getElementById('vr-options-wrap').style.display = 'block';
+  document.getElementById('vr-process-btn').disabled       = false;
+
+  /* Try loading video for duration/preview — but don't block if it fails */
+  VR.objectURL = URL.createObjectURL(file);
+  var vid = document.getElementById('vr-video');
+  var newVid = vid.cloneNode(false);
+  vid.parentNode.replaceChild(newVid, vid);
+  vid = newVid; VR.videoEl = vid;
+
+  vid.addEventListener('loadedmetadata', function onMeta(){
+    vid.removeEventListener('loadedmetadata', onMeta);
+    var dur = vid.duration || 0;
+    document.getElementById('vr-dur').textContent = vrFmtTime(dur);
+    document.getElementById('vr-dim').textContent = vid.videoWidth + 'x' + vid.videoHeight;
+    if(VR.plan === 'free' && dur > VR.maxFreeSecs){
+      document.getElementById('vr-plan-msg').innerHTML = 'Free plan: your video is <strong>'+vrFmtTime(dur)+'</strong> &#8212; max is 3:00. <a style="cursor:pointer;color:var(--accent2);font-weight:700;" onclick="openModal(&quot;signupModal&quot;)">Upgrade to Pro</a> for unlimited.';
+      document.getElementById('vr-plan-notice').classList.add('show');
+      document.getElementById('vr-process-btn').disabled = true;
+    }
+    vid.currentTime = Math.min(dur * 0.1, 5);
+  });
+
+  vid.addEventListener('seeked', function onSeeked(){
+    vid.removeEventListener('seeked', onSeeked);
+    vrDrawPreview();
+  });
+
+  /* Error is silent — user can still click Convert */
+  vid.addEventListener('error', function(){ console.warn('[VR] preview load failed, continuing'); });
+
+  vid.preload = 'metadata';
+  vid.src = VR.objectURL;
+}
+
+function showVideoInfo(){}
+
+
+function vrGetVid(){
+  return document.getElementById('vr-video');
+}
+
+function vrDrawPreview(){
+  var vid = vrGetVid();
+  if(!vid || !vid.videoWidth || !vid.videoHeight) return;
+  document.getElementById('vr-preview-wrap').classList.add('show');
+  var co  = document.getElementById('vr-canvas-orig');
+  var asp = vid.videoWidth / vid.videoHeight;
+  co.width  = 200;
+  co.height = Math.round(200 / asp);
+  co.getContext('2d').drawImage(vid, 0, 0, co.width, co.height);
+  var ratio = VR.ratioMap[VR.format];
+  var outC  = document.getElementById('vr-canvas-out');
+  var preH  = 120;
+  var preW  = Math.max(1, Math.round(preH * ratio));
+  outC.width  = preW; outC.height = preH;
+  var ctx = outC.getContext('2d');
+  ctx.fillStyle = '#111'; ctx.fillRect(0,0,preW,preH);
+
+  /* Try face-detected crop for preview */
+  vrInitFaceDetector();
+  if(VR_faceSupported){
+    var tmpC = document.createElement('canvas');
+    tmpC.width = vid.videoWidth; tmpC.height = vid.videoHeight;
+    tmpC.getContext('2d').drawImage(vid, 0, 0);
+    vrSmartCrop(tmpC, vid.videoWidth, vid.videoHeight, ratio).then(function(c){
+      ctx.fillStyle = '#111'; ctx.fillRect(0,0,preW,preH);
+      ctx.drawImage(vid, c.x, c.y, c.w, c.h, 0, 0, preW, preH);
+    });
+  } else {
+    var c = vrCalcCrop(vid.videoWidth, vid.videoHeight, ratio);
+    ctx.drawImage(vid, c.x, c.y, c.w, c.h, 0, 0, preW, preH);
+  }
+}
+
+/* ── FACE-AWARE CROP ──
+   Uses FaceDetector API (Chrome 70+) when available.
+   Falls back gracefully to center crop on unsupported browsers. */
+
+var VR_FaceDetector = null;
+var VR_faceSupported = false;
+var VR_faceChecked   = false;
+var VR_lastFaceX     = null; /* smoothed face center X (0-1) */
+var VR_lastFaceY     = null; /* smoothed face center Y (0-1) */
+var VR_SMOOTH        = 0.15; /* lerp smoothing factor */
+
+function vrInitFaceDetector(){
+  if(VR_faceChecked) return;
+  VR_faceChecked = true;
+  if(typeof FaceDetector !== 'undefined'){
+    try{
+      VR_FaceDetector = new FaceDetector({ fastMode: true, maxDetectedFaces: 3 });
+      VR_faceSupported = true;
+      console.log('[VR] FaceDetector API available — smart crop enabled');
+      /* Update UI badge */
+      var badge = document.getElementById('vr-face-badge');
+      if(badge){ badge.textContent = 'Smart Crop: ON'; badge.style.background = 'rgba(92,240,208,0.15)'; badge.style.color = 'var(--accent3)'; badge.style.borderColor = 'rgba(92,240,208,0.3)'; }
+    } catch(e){
+      VR_faceSupported = false;
+      console.log('[VR] FaceDetector not available, using center crop');
+    }
+  } else {
+    console.log('[VR] FaceDetector API not supported in this browser, using center crop');
+  }
+}
+
+/* Detect faces on an ImageBitmap or canvas and return the crop box */
+async function vrSmartCrop(source, srcW, srcH, tgtRatio){
+  /* Always compute the center-crop fallback */
+  var centerCrop = vrCalcCrop(srcW, srcH, tgtRatio);
+
+  if(!VR_faceSupported || !VR_FaceDetector) return centerCrop;
+
+  try {
+    var faces = await VR_FaceDetector.detect(source);
+    if(!faces || faces.length === 0){
+      /* No face — slowly drift back to center */
+      if(VR_lastFaceX !== null){
+        VR_lastFaceX = VR_lastFaceX + (0.5 - VR_lastFaceX) * VR_SMOOTH;
+        VR_lastFaceY = VR_lastFaceY + (0.5 - VR_lastFaceY) * VR_SMOOTH;
+      }
+    } else {
+      /* Use the largest detected face as the subject */
+      var best = faces.reduce(function(a,b){
+        return (a.boundingBox.width * a.boundingBox.height) >= (b.boundingBox.width * b.boundingBox.height) ? a : b;
+      });
+      var bb = best.boundingBox;
+      var faceCX = (bb.x + bb.width  / 2) / srcW;
+      var faceCY = (bb.y + bb.height / 2) / srcH;
+      /* Bias slightly upward so full head is included */
+      faceCY = Math.max(0, faceCY - 0.05);
+      /* Lerp smooth to avoid jitter */
+      if(VR_lastFaceX === null){ VR_lastFaceX = faceCX; VR_lastFaceY = faceCY; }
+      else {
+        VR_lastFaceX = VR_lastFaceX + (faceCX - VR_lastFaceX) * VR_SMOOTH;
+        VR_lastFaceY = VR_lastFaceY + (faceCY - VR_lastFaceY) * VR_SMOOTH;
+      }
+    }
+
+    if(VR_lastFaceX === null) return centerCrop;
+    return vrCalcCropAt(srcW, srcH, tgtRatio, VR_lastFaceX, VR_lastFaceY);
+
+  } catch(e){
+    return centerCrop;
+  }
+}
+
+/* Crop centered on a specific point (cx, cy) in 0-1 normalised coords */
+function vrCalcCropAt(srcW, srcH, tgtRatio, cx, cy){
+  var srcRatio = srcW / srcH;
+  var w, h, x, y;
+  if(tgtRatio < srcRatio){
+    h = srcH; w = Math.round(srcH * tgtRatio);
+    x = Math.round(cx * srcW - w / 2);
+    x = Math.max(0, Math.min(srcW - w, x));
+    y = 0;
+  } else {
+    w = srcW; h = Math.round(srcW / tgtRatio);
+    x = 0;
+    y = Math.round(cy * srcH - h / 2);
+    y = Math.max(0, Math.min(srcH - h, y));
+  }
+  return { x:x, y:y, w:w, h:h };
+}
+
+function vrCalcCrop(srcW, srcH, tgtRatio){
+  var srcRatio = srcW / srcH; var x,y,w,h;
+  if(tgtRatio < srcRatio){ h=srcH; w=Math.round(srcH*tgtRatio); x=Math.round((srcW-w)/2); y=0; }
+  else{ w=srcW; h=Math.round(srcW/tgtRatio); x=0; y=Math.round((srcH-h)/2); }
+  return {x:x,y:y,w:w,h:h};
+}
+
+function vrSelectFormat(el, fmt){
+  if(el.classList.contains('locked')) return;
+  document.querySelectorAll('#vr-format-grid .vr-option-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected'); VR.format = fmt;
+  var lbl = document.getElementById('vr-canvas-out-label');
+  if(lbl) lbl.textContent = 'Output (' + fmt + ')';
+  var vid = vrGetVid();
+  if(vid && vid.videoWidth) vrDrawPreview();
+}
+
+function vrSelectRes(el, res){
+  if(el.classList.contains('locked')){ showToast('2K and 4K require Pro or Team plan.'); openModal('signupModal'); return; }
+  document.querySelectorAll('#vr-res-grid .vr-option-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected'); VR.res = res;
+}
+
+async function vrProcess(){
+  if(!VR.file){ showToast('Please select a video file first.'); return; }
+
+  var btn      = document.getElementById('vr-process-btn');
+  var progWrap = document.getElementById('vr-progress-wrap');
+  var progBar  = document.getElementById('vr-progress-bar');
+  var progLbl  = document.getElementById('vr-progress-label');
+
+  /* Create a brand-new video element for processing — fresh context, no prior errors */
+  var procVid = document.createElement('video');
+  procVid.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;';
+  procVid.preload = 'auto';
+  procVid.muted = true;
+  document.body.appendChild(procVid);
+
+  btn.disabled = true; VR.outputBlob = null;
+  document.getElementById('vr-download-btn').style.display = 'none';
+  progWrap.classList.add('show'); progBar.style.width = '3%'; progLbl.textContent = 'Setting up...';
+  await new Promise(function(r){ setTimeout(r, 80); });
+
+  try {
+    var ratio  = VR.ratioMap[VR.format];
+    var resObj = VR.resMap[VR.res];
+    var dur    = procVid.duration || 9999;
+    var outW, outH;
+    if(ratio <= 1){ outH = resObj.h; outW = Math.round(outH * ratio); }
+    else           { outW = resObj.w; outH = Math.round(outW / ratio); }
+    if(outW % 2 !== 0) outW--; if(outH % 2 !== 0) outH--;
+    var crop = vrCalcCrop(procVid.videoWidth, procVid.videoHeight, ratio); /* updated per-frame by face detector */
+    var canvas = document.createElement('canvas');
+    canvas.width = outW; canvas.height = outH;
+    var ctx = canvas.getContext('2d', {alpha:false});
+    var mimes = ['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+    var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
+    var stream   = canvas.captureStream(30);
+    var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
+    var chunks = []; recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
+    var doneRes; var doneP = new Promise(function(r){ doneRes=r; }); recorder.onstop = doneRes;
+    progLbl.textContent = 'Loading video...'; progBar.style.width = '5%';
+    /* Load the file into our fresh process video element */
+    await new Promise(function(resolve){
+      /* Never reject — onerror on blob URLs is unreliable.
+         Resolve on any positive signal OR after timeout. */
+      procVid.onerror       = function(){ console.warn('[VR] procVid onerror ignored, continuing'); setTimeout(resolve, 500); };
+      procVid.oncanplay     = function(){ procVid.oncanplay = null; resolve(); };
+      procVid.onloadeddata  = function(){ procVid.onloadeddata = null; resolve(); };
+      procVid.onloadedmetadata = function(){ procVid.onloadedmetadata = null; resolve(); };
+      procVid.src = VR.objectURL;
+      procVid.load();
+      setTimeout(resolve, 6000); /* hard timeout fallback */
+    });
+    progLbl.textContent = 'Seeking...';
+    await new Promise(function(resolve){
+      function onS(){ procVid.removeEventListener('seeked',onS); resolve(); }
+      procVid.addEventListener('seeked', onS);
+      procVid.currentTime = 0;
+      setTimeout(function(){ procVid.removeEventListener('seeked',onS); resolve(); }, 2000);
+    });
+    recorder.start(100); progLbl.textContent = 'Converting... 0%';
+    procVid.muted = true;
+    try{ await procVid.play(); } catch(pe){ recorder.stop(); await doneP; throw new Error('Playback blocked. Use Chrome or Edge.'); }
+    /* Init face detection for this conversion */
+    VR_lastFaceX = null; VR_lastFaceY = null;
+    vrInitFaceDetector();
+
+    /* Small canvas for face detection (quarter resolution for speed) */
+    var faceCanvas = document.createElement('canvas');
+    faceCanvas.width  = Math.round(procVid.videoWidth  / 4);
+    faceCanvas.height = Math.round(procVid.videoHeight / 4);
+    var faceCtx   = faceCanvas.getContext('2d');
+    var frameIdx  = 0;
+    var FACE_EVERY = 6; /* run face detection every 6 frames */
+
+    await new Promise(function(resolve){
+      var rafId;
+      function loop(){
+        if(procVid.ended || procVid.currentTime >= dur - 0.05){
+          ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+          ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+          cancelAnimationFrame(rafId); resolve(); return;
+        }
+
+        frameIdx++;
+
+        /* Async face detect every N frames — updates crop without blocking */
+        if(VR_faceSupported && frameIdx % FACE_EVERY === 0){
+          faceCtx.drawImage(procVid, 0, 0, faceCanvas.width, faceCanvas.height);
+          vrSmartCrop(faceCanvas, procVid.videoWidth, procVid.videoHeight, ratio).then(function(fc){ crop = fc; });
+        }
+
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+        ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
+        var pct = Math.min(4 + Math.round((procVid.currentTime/dur)*93), 97);
+        progBar.style.width = pct + '%';
+        progLbl.textContent = (VR_faceSupported ? 'Smart tracking... ' : 'Converting... ') + pct + '%';
+        rafId = requestAnimationFrame(loop);
+      }
+      rafId = requestAnimationFrame(loop);
+    });
+    procVid.pause();
+    await new Promise(function(r){ setTimeout(r,400); });
+    recorder.stop(); await doneP;
+    VR.outputBlob = new Blob(chunks, {type:mime});
+    if(!VR.outputBlob || VR.outputBlob.size < 500) throw new Error('Output empty. Try Chrome or Edge.');
+    progBar.style.width = '100%'; progLbl.textContent = 'Done! Click Download to save.';
+    document.getElementById('vr-download-btn').style.display = 'inline-flex';
+    btn.disabled = false; showToast('Converted! Click Download.');
+  } catch(err){
+    console.error('[VR]', err);
+    progLbl.textContent = 'Error: ' + (err.message||err);
+    progBar.style.width = '0%';
+    showToast('Error: ' + (err.message||String(err)));
+    btn.disabled = false;
+    try{ document.body.removeChild(procVid); }catch(e){}
+  }
+}
+
+function vrDownload(){
+  if(!VR.outputBlob){ showToast('Nothing to download yet.'); return; }
+  var ext  = VR.outputBlob.type.includes('mp4') ? 'mp4' : 'webm';
+  var name = 'creatoros-' + VR.format.replace(':','-') + '-' + VR.res + '.' + ext;
+  var url  = URL.createObjectURL(VR.outputBlob);
+  var a    = document.createElement('a'); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+}
+
+function vrReset(){
+  var vid = document.getElementById('vr-video');
+  if(vid){ vid.pause(); vid.removeAttribute('src'); vid.load(); }
+  if(VR.objectURL){ URL.revokeObjectURL(VR.objectURL); VR.objectURL = null; }
+  VR.file = null; VR.outputBlob = null; VR.format = '9:16'; VR.res = '720p'; VR.videoEl = null;
+  document.getElementById('vr-meta').style.display           = 'none';
+  document.getElementById('vr-options-wrap').style.display   = 'none';
+  document.getElementById('vr-preview-wrap').classList.remove('show');
+  document.getElementById('vr-progress-wrap').classList.remove('show');
+  document.getElementById('vr-download-btn').style.display   = 'none';
+  document.getElementById('vr-plan-notice').classList.remove('show');
+  document.getElementById('vr-process-btn').disabled         = false;
+  document.getElementById('vr-file-input').value             = '';
+  document.getElementById('vr-canvas-out-label').textContent = 'Output (9:16)';
+  document.getElementById('vr-progress-bar').style.width     = '0%';
+  document.getElementById('vr-progress-label').textContent   = '';
+  document.querySelectorAll('#vr-format-grid .vr-option-card').forEach(function(c,i){ c.classList.toggle('selected',i===0); });
+  document.querySelectorAll('#vr-res-grid .vr-option-card').forEach(function(c,i){ c.classList.toggle('selected',i===0); });
+  showToast('Reset. Ready for a new video.');
+}
+
+function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+(ss<10?'0':'')+ss; }
+
+['cdd-platform','cdd-tone','cdd-repurpose-target','cdd-settings-niche','cdd-settings-tone','cdd-settings-platform'].forEach(function(id){
+  var sel=document.querySelector('#'+id+'-menu .cdd-option.selected');
+  if(sel) cddValues[id]=sel.textContent.trim();
+});
+
+renderProjects();
+
+/* SCROLL REVEAL */
+var revealObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}
+  });
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(function(el,i){
+  el.style.transitionDelay=(i%4*0.07)+'s';
+  revealObs.observe(el);
+});
+
+/* NAV SHRINK */
+window.addEventListener('scroll',function(){
+  document.getElementById('navbar').style.padding=window.scrollY>50?'0.6rem 2rem':'1rem 2rem';
+},{passive:true});
+
+/* MODAL CLOSE ON OVERLAY CLICK */
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===el)closeModal(el.id);});
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m){closeModal(m.id);});
+});
+</script>
+<video id="vr-video" style="position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;opacity:0;pointer-events:none;" playsinline preload="auto"></video>
+</body>
+</html>
