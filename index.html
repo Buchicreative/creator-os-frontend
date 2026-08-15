@@ -1675,22 +1675,9 @@ async function vrProcess(){
     recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
     var doneRes; var doneP = new Promise(function(r){ doneRes = r; }); recorder.onstop = doneRes;
 
-    /* Seek to start */
-    progLbl.textContent = 'Starting conversion...';
     progBar.style.width = '18%';
-    procVid.currentTime = 0;
-    await new Promise(function(resolve){
-      procVid.onseeked = function(){ procVid.onseeked = null; resolve(); };
-      setTimeout(resolve, 2000);
-    });
+    var crop = vrCalcCrop(srcW, srcH, ratio); /* initial crop */
 
-    /* Draw first frame */
-    var crop = vrCropForFrame(0, srcW, srcH, ratio, faceMap);
-    ctx.fillStyle = '#000'; ctx.fillRect(0,0,outW,outH);
-    ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
-
-    recorder.start(100);
-    progLbl.textContent = 'Converting with AI tracking... 0%';
 
     /* Seek-based render — reliable, uses AI face coords per frame */
     var FPS        = 15; /* 15fps output — fast and smooth enough for social media */
