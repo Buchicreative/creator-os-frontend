@@ -777,9 +777,30 @@ var OPENAI_KEY = ''; /* Moved to backend — no longer needed in frontend */
 /* ── AUTH STATE ── */
 var AUTH = {
   token   : localStorage.getItem('cos_token')   || null,
+  refresh : localStorage.getItem('cos_refresh') || null,
   user    : JSON.parse(localStorage.getItem('cos_user') || 'null'),
   plan    : localStorage.getItem('cos_plan')    || 'free',
 };
+
+/* Auto-refresh token if it exists but might be stale */
+(function autoRefresh(){
+  if(!AUTH.refresh || AUTH.user) return; /* skip if no refresh token or already have user */
+  fetch(API_BASE + '/auth/refresh', {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify({ refresh_token: AUTH.refresh })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if(data.access_token){
+      AUTH.token = data.access_token;
+      AUTH.refresh = data.refresh_token;
+      localStorage.setItem('cos_token',   data.access_token);
+      localStorage.setItem('cos_refresh', data.refresh_token);
+    }
+  })
+  .catch(function(){ /* silent fail — user just stays logged out */ });
+})();
 
 /* ── API HELPER ── */
 async function apiCall(method, path, body){
@@ -800,9 +821,12 @@ function saveAuth(data){
   AUTH.token = data.access_token;
   AUTH.user  = data.user;
   AUTH.plan  = data.user.plan || 'free';
-  localStorage.setItem('cos_token', AUTH.token);
-  localStorage.setItem('cos_user',  JSON.stringify(AUTH.user));
-  localStorage.setItem('cos_plan',  AUTH.plan);
+  localStorage.setItem('cos_token',         AUTH.token);
+  localStorage.setItem('cos_user',          JSON.stringify(AUTH.user));
+  localStorage.setItem('cos_plan',          AUTH.plan);
+  if(data.refresh_token){
+    localStorage.setItem('cos_refresh',     data.refresh_token);
+  }
   VR.plan = AUTH.plan;
   updateAuthUI();
 }
@@ -812,6 +836,7 @@ function clearAuth(){
   localStorage.removeItem('cos_token');
   localStorage.removeItem('cos_user');
   localStorage.removeItem('cos_plan');
+  localStorage.removeItem('cos_refresh');
   VR.plan = 'free';
   updateAuthUI();
 }
@@ -1673,7 +1698,14 @@ function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+
   if(sel) cddValues[id]=sel.textContent.trim();
 });
 
-renderProjects();
+/* INIT — restore auth session and run after DOM ready */
+if(AUTH.token && AUTH.user){
+  updateAuthUI();
+  loadProjects();
+} else {
+  renderProjects();
+  updateAuthUI();
+}
 
 /* SCROLL REVEAL */
 var revealObs=new IntersectionObserver(function(entries){
