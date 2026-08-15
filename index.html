@@ -1490,8 +1490,19 @@ async function vrProcess(){
     var canvas = document.createElement('canvas');
     canvas.width = outW; canvas.height = outH;
     var ctx = canvas.getContext('2d', {alpha:false});
-    var mimes = ['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
-    var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
+    /* Try MP4 first — Chrome 130+ and Edge support it natively */
+    var mimes = [
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1',
+      'video/mp4',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    var mime = mimes.find(function(m){
+      try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; }
+    }) || 'video/webm';
+    console.log('[VR] Recording with MIME type:', mime);
     var stream   = canvas.captureStream(30);
     var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
     var chunks = []; recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
@@ -1575,93 +1586,28 @@ async function vrProcess(){
   }
 }
 
-async function vrDownload(){
+function vrDownload(){
   if(!VR.outputBlob){ showToast('Nothing to download yet.'); return; }
 
-  var downloadBtn = document.getElementById('vr-download-btn');
-  var progWrap    = document.getElementById('vr-progress-wrap');
-  var progBar     = document.getElementById('vr-progress-bar');
-  var progLbl     = document.getElementById('vr-progress-label');
+  /* Determine correct extension from the blob MIME type */
+  var mime = VR.outputBlob.type || '';
+  var ext  = 'webm';
+  if(mime.includes('mp4'))  ext = 'mp4';
+  else if(mime.includes('ogg')) ext = 'ogg';
 
-  downloadBtn.disabled = true;
-  downloadBtn.textContent = 'Preparing...';
-  progWrap.classList.add('show');
-  progBar.style.width = '5%';
-  progLbl.textContent = 'Loading MP4 converter...';
+  var name = 'creatoros-' + VR.format.replace(':','-') + '-' + VR.res + '.' + ext;
+  var url  = URL.createObjectURL(VR.outputBlob);
+  var a    = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
 
-  try {
-    /* Dynamically load FFmpeg.wasm v0.11.6 from unpkg */
-    await vrLoadScript('https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js');
-    await vrLoadScript('https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js');
-
-    if(typeof createFFmpeg === 'undefined'){
-      throw new Error('FFmpeg could not be loaded');
-    }
-
-    var ffmpeg = createFFmpeg({
-      corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
-      log: false,
-      progress: function(p){
-        var pct = Math.min(15 + Math.round((p.ratio||0) * 80), 95);
-        progBar.style.width = pct + '%';
-        progLbl.textContent = 'Converting to MP4... ' + pct + '%';
-      }
-    });
-
-    progBar.style.width = '10%';
-    progLbl.textContent = 'Loading FFmpeg engine...';
-    await ffmpeg.load();
-
-    progBar.style.width = '15%';
-    progLbl.textContent = 'Processing video...';
-
-    var webmData = new Uint8Array(await VR.outputBlob.arrayBuffer());
-    ffmpeg.FS('writeFile', 'input.webm', webmData);
-
-    await ffmpeg.run(
-      '-i',        'input.webm',
-      '-c:v',      'libx264',
-      '-preset',   'ultrafast',
-      '-crf',      '23',
-      '-c:a',      'aac',
-      '-movflags', '+faststart',
-      'output.mp4'
-    );
-
-    var mp4Data = ffmpeg.FS('readFile', 'output.mp4');
-    var mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
-
-    try { ffmpeg.FS('unlink', 'input.webm'); } catch(e){}
-    try { ffmpeg.FS('unlink', 'output.mp4'); } catch(e){}
-
-    progBar.style.width = '100%';
-    progLbl.textContent = 'Done! Saved as MP4.';
-    vrDirectDownload(mp4Blob, 'mp4');
-    showToast('Downloaded as MP4. Plays everywhere.');
-
-  } catch(err){
-    console.warn('[VR] MP4 conversion failed:', err.message);
-    progBar.style.width = '100%';
-    progLbl.textContent = 'Saved as WebM.';
-    vrDirectDownload(VR.outputBlob, 'webm');
-    showToast('Saved as WebM. Open in Chrome or VLC to play.');
-  } finally {
-    downloadBtn.disabled = false;
-    downloadBtn.textContent = 'Download';
+  if(ext === 'mp4'){
+    showToast('Downloaded as MP4. Ready for any platform.');
+  } else {
+    showToast('Downloaded as WebM. For MP4, use Chrome or Edge.');
   }
 }
-
-/* Load an external script dynamically and wait for it */
-function vrLoadScript(src){
-  return new Promise(function(resolve, reject){
-    /* Don't load twice */
-    if(document.querySelector('script[src="'+src+'"]')){ resolve(); return; }
-    var s = document.createElement('script');
-    s.src = src; s.onload = resolve; s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
-
 function vrDirectDownload(blob, ext){
   var name = 'creatoros-' + VR.format.replace(':','-') + '-' + VR.res + '.' + ext;
   var url  = URL.createObjectURL(blob);
