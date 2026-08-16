@@ -309,6 +309,19 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 .vr-plan-notice a{color:var(--accent2);font-weight:700;text-decoration:underline;cursor:pointer;}
 
 /* UPGRADE POPUP */
+function goUpgrade(){
+  /* If logged in, scroll to pricing so they can choose a plan */
+  /* If not logged in, open signup modal */
+  if(AUTH.token){
+    closeUpgradePopup();
+    navScrollTo(null, 'pricing');
+  } else {
+    closeUpgradePopup();
+    openModal('signupModal');
+  }
+}
+
+
 .upgrade-popup-overlay{display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;}
 .upgrade-popup-overlay.open{display:flex;}
 .upgrade-popup{background:var(--surface);border:1px solid rgba(124,92,252,0.3);border-radius:20px;padding:2rem 1.75rem;max-width:380px;width:100%;text-align:center;position:relative;animation:modalIn 0.3s ease;box-shadow:0 40px 80px rgba(0,0,0,0.5),0 0 60px rgba(124,92,252,0.15);}
@@ -499,7 +512,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
-      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="openModal('signupModal')" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
+      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
       <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
@@ -645,7 +658,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
               <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
                 <div>
                   <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.1rem;">AI Face Tracking</div>
-                  <div id="vr-face-badge" style="font-size:0.72rem;color:var(--muted);">Auto-follows subject as they move</div>
+                  <div id="vr-face-badge" style="font-size:0.72rem;color:var(--muted);background:none;border:none;padding:0;">Best for single-subject videos. For podcasts, tracking follows the most visible face</div>
                 </div>
                 <!-- Toggle switch -->
                 <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex-shrink:0;">
@@ -787,7 +800,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
           <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Carousel generator</li>
           <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Repurposing engine</li>
         </ul>
-        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="openModal('signupModal')">Get Started Free</button>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Get Started Free</button>
       </div>
       <!-- PRO -->
       <div class="price-card featured reveal">
@@ -802,7 +815,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
           <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Team collaboration</li>
         </ul>
-        <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="openModal('signupModal')">Upgrade to Pro &#x2192;</button>
+        <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Upgrade to Pro &#x2192;</button>
       </div>
       <!-- TEAM -->
       <div class="price-card reveal">
@@ -816,7 +829,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
         </ul>
-        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="openModal('signupModal')">Start Team Plan &#x2192;</button>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Start Team Plan &#x2192;</button>
       </div>
     </div>
   </div>
@@ -863,7 +876,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 2K and 4K output resolution</li>
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI content generation</li>
     </ul>
-    <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.85rem;" onclick="closeUpgradePopup();openModal('signupModal')">Upgrade to Pro &#x2192;</button>
+    <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.85rem;" onclick="goUpgrade()">Upgrade to Pro &#x2192;</button>
     <div style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);">Starting at $19/month. Cancel anytime.</div>
   </div>
 </div>
@@ -1269,6 +1282,19 @@ function googleAuth(){
 }
 
 /* UPGRADE POPUP */
+function goUpgrade(){
+  /* If logged in, scroll to pricing so they can choose a plan */
+  /* If not logged in, open signup modal */
+  if(AUTH.token){
+    closeUpgradePopup();
+    navScrollTo(null, 'pricing');
+  } else {
+    closeUpgradePopup();
+    openModal('signupModal');
+  }
+}
+
+
 function openUpgradePopup(title, desc){
   var t = document.getElementById('upgrade-popup-title');
   var d = document.getElementById('upgrade-popup-desc');
@@ -1634,6 +1660,29 @@ function vrSelectRes(el, res){
   if(el.classList.contains('locked')){ openUpgradePopup('Pro Feature: High Resolution', '2K and 4K output resolution is available on Pro and Team plans. Free users can export up to 1080p Full HD.'); return; }
   document.querySelectorAll('#vr-res-grid .vr-option-card').forEach(function(c){c.classList.remove('selected');});
   el.classList.add('selected'); VR.res = res;
+
+  /* Warn if output resolution exceeds source resolution */
+  var vid = document.getElementById('vr-video');
+  var srcH = vid ? (vid.videoHeight || 0) : 0;
+  var resMap = { '720p': 720, '1080p': 1080, '2k': 1440, '4k': 2160 };
+  var outH   = resMap[res] || 0;
+  var notice = document.getElementById('vr-res-notice');
+
+  if(srcH > 0 && outH > srcH){
+    if(!notice){
+      notice = document.createElement('div');
+      notice.id = 'vr-res-notice';
+      notice.style.cssText = 'font-size:0.73rem;color:#febc2e;background:rgba(254,188,46,0.08);border:1px solid rgba(254,188,46,0.2);border-radius:8px;padding:0.5rem 0.75rem;margin-top:0.45rem;display:flex;align-items:center;gap:0.4rem;';
+      notice.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Your source video is ' + srcH + 'p. Choosing ' + res.toUpperCase() + ' will not improve quality — it only increases file size.';
+      var resGrid = document.getElementById('vr-res-grid');
+      if(resGrid) resGrid.parentNode.insertBefore(notice, resGrid.nextSibling);
+    } else {
+      notice.style.display = 'flex';
+      notice.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Your source video is ' + srcH + 'p. Choosing ' + res.toUpperCase() + ' will not improve quality — it only increases file size.';
+    }
+  } else {
+    if(notice) notice.style.display = 'none';
+  }
 }
 
 async function vrProcess(){
