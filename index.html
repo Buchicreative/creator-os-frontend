@@ -310,13 +310,17 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 
 /* UPGRADE POPUP */
 function goUpgrade(){
-  /* If logged in, scroll to pricing so they can choose a plan */
-  /* If not logged in, open signup modal */
-  if(AUTH.token){
-    closeUpgradePopup();
-    navScrollTo(null, 'pricing');
+  closeUpgradePopup();
+  /* Check both token AND user object — either confirms logged-in state */
+  var loggedIn = !!(AUTH.token || AUTH.user || localStorage.getItem('cos_token'));
+  if(loggedIn){
+    /* Scroll to pricing section */
+    var pricingEl = document.getElementById('pricing');
+    if(pricingEl){
+      var navH = document.getElementById('navbar').offsetHeight;
+      window.scrollTo({ top: pricingEl.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
+    }
   } else {
-    closeUpgradePopup();
     openModal('signupModal');
   }
 }
@@ -1010,7 +1014,7 @@ function updateAuthUI(){
         planBadge.innerHTML = '<span class="badge-dot"></span> Team Plan. Unlimited Access &#10024;';
         statPlan.textContent = 'Team';
       } else {
-        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a onclick="openModal(&quot;signupModal&quot;)" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
         statPlan.textContent = 'Free';
       }
     }
@@ -1283,13 +1287,17 @@ function googleAuth(){
 
 /* UPGRADE POPUP */
 function goUpgrade(){
-  /* If logged in, scroll to pricing so they can choose a plan */
-  /* If not logged in, open signup modal */
-  if(AUTH.token){
-    closeUpgradePopup();
-    navScrollTo(null, 'pricing');
+  closeUpgradePopup();
+  /* Check both token AND user object — either confirms logged-in state */
+  var loggedIn = !!(AUTH.token || AUTH.user || localStorage.getItem('cos_token'));
+  if(loggedIn){
+    /* Scroll to pricing section */
+    var pricingEl = document.getElementById('pricing');
+    if(pricingEl){
+      var navH = document.getElementById('navbar').offsetHeight;
+      window.scrollTo({ top: pricingEl.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
+    }
   } else {
-    closeUpgradePopup();
     openModal('signupModal');
   }
 }
