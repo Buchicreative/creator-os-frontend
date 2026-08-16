@@ -1578,30 +1578,19 @@ function vrLoadScriptMP(src){
 
 function vrToggleTracking(enabled){
   VR.trackingEnabled = enabled;
-  var badge  = document.getElementById('vr-face-badge');
-  var track  = document.getElementById('vr-toggle-track');
-  var knob   = document.getElementById('vr-toggle-knob');
+  var badge = document.getElementById('vr-face-badge');
+  /* Only update text and color — no background highlight ever */
   if(enabled){
-    if(badge){ badge.textContent = 'AI tracking ON — server will analyse faces'; badge.style.color = 'var(--accent3)'; }
-    if(track) track.style.background = 'var(--accent)';
-    if(knob)  knob.style.transform   = 'translateX(18px)';
+    if(badge){ badge.textContent = 'ON — server will analyse faces before converting'; badge.style.color = 'var(--accent3)'; }
   } else {
-    if(badge){ badge.textContent = 'Auto-follows subject as they move'; badge.style.color = 'var(--muted)'; }
-    if(track) track.style.background = 'var(--border)';
-    if(knob)  knob.style.transform   = 'translateX(0)';
+    if(badge){ badge.textContent = 'Best for single-subject videos. For podcasts, tracking follows the most visible face'; badge.style.color = 'var(--muted)'; }
   }
 }
 
 function vrInitFaceDetector(){
   if(VR_faceChecked) return;
   VR_faceChecked = true;
-  var badge = document.getElementById('vr-face-badge');
-  if(badge){
-    badge.textContent   = 'AI Face Tracking: Server';
-    badge.style.background   = 'rgba(92,240,208,0.15)';
-    badge.style.color        = 'var(--accent3)';
-    badge.style.borderColor  = 'rgba(92,240,208,0.3)';
-  }
+  /* Badge text only — no background highlight, just color change */
 }
 
 /* Smart crop — uses center crop for now */
@@ -1673,12 +1662,14 @@ function vrSelectRes(el, res){
       notice = document.createElement('div');
       notice.id = 'vr-res-notice';
       notice.style.cssText = 'font-size:0.73rem;color:#febc2e;background:rgba(254,188,46,0.08);border:1px solid rgba(254,188,46,0.2);border-radius:8px;padding:0.5rem 0.75rem;margin-top:0.45rem;display:flex;align-items:center;gap:0.4rem;';
-      notice.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Your source video is ' + srcH + 'p. Choosing ' + res.toUpperCase() + ' will not improve quality — it only increases file size.';
+      var srcResName = srcH >= 2160 ? '4K' : srcH >= 1440 ? '2K' : srcH >= 1080 ? '1080p' : srcH >= 720 ? '720p' : srcH >= 480 ? '480p' : srcH + 'p';
+            notice.textContent = 'Your source is ' + srcResName + '. Selecting ' + res.toUpperCase() + ' won’t increase quality — it only increases file size.';
       var resGrid = document.getElementById('vr-res-grid');
       if(resGrid) resGrid.parentNode.insertBefore(notice, resGrid.nextSibling);
     } else {
       notice.style.display = 'flex';
-      notice.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Your source video is ' + srcH + 'p. Choosing ' + res.toUpperCase() + ' will not improve quality — it only increases file size.';
+      var srcResName = srcH >= 2160 ? '4K' : srcH >= 1440 ? '2K' : srcH >= 1080 ? '1080p' : srcH >= 720 ? '720p' : srcH >= 480 ? '480p' : srcH + 'p';
+            notice.textContent = 'Your source is ' + srcResName + '. Selecting ' + res.toUpperCase() + ' won’t increase quality — it only increases file size.';
     }
   } else {
     if(notice) notice.style.display = 'none';
