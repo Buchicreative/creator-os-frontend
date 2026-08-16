@@ -1745,27 +1745,11 @@ async function vrProcess(){
     var mimes = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
 
-    /* Capture canvas video + audio from video element */
+    /* Use captureStream from procVid for audio — simplest reliable approach.
+       Must be called AFTER procVid.play() so audio is active.
+       We'll set up the stream now and add audio track after play() starts. */
     var canvasStream = canvas.captureStream(30);
-    var stream;
-
-    try {
-      /* Capture audio directly from the video element's stream */
-      /* procVid must be playing for captureStream to work */
-      var vidStream  = procVid.captureStream ? procVid.captureStream() : procVid.mozCaptureStream ? procVid.mozCaptureStream() : null;
-      if(vidStream && vidStream.getAudioTracks().length > 0){
-        var audioTrack = vidStream.getAudioTracks()[0];
-        var videoTrack = canvasStream.getVideoTracks()[0];
-        stream = new MediaStream([videoTrack, audioTrack]);
-        console.log('[VR] Audio captured from video element');
-      } else {
-        stream = canvasStream;
-        console.log('[VR] No audio track found — video only');
-      }
-    } catch(audioErr){
-      console.warn('[VR] Audio capture failed:', audioErr.message);
-      stream = canvasStream;
-    }
+    var stream = canvasStream; /* default — audio added after play() below */
 
     var recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VR.bitrateMap[VR.res] });
     var chunks   = [];
@@ -1805,6 +1789,17 @@ async function vrProcess(){
     procVid.volume = 0; /* silent to user but audio track still captured */
     procVid.playbackRate = 1;
     try{ await procVid.play(); } catch(e){ throw new Error('Playback blocked. Use Chrome or Edge.'); }
+
+    /* Add audio track AFTER play() starts — captureStream needs active playback */
+    try {
+      var vidStream = procVid.captureStream ? procVid.captureStream() : null;
+      if(vidStream && vidStream.getAudioTracks().length > 0){
+        stream.addTrack(vidStream.getAudioTracks()[0]);
+        console.log('[VR] Audio track added to output');
+      } else {
+        console.log('[VR] No audio track in source — video only');
+      }
+    } catch(ae){ console.warn('[VR] Audio capture skipped:', ae.message); }
 
     await new Promise(function(resolve){
       var rafId;
