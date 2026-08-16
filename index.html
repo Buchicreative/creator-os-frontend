@@ -340,7 +340,7 @@ function goUpgrade(){
 .upgrade-popup-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
 
 /* VR TOGGLE */
-#vr-tracking-toggle:checked + #vr-toggle-track { background: var(--accent); }
+#vr-tracking-toggle:checked + #vr-toggle-track { background: #28c840; }
 #vr-tracking-toggle:checked ~ #vr-toggle-knob  { transform: translateX(18px); }
 
 /* PASSWORD FIELD */
@@ -1808,11 +1808,25 @@ async function vrProcess(){
     ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
     try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
 
-    /* STEP 7: Start recording then play */
-    recorder.start(250);
+    /* STEP 7: Play first, then tap audio, then start recorder */
     progLbl.textContent = 'Converting... 0%';
 
     await procVid.play().catch(function(){ throw new Error('Playback blocked. Try Chrome or Edge.'); });
+
+    /* Tap audio from the playing video element — must be after play() */
+    await new Promise(function(r){ requestAnimationFrame(r); }); /* wait 1 frame */
+    try {
+      var vidStream = procVid.captureStream ? procVid.captureStream() : null;
+      if(vidStream){
+        var audioTracks = vidStream.getAudioTracks();
+        if(audioTracks.length > 0){
+          stream.addTrack(audioTracks[0]);
+          console.log('[VR] Audio track captured from video');
+        }
+      }
+    } catch(ae){ console.warn('[VR] Audio not captured:', ae.message); }
+
+    recorder.start(250);
 
     /* STEP 8: Render loop */
     await new Promise(function(resolve){
