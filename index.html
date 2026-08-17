@@ -1198,6 +1198,8 @@ function saveAuth(data){
     localStorage.setItem('cos_refresh',     data.refresh_token);
   }
   VR.plan = AUTH.plan;
+  document.documentElement.classList.add('is-logged-in');
+  document.documentElement.classList.remove('is-logged-out');
   updateAuthUI();
   vrCheckPlan();
 }
@@ -1209,6 +1211,8 @@ function clearAuth(){
   localStorage.removeItem('cos_plan');
   localStorage.removeItem('cos_refresh');
   VR.plan = 'free';
+  document.documentElement.classList.remove('is-logged-in');
+  document.documentElement.classList.add('is-logged-out');
   updateAuthUI();
 }
 
