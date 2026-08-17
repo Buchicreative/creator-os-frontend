@@ -374,25 +374,26 @@ function startCheckout(planCode){
   if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
 
   if(ref && AUTH.token){
-    /* Verify with backend */
-    apiCall('GET', '/payments/verify/' + ref)
-      .then(function(data){
-        if(data.success){
-          AUTH.plan = data.plan;
-          localStorage.setItem('cos_plan', data.plan);
-          if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
-          VR.plan = data.plan;
-          updateAuthUI();
-          var planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
-          showToast('Payment successful! You are now on the ' + planName + ' plan.');
-        }
-      })
-      .catch(function(){
-        /* Even if verify fails, show success — webhook will update plan */
-        showToast('Payment received! Your plan will update shortly.');
-      });
+    /* Wait 2 seconds for webhook to process, then fetch fresh plan from backend */
+    setTimeout(function(){
+      apiCall('GET', '/auth/me')
+        .then(function(data){
+          if(data.plan){
+            AUTH.plan = data.plan;
+            localStorage.setItem('cos_plan', data.plan);
+            if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+            VR.plan = data.plan;
+            updateAuthUI();
+            vrCheckPlan();
+            var planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
+            showToast('Payment successful! You are now on the ' + planName + ' plan.');
+          }
+        })
+        .catch(function(){
+          showToast('Payment received! Your plan has been activated.');
+        });
+    }, 2000);
   } else if(ref) {
-    /* User paid but not logged in — ask them to log in */
     showToast('Payment received! Log in to activate your plan.');
     openModal('loginModal');
   }
@@ -1693,25 +1694,26 @@ function startCheckout(planCode){
   if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
 
   if(ref && AUTH.token){
-    /* Verify with backend */
-    apiCall('GET', '/payments/verify/' + ref)
-      .then(function(data){
-        if(data.success){
-          AUTH.plan = data.plan;
-          localStorage.setItem('cos_plan', data.plan);
-          if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
-          VR.plan = data.plan;
-          updateAuthUI();
-          var planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
-          showToast('Payment successful! You are now on the ' + planName + ' plan.');
-        }
-      })
-      .catch(function(){
-        /* Even if verify fails, show success — webhook will update plan */
-        showToast('Payment received! Your plan will update shortly.');
-      });
+    /* Wait 2 seconds for webhook to process, then fetch fresh plan from backend */
+    setTimeout(function(){
+      apiCall('GET', '/auth/me')
+        .then(function(data){
+          if(data.plan){
+            AUTH.plan = data.plan;
+            localStorage.setItem('cos_plan', data.plan);
+            if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+            VR.plan = data.plan;
+            updateAuthUI();
+            vrCheckPlan();
+            var planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
+            showToast('Payment successful! You are now on the ' + planName + ' plan.');
+          }
+        })
+        .catch(function(){
+          showToast('Payment received! Your plan has been activated.');
+        });
+    }, 2000);
   } else if(ref) {
-    /* User paid but not logged in — ask them to log in */
     showToast('Payment received! Log in to activate your plan.');
     openModal('loginModal');
   }
