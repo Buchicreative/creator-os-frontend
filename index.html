@@ -637,7 +637,18 @@ async function apiCall(method, path, body){
   if(body)       opts.body = JSON.stringify(body);
   var res  = await fetch(API_BASE + path, opts);
   var data = await res.json();
-  if(!res.ok) throw new Error(data.error || 'Request failed');
+  if(!res.ok){
+    if(res.status === 401){
+      /* Token expired — clear session */
+      ['cos_token','cos_user','cos_plan','cos_refresh'].forEach(function(k){ localStorage.removeItem(k); });
+      AUTH.token = null; AUTH.user = null; AUTH.plan = 'free';
+      document.documentElement.classList.remove('is-logged-in');
+      document.documentElement.classList.add('is-logged-out');
+      updateAuthUI();
+      throw new Error('Session expired. Please log in again.');
+    }
+    throw new Error(data.error || 'Request failed');
+  }
   return data;
 }
 
