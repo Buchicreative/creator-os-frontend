@@ -2194,7 +2194,11 @@ function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+
   if(sel) cddValues[id]=sel.textContent.trim();
 });
 
-/* INIT — restore auth session and run after DOM ready */
+/* INIT — restore auth session from localStorage then update UI */
+AUTH.token = localStorage.getItem('cos_token');
+try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+AUTH.plan  = localStorage.getItem('cos_plan') || 'free';
+
 if(AUTH.token && AUTH.user){
   updateAuthUI();
   loadProjects();
