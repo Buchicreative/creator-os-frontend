@@ -587,7 +587,7 @@ function startCheckout(planCode){
   <div class="hero-content">
 
     <!-- LOGGED OUT STATE -->
-    <div id="hero-loggedout">
+    <div id="hero-loggedout" style="display:none;">
       <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System, Now Live</div>
       <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
       <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content. All powered by AI.</p>
@@ -1081,6 +1081,43 @@ var AUTH = {
     }
   })
   .catch(function(){ /* silent fail — user just stays logged out */ });
+})();
+
+/* ── INSTANT AUTH CHECK — runs before page renders ── */
+(function instantAuthCheck(){
+  var token = localStorage.getItem('cos_token');
+  var user  = null;
+  try{ user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+
+  var heroOut = document.getElementById('hero-loggedout');
+  var heroIn  = document.getElementById('hero-loggedin');
+
+  if(token && user){
+    /* Show logged-in hero immediately */
+    if(heroOut) heroOut.style.display = 'none';
+    if(heroIn)  heroIn.style.display  = 'block';
+
+    /* Set name immediately */
+    var name = user.name || user.email.split('@')[0];
+    var heroUser = document.getElementById('hero-username');
+    var navName  = document.getElementById('nav-user-name');
+    var navLogin = document.getElementById('nav-login-btn');
+    var navSignup= document.getElementById('nav-signup-btn');
+    var navLogout= document.getElementById('nav-logout-btn');
+    var h = new Date().getHours();
+    var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    var heroGreet = document.getElementById('hero-greeting');
+    if(heroGreet) heroGreet.innerHTML = g + ', <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + name + '</span>';
+    if(heroUser)  heroUser.textContent = name;
+    if(navName){  navName.style.display = 'inline-block'; navName.textContent = name; }
+    if(navLogin)  navLogin.style.display = 'none';
+    if(navSignup) navSignup.style.display = 'none';
+    if(navLogout) navLogout.style.display = 'inline-flex';
+  } else {
+    /* Show logged-out hero immediately */
+    if(heroOut) heroOut.style.display = 'block';
+    if(heroIn)  heroIn.style.display  = 'none';
+  }
 })();
 
 /* ── API HELPER ── */
