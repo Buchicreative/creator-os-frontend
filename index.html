@@ -339,9 +339,7 @@ function goUpgrade(){
 .upgrade-popup-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
 .upgrade-popup-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
 
-/* VR TOGGLE */
-#vr-tracking-toggle:checked + #vr-toggle-track { background: #28c840; }
-#vr-tracking-toggle:checked ~ #vr-toggle-knob  { transform: translateX(18px); }
+/* VR TOGGLE — controlled via JS in vrToggleTracking() */
 
 /* PASSWORD FIELD */
 .pw-wrap{position:relative;}
@@ -1587,11 +1585,16 @@ function vrLoadScriptMP(src){
 function vrToggleTracking(enabled){
   VR.trackingEnabled = enabled;
   var badge = document.getElementById('vr-face-badge');
-  /* Only update text and color — no background highlight ever */
+  var track = document.getElementById('vr-toggle-track');
+  var knob  = document.getElementById('vr-toggle-knob');
   if(enabled){
     if(badge){ badge.textContent = 'ON — server will analyse faces before converting'; badge.style.color = 'var(--accent3)'; }
+    if(track) track.style.background = '#28c840';
+    if(knob)  knob.style.transform   = 'translateX(18px)';
   } else {
     if(badge){ badge.textContent = 'Best for single-subject videos. For podcasts, tracking follows the most visible face'; badge.style.color = 'var(--muted)'; }
+    if(track) track.style.background = 'var(--border)';
+    if(knob)  knob.style.transform   = 'translateX(0)';
   }
 }
 
