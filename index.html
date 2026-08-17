@@ -309,21 +309,70 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem
 .vr-plan-notice a{color:var(--accent2);font-weight:700;text-decoration:underline;cursor:pointer;}
 
 /* UPGRADE POPUP */
-function goUpgrade(){
+function goUpgrade(planCode){
   closeUpgradePopup();
-  /* Check both token AND user object — either confirms logged-in state */
   var loggedIn = !!(AUTH.token || AUTH.user || localStorage.getItem('cos_token'));
-  if(loggedIn){
-    /* Scroll to pricing section */
+
+  if(!loggedIn){
+    openModal('signupModal');
+    return;
+  }
+
+  /* If no specific plan, scroll to pricing */
+  if(!planCode){
     var pricingEl = document.getElementById('pricing');
     if(pricingEl){
       var navH = document.getElementById('navbar').offsetHeight;
       window.scrollTo({ top: pricingEl.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
     }
-  } else {
-    openModal('signupModal');
+    return;
+  }
+
+  /* Initiate Paystack checkout */
+  startCheckout(planCode);
+}
+
+async function startCheckout(planCode){
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+  if(!AUTH.token){ openModal('loginModal'); return; }
+
+  showToast('Redirecting to checkout...');
+
+  try {
+    var data = await apiCall('POST', '/payments/initialize', { plan: planCode });
+    if(data.authorization_url){
+      window.location.href = data.authorization_url;
+    }
+  } catch(e){
+    showToast(e.message || 'Could not start checkout. Please try again.');
   }
 }
+
+/* Check URL for payment success on page load */
+(function checkPaymentReturn(){
+  var params = new URLSearchParams(window.location.search);
+  var ref    = params.get('reference');
+  var plan   = params.get('plan');
+
+  if(ref && AUTH.token){
+    /* Verify payment with backend */
+    apiCall('GET', '/payments/verify/' + ref)
+      .then(function(data){
+        if(data.success){
+          /* Update local plan */
+          AUTH.plan = data.plan;
+          localStorage.setItem('cos_plan', data.plan);
+          if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+          VR.plan = data.plan;
+          updateAuthUI();
+          showToast('Payment successful! You are now on the ' + data.plan.charAt(0).toUpperCase() + data.plan.slice(1) + ' plan.');
+          /* Clean URL */
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      })
+      .catch(function(){ });
+  }
+})();
 
 
 .upgrade-popup-overlay{display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;}
@@ -898,7 +947,7 @@ function goUpgrade(){
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> AI face tracking</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
         </ul>
-        <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Upgrade to Pro &#x2192;</button>
+        <button class="btn-hero" id="pro-upgrade-btn" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'pro_yearly':'pro_monthly')">Upgrade to Pro &#x2192;</button>
       </div>
 
       <!-- TEAM -->
@@ -915,7 +964,7 @@ function goUpgrade(){
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
         </ul>
-        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Start Team Plan &#x2192;</button>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Start Team Plan &#x2192;</button>
       </div>
     </div>
   </div>
@@ -1555,21 +1604,70 @@ function googleAuth(){
 }
 
 /* UPGRADE POPUP */
-function goUpgrade(){
+function goUpgrade(planCode){
   closeUpgradePopup();
-  /* Check both token AND user object — either confirms logged-in state */
   var loggedIn = !!(AUTH.token || AUTH.user || localStorage.getItem('cos_token'));
-  if(loggedIn){
-    /* Scroll to pricing section */
+
+  if(!loggedIn){
+    openModal('signupModal');
+    return;
+  }
+
+  /* If no specific plan, scroll to pricing */
+  if(!planCode){
     var pricingEl = document.getElementById('pricing');
     if(pricingEl){
       var navH = document.getElementById('navbar').offsetHeight;
       window.scrollTo({ top: pricingEl.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
     }
-  } else {
-    openModal('signupModal');
+    return;
+  }
+
+  /* Initiate Paystack checkout */
+  startCheckout(planCode);
+}
+
+async function startCheckout(planCode){
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+  if(!AUTH.token){ openModal('loginModal'); return; }
+
+  showToast('Redirecting to checkout...');
+
+  try {
+    var data = await apiCall('POST', '/payments/initialize', { plan: planCode });
+    if(data.authorization_url){
+      window.location.href = data.authorization_url;
+    }
+  } catch(e){
+    showToast(e.message || 'Could not start checkout. Please try again.');
   }
 }
+
+/* Check URL for payment success on page load */
+(function checkPaymentReturn(){
+  var params = new URLSearchParams(window.location.search);
+  var ref    = params.get('reference');
+  var plan   = params.get('plan');
+
+  if(ref && AUTH.token){
+    /* Verify payment with backend */
+    apiCall('GET', '/payments/verify/' + ref)
+      .then(function(data){
+        if(data.success){
+          /* Update local plan */
+          AUTH.plan = data.plan;
+          localStorage.setItem('cos_plan', data.plan);
+          if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+          VR.plan = data.plan;
+          updateAuthUI();
+          showToast('Payment successful! You are now on the ' + data.plan.charAt(0).toUpperCase() + data.plan.slice(1) + ' plan.');
+          /* Clean URL */
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      })
+      .catch(function(){ });
+  }
+})();
 
 
 function openUpgradePopup(title, desc){
