@@ -490,6 +490,39 @@ html.is-logged-in #cta-section { display: none !important; }
 .mob-nav-item span{font-size:0.6rem;font-weight:500;}
 .mob-nav-item.active{color:var(--accent);}
 
+/* On mobile, hide landing page sections when logged in */
+@media(max-width:960px){
+  html.is-logged-in .hero,
+  html.is-logged-in #how,
+  html.is-logged-in #features,
+  html.is-logged-in #pricing,
+  html.is-logged-in #faq,
+  html.is-logged-in #cta-section,
+  html.is-logged-in footer,
+  html.is-logged-in .testimonials-section { display: none !important; }
+
+  html.is-logged-in #app-section {
+    padding: 0 !important;
+    min-height: 100vh;
+  }
+
+  html.is-logged-in .app-preview {
+    border-radius: 0 !important;
+    border: none !important;
+    margin-top: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html.is-logged-in .app-bar {
+    display: none !important;
+  }
+
+  html.is-logged-in .container {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -1261,18 +1294,6 @@ function googleAuth(){
     window.location.href = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
   });
 }
-
-/* On mobile when logged in, auto-scroll to app section */
-(function mobileAutoScroll(){
-  if(window.innerWidth > 960) return; /* desktop only needs scroll on login */
-  var token = localStorage.getItem('cos_token');
-  if(!token) return;
-  /* Small delay to let page render first */
-  setTimeout(function(){
-    var el = document.getElementById('app-section');
-    if(el) el.scrollIntoView({ behavior: 'instant' });
-  }, 100);
-})();
 
 /* Handle OAuth callback — Supabase redirects back with access_token in URL hash */
 (function handleOAuthCallback(){
