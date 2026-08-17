@@ -332,45 +332,69 @@ function goUpgrade(planCode){
   startCheckout(planCode);
 }
 
-async function startCheckout(planCode){
-  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
-  if(!AUTH.token){ openModal('loginModal'); return; }
+var PAYSTACK_PAGES = {
+  pro_monthly  : 'https://paystack.shop/pay/lt63cey8jq',
+  pro_yearly   : 'https://paystack.shop/pay/x2xbl5txcy',
+  team_monthly : 'https://paystack.shop/pay/wz9y6vxwyz',
+  team_yearly  : 'https://paystack.shop/pay/lqtob4ew78',
+};
+
+function startCheckout(planCode){
+  if(!AUTH.token && !localStorage.getItem('cos_token')){
+    openModal('loginModal');
+    return;
+  }
+
+  var url = PAYSTACK_PAGES[planCode];
+  if(!url){ showToast('Invalid plan selected.'); return; }
+
+  /* Pass user email to Paystack page so it pre-fills */
+  var user = AUTH.user || JSON.parse(localStorage.getItem('cos_user') || '{}');
+  if(user && user.email){
+    url += '?email=' + encodeURIComponent(user.email);
+  }
 
   showToast('Redirecting to checkout...');
-
-  try {
-    var data = await apiCall('POST', '/payments/initialize', { plan: planCode });
-    if(data.authorization_url){
-      window.location.href = data.authorization_url;
-    }
-  } catch(e){
-    showToast(e.message || 'Could not start checkout. Please try again.');
-  }
+  setTimeout(function(){ window.location.href = url; }, 500);
 }
 
 /* Check URL for payment success on page load */
 (function checkPaymentReturn(){
-  var params = new URLSearchParams(window.location.search);
-  var ref    = params.get('reference');
-  var plan   = params.get('plan');
+  var params    = new URLSearchParams(window.location.search);
+  var ref       = params.get('reference') || params.get('trxref');
+  var planParam = params.get('plan');
+
+  if(!ref) return;
+
+  /* Clean URL first */
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  /* Restore auth */
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+  if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
 
   if(ref && AUTH.token){
-    /* Verify payment with backend */
+    /* Verify with backend */
     apiCall('GET', '/payments/verify/' + ref)
       .then(function(data){
         if(data.success){
-          /* Update local plan */
           AUTH.plan = data.plan;
           localStorage.setItem('cos_plan', data.plan);
           if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
           VR.plan = data.plan;
           updateAuthUI();
-          showToast('Payment successful! You are now on the ' + data.plan.charAt(0).toUpperCase() + data.plan.slice(1) + ' plan.');
-          /* Clean URL */
-          window.history.replaceState({}, document.title, window.location.pathname);
+          var planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
+          showToast('Payment successful! You are now on the ' + planName + ' plan.');
         }
       })
-      .catch(function(){ });
+      .catch(function(){
+        /* Even if verify fails, show success — webhook will update plan */
+        showToast('Payment received! Your plan will update shortly.');
+      });
+  } else if(ref) {
+    /* User paid but not logged in — ask them to log in */
+    showToast('Payment received! Log in to activate your plan.');
+    openModal('loginModal');
   }
 })();
 
@@ -1627,45 +1651,69 @@ function goUpgrade(planCode){
   startCheckout(planCode);
 }
 
-async function startCheckout(planCode){
-  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
-  if(!AUTH.token){ openModal('loginModal'); return; }
+var PAYSTACK_PAGES = {
+  pro_monthly  : 'https://paystack.shop/pay/lt63cey8jq',
+  pro_yearly   : 'https://paystack.shop/pay/x2xbl5txcy',
+  team_monthly : 'https://paystack.shop/pay/wz9y6vxwyz',
+  team_yearly  : 'https://paystack.shop/pay/lqtob4ew78',
+};
+
+function startCheckout(planCode){
+  if(!AUTH.token && !localStorage.getItem('cos_token')){
+    openModal('loginModal');
+    return;
+  }
+
+  var url = PAYSTACK_PAGES[planCode];
+  if(!url){ showToast('Invalid plan selected.'); return; }
+
+  /* Pass user email to Paystack page so it pre-fills */
+  var user = AUTH.user || JSON.parse(localStorage.getItem('cos_user') || '{}');
+  if(user && user.email){
+    url += '?email=' + encodeURIComponent(user.email);
+  }
 
   showToast('Redirecting to checkout...');
-
-  try {
-    var data = await apiCall('POST', '/payments/initialize', { plan: planCode });
-    if(data.authorization_url){
-      window.location.href = data.authorization_url;
-    }
-  } catch(e){
-    showToast(e.message || 'Could not start checkout. Please try again.');
-  }
+  setTimeout(function(){ window.location.href = url; }, 500);
 }
 
 /* Check URL for payment success on page load */
 (function checkPaymentReturn(){
-  var params = new URLSearchParams(window.location.search);
-  var ref    = params.get('reference');
-  var plan   = params.get('plan');
+  var params    = new URLSearchParams(window.location.search);
+  var ref       = params.get('reference') || params.get('trxref');
+  var planParam = params.get('plan');
+
+  if(!ref) return;
+
+  /* Clean URL first */
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  /* Restore auth */
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+  if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
 
   if(ref && AUTH.token){
-    /* Verify payment with backend */
+    /* Verify with backend */
     apiCall('GET', '/payments/verify/' + ref)
       .then(function(data){
         if(data.success){
-          /* Update local plan */
           AUTH.plan = data.plan;
           localStorage.setItem('cos_plan', data.plan);
           if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
           VR.plan = data.plan;
           updateAuthUI();
-          showToast('Payment successful! You are now on the ' + data.plan.charAt(0).toUpperCase() + data.plan.slice(1) + ' plan.');
-          /* Clean URL */
-          window.history.replaceState({}, document.title, window.location.pathname);
+          var planName = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
+          showToast('Payment successful! You are now on the ' + planName + ' plan.');
         }
       })
-      .catch(function(){ });
+      .catch(function(){
+        /* Even if verify fails, show success — webhook will update plan */
+        showToast('Payment received! Your plan will update shortly.');
+      });
+  } else if(ref) {
+    /* User paid but not logged in — ask them to log in */
+    showToast('Payment received! Log in to activate your plan.');
+    openModal('loginModal');
   }
 })();
 
