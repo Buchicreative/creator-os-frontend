@@ -1711,10 +1711,88 @@ function checkContentPlan(feature){
 }
 
 function googleAuth(){
-  apiCall('GET', '/auth/google')
-    .then(function(data){ window.location.href = data.url; })
-    .catch(function(){ showToast('Google sign-in coming soon.'); });
+  var SUPABASE_URL = 'https://jivujemgzqxouqhahzqi.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_iPOYkt8Ed0yMBUfRN14avA_favEJh1W';
+  var redirectTo   = window.location.origin + window.location.pathname;
+
+  fetch(SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo), {
+    method  : 'GET',
+    headers : { 'apikey': SUPABASE_KEY },
+    redirect: 'manual',
+  })
+  .then(function(res){
+    /* Supabase returns a redirect — follow it */
+    var url = res.headers.get('location') || res.url;
+    if(url) window.location.href = url;
+    else    showToast('Could not start Google sign-in. Try again.');
+  })
+  .catch(function(){
+    /* Direct redirect approach */
+    window.location.href = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
+  });
 }
+
+/* Handle OAuth callback — Supabase redirects back with access_token in URL hash */
+(function handleOAuthCallback(){
+  var hash = window.location.hash;
+  if(!hash || hash.indexOf('access_token') < 0) return;
+
+  var params = {};
+  hash.replace('#', '').split('&').forEach(function(p){
+    var parts = p.split('=');
+    params[parts[0]] = decodeURIComponent(parts[1] || '');
+  });
+
+  if(!params.access_token) return;
+
+  /* Clean URL immediately */
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  /* Fetch user info from Supabase */
+  fetch('https://jivujemgzqxouqhahzqi.supabase.co/auth/v1/user', {
+    headers: {
+      'apikey'       : 'sb_publishable_iPOYkt8Ed0yMBUfRN14avA_favEJh1W',
+      'Authorization': 'Bearer ' + params.access_token,
+    }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(user){
+    if(!user || !user.id) return;
+
+    var name = (user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name)) || user.email.split('@')[0];
+
+    /* Save auth locally */
+    saveAuth({
+      access_token  : params.access_token,
+      refresh_token : params.refresh_token || '',
+      user : {
+        id    : user.id,
+        email : user.email,
+        name  : name,
+        plan  : 'free',
+      }
+    });
+
+    /* Create/update profile in backend */
+    apiCall('POST', '/auth/google-callback', {
+      id    : user.id,
+      email : user.email,
+      name  : name,
+    }).catch(function(){});
+
+    showToast('Welcome, ' + name + '!');
+
+    /* Scroll to dashboard */
+    setTimeout(function(){
+      var el = document.getElementById('app-section');
+      if(el){
+        var navH = document.getElementById('navbar').offsetHeight;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
+      }
+    }, 350);
+  })
+  .catch(function(){ showToast('Google sign-in failed. Please try again.'); });
+})();
 
 /* UPGRADE POPUP */
 function goUpgrade(planCode){
