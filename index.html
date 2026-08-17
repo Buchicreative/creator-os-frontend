@@ -1356,11 +1356,12 @@ async function saveSettings(){
   var btn = document.querySelector('#panel-settings .app-btn-sm');
   if(btn){ btn.textContent = 'Saving...'; btn.disabled = true; }
 
-  /* Check token from localStorage directly in case AUTH object is stale */
-  var token = AUTH.token || localStorage.getItem('cos_token');
+  /* Restore AUTH.token from localStorage if it got cleared */
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+  if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
 
   try {
-    if(token){
+    if(AUTH.token){
       /* Save to backend */
       var body = { niche: niche, tone: tone, platform: platform };
       if(newName) body.name = newName;
@@ -1373,7 +1374,8 @@ async function saveSettings(){
         localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
       }
     } else {
-      throw new Error('Not logged in');
+      /* Not logged in — save locally only, no error toast */
+      console.warn('[Settings] No token — saving locally only');
     }
 
     /* Update greeting on homepage immediately */
@@ -1413,7 +1415,12 @@ async function saveSettings(){
 function loadSettingsPanel(){
   /* Name */
   var nameEl = document.getElementById('settings-name');
-  if(nameEl && AUTH.user) nameEl.value = AUTH.user.name || '';
+  if(nameEl){
+    /* Try AUTH.user first, then localStorage */
+    var savedUser = AUTH.user;
+    if(!savedUser) try{ savedUser = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+    nameEl.value = (savedUser && savedUser.name) ? savedUser.name : '';
+  }
 
   /* Niche */
   var savedNiche = localStorage.getItem('cos_niche') || 'Designer';
