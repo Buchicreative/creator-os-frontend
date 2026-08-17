@@ -1102,11 +1102,16 @@ async function cancelSubscription(){
 /* Load saved settings into the panel when it opens */
 function loadSettingsPanel(){
   /* Name */
+  var savedUser = AUTH.user;
+  if(!savedUser) try{ savedUser = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+
+  /* Show account email (read-only) */
+  var emailDisplay = document.getElementById('settings-email-display');
+  if(emailDisplay && savedUser && savedUser.email) emailDisplay.textContent = savedUser.email;
+
+  /* Display name */
   var nameEl = document.getElementById('settings-name');
   if(nameEl){
-    /* Try AUTH.user first, then localStorage */
-    var savedUser = AUTH.user;
-    if(!savedUser) try{ savedUser = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
     nameEl.value = (savedUser && savedUser.name) ? savedUser.name : '';
   }
 
@@ -2457,6 +2462,13 @@ document.addEventListener('keydown',function(e){
           <div class="app-panel" id="panel-settings">
             <div class="panel-title">Profile &amp; Settings</div>
 
+            <!-- Account Email (read-only) -->
+            <div class="settings-row">
+              <label class="settings-label">Account Email</label>
+              <div id="settings-email-display" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;font-size:0.88rem;color:var(--muted);cursor:not-allowed;">—</div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">This is the email linked to your account. It cannot be changed here.</div>
+            </div>
+
             <!-- Display Name -->
             <div class="settings-row">
               <label class="settings-label">Display Name</label>
@@ -2574,7 +2586,7 @@ document.addEventListener('keydown',function(e){
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile. Create anywhere, anytime</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Save, edit, copy and export in one click</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by the latest GPT-4o AI model</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by advanced AI technology</li>
         </ul>
       </div>
       <div class="workflow-visual reveal">
@@ -2699,11 +2711,6 @@ document.addEventListener('keydown',function(e){
       <details class="faq-item">
         <summary>Can I cancel my subscription anytime?</summary>
         <p>Absolutely. You can cancel from your Settings panel at any time. You'll keep full access until the end of your current billing period, then automatically move to the Free plan.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>What AI model powers Creator OS?</summary>
-        <p>Creator OS uses OpenAI's GPT-4 to generate ideas, scripts, carousels, captions, threads, and repurposed content. The video face tracking is powered by a custom OpenCV model running on our servers.</p>
       </details>
 
       <details class="faq-item">
