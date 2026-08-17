@@ -1262,6 +1262,18 @@ function googleAuth(){
   });
 }
 
+/* On mobile when logged in, auto-scroll to app section */
+(function mobileAutoScroll(){
+  if(window.innerWidth > 960) return; /* desktop only needs scroll on login */
+  var token = localStorage.getItem('cos_token');
+  if(!token) return;
+  /* Small delay to let page render first */
+  setTimeout(function(){
+    var el = document.getElementById('app-section');
+    if(el) el.scrollIntoView({ behavior: 'instant' });
+  }, 100);
+})();
+
 /* Handle OAuth callback — Supabase redirects back with access_token in URL hash */
 (function handleOAuthCallback(){
   var hash = window.location.hash;
