@@ -2415,7 +2415,8 @@ async function vrProcess(){
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
     console.log('[VR] mime:', mime, 'size:', outW+'x'+outH, 'dur:', dur);
 
-    var stream   = canvas.captureStream(30);
+    var canvasStream = canvas.captureStream(30); /* single capture — reused for audio merge */
+    var stream   = canvasStream;
     var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
     var chunks   = [];
     recorder.ondataavailable = function(e){ if(e.data&&e.data.size>0) chunks.push(e.data); };
@@ -2464,7 +2465,7 @@ async function vrProcess(){
       if(vidStream && vidStream.getAudioTracks().length > 0){
         /* Build a fresh MediaStream with canvas video + video audio */
         var mergedStream = new MediaStream();
-        mergedStream.addTrack(canvas.captureStream(30).getVideoTracks()[0]);
+        mergedStream.addTrack(canvasStream.getVideoTracks()[0]); /* reuse existing stream */
         mergedStream.addTrack(vidStream.getAudioTracks()[0]);
         stream = mergedStream;
         /* Recreate recorder with merged stream */
