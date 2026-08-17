@@ -348,12 +348,7 @@ function startCheckout(planCode){
   var url = PAYSTACK_PAGES[planCode];
   if(!url){ showToast('Invalid plan selected.'); return; }
 
-  /* Pass user email to Paystack page so it pre-fills */
-  var user = AUTH.user || JSON.parse(localStorage.getItem('cos_user') || '{}');
-  if(user && user.email){
-    url += '?email=' + encodeURIComponent(user.email);
-  }
-
+  /* Open directly without email param — Paystack will ask for it */
   showToast('Redirecting to checkout...');
   setTimeout(function(){ window.location.href = url; }, 500);
 }
@@ -1668,12 +1663,7 @@ function startCheckout(planCode){
   var url = PAYSTACK_PAGES[planCode];
   if(!url){ showToast('Invalid plan selected.'); return; }
 
-  /* Pass user email to Paystack page so it pre-fills */
-  var user = AUTH.user || JSON.parse(localStorage.getItem('cos_user') || '{}');
-  if(user && user.email){
-    url += '?email=' + encodeURIComponent(user.email);
-  }
-
+  /* Open directly without email param — Paystack will ask for it */
   showToast('Redirecting to checkout...');
   setTimeout(function(){ window.location.href = url; }, 500);
 }
