@@ -11,6 +11,8 @@
 /* Auth state — set by inline head script before paint */
 html.is-logged-out #hero-loggedin  { display: none !important; }
 html.is-logged-out #hero-loggedout { display: block !important; }
+html.is-logged-in #hero-greeting { opacity: 0; transition: opacity 0.15s; }
+html.is-logged-in.auth-ready #hero-greeting { opacity: 1; }
 html.is-logged-in  #hero-loggedout { display: none !important; }
 html.is-logged-in  #hero-loggedin  { display: block !important; }
 
@@ -111,6 +113,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;display:f
 
 /* HERO AUTH STATE — controlled by class on <html> before paint */
 html.is-logged-out #hero-loggedout { display: block !important; }
+html.is-logged-in #hero-greeting { opacity: 0; transition: opacity 0.15s; }
+html.is-logged-in.auth-ready #hero-greeting { opacity: 1; }
 html.is-logged-out #hero-loggedin  { display: none  !important; }
 html.is-logged-in  #hero-loggedin  { display: block !important; }
 html.is-logged-in  #hero-loggedout { display: none  !important; }
@@ -523,16 +527,12 @@ html.is-logged-in #cta-section { display: none !important; }
       if(_t && (_u || window.location.hash.indexOf('access_token') >= 0)){
         document.documentElement.classList.add('is-logged-in');
         document.documentElement.classList.remove('is-logged-out');
-        /* Set name immediately so hero never shows "Hello, Creator" */
+        /* Store name and greeting for updateAuthUI to use */
         if(_u && _u.name){
-          var _name = _u.name;
           var _h2 = new Date().getHours();
-          var _g = _h2 < 12 ? 'Good morning' : _h2 < 17 ? 'Good afternoon' : 'Good evening';
-          /* Use a style block to override the default text before DOM is ready */
-          document.write('<style>#hero-greeting{visibility:hidden;}#hero-username{visibility:hidden;}</style>');
-          /* Will be made visible and updated by updateAuthUI() immediately after */
-          window._preloadName = _name;
-          window._preloadGreet = _g;
+          window._preloadName  = _u.name;
+          window._preloadGreet = _h2 < 12 ? 'Good morning' : _h2 < 17 ? 'Good afternoon' : 'Good evening';
+          window._preloadPlan  = _u.plan || 'free';
         }
       } else {
         document.documentElement.classList.add('is-logged-out');
@@ -691,6 +691,7 @@ function updateAuthUI(){
     if(_hg){ _hg.innerHTML = (window._preloadGreet||'Hello') + ', <span id="hero-username" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + window._preloadName + '</span>'; _hg.style.visibility = ''; }
     if(_nn){ _nn.textContent = window._preloadName; }
     window._preloadName = null; window._preloadGreet = null;
+    document.documentElement.classList.add('auth-ready');
   }
   var loggedIn = !!AUTH.user;
   var name     = AUTH.user ? (AUTH.user.name || AUTH.user.email.split('@')[0]) : '';
