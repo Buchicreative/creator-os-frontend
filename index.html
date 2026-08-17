@@ -490,39 +490,6 @@ html.is-logged-in #cta-section { display: none !important; }
 .mob-nav-item span{font-size:0.6rem;font-weight:500;}
 .mob-nav-item.active{color:var(--accent);}
 
-/* On mobile, hide landing page sections when logged in */
-@media(max-width:960px){
-  html.is-logged-in .hero,
-  html.is-logged-in #how,
-  html.is-logged-in #features,
-  html.is-logged-in #pricing,
-  html.is-logged-in #faq,
-  html.is-logged-in #cta-section,
-  html.is-logged-in footer,
-  html.is-logged-in .testimonials-section { display: none !important; }
-
-  html.is-logged-in #app-section {
-    padding: 0 !important;
-    min-height: 100vh;
-  }
-
-  html.is-logged-in .app-preview {
-    border-radius: 0 !important;
-    border: none !important;
-    margin-top: 0 !important;
-    box-shadow: none !important;
-  }
-
-  html.is-logged-in .app-bar {
-    display: none !important;
-  }
-
-  html.is-logged-in .container {
-    padding: 0 !important;
-    max-width: 100% !important;
-  }
-}
-
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -2405,6 +2372,9 @@ document.addEventListener('keydown',function(e){
               <div class="qa-btn" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg><div class="qa-label">Generate Ideas</div></div>
               <div class="qa-btn" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div class="qa-label">Create Content</div></div>
               <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
+              <div class="qa-btn" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><div class="qa-label">Projects</div></div>
+              <div class="qa-btn" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><div class="qa-label">Video Resize</div></div>
+              <div class="qa-btn" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div class="qa-label">Settings</div></div>
             </div>
             <div class="trending-label">Trending Ideas</div>
             <div class="idea-item" onclick="useIdea('5 mistakes new creators make in their first 90 days')"><span class="idea-dot"></span>5 mistakes new creators make in their first 90 days<span class="idea-tag">Script</span></div>
