@@ -696,6 +696,13 @@ function updateAuthUI(){
   }
 
   /* ── Hero state swap ── */
+  if(loggedIn){
+    document.documentElement.classList.add('is-logged-in');
+    document.documentElement.classList.remove('is-logged-out');
+  } else {
+    document.documentElement.classList.add('is-logged-out');
+    document.documentElement.classList.remove('is-logged-in');
+  }
   var heroOut = document.getElementById('hero-loggedout');
   var heroIn  = document.getElementById('hero-loggedin');
   if(heroOut) heroOut.style.display = loggedIn ? 'none'  : 'block';
