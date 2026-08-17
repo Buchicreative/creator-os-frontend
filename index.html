@@ -403,7 +403,18 @@ function goUpgrade(){
       </div>
     </div>
     <button class="modal-btn" onclick="doLogin()">Log In &#x2192;</button>
+    <div style="text-align:center;margin-top:0.6rem;">
+      <a onclick="showForgotPassword()" style="font-size:0.8rem;color:var(--muted);cursor:pointer;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Forgot your password?</a>
+    </div>
     <div class="modal-switch">No account? <a onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
+
+    <!-- Forgot password inline form (hidden by default) -->
+    <div id="forgot-pw-form" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.75rem;">Enter your email and we'll send a reset link.</p>
+      <div class="form-group"><input type="email" id="forgot-pw-email" class="form-input" placeholder="Your email address"></div>
+      <button class="modal-btn" style="background:rgba(124,92,252,0.15);color:var(--accent);box-shadow:none;" onclick="doForgotPassword()">Send Reset Link</button>
+      <div style="text-align:center;margin-top:0.5rem;"><a onclick="hideForgotPassword()" style="font-size:0.78rem;color:var(--muted);cursor:pointer;">Back to login</a></div>
+    </div>
   </div>
 </div>
 
@@ -1540,6 +1551,33 @@ function pwConfirmCheck(inp, origId, hintId){
   }
 }
 
+function showForgotPassword(){
+  document.getElementById('forgot-pw-form').style.display = 'block';
+  document.querySelector('#loginModal .modal-btn').style.display = 'none';
+  document.querySelector('#loginModal .modal-divider').style.display = 'none';
+}
+function hideForgotPassword(){
+  document.getElementById('forgot-pw-form').style.display = 'none';
+  document.querySelector('#loginModal .modal-btn').style.display = 'block';
+  document.querySelector('#loginModal .modal-divider').style.display = 'flex';
+}
+async function doForgotPassword(){
+  var email = document.getElementById('forgot-pw-email').value.trim();
+  if(!email){ showToast('Please enter your email.'); return; }
+  var btn = document.querySelector('#forgot-pw-form .modal-btn');
+  btn.textContent = 'Sending...'; btn.disabled = true;
+  try {
+    await apiCall('POST', '/auth/forgot-password', { email });
+    showToast('Reset link sent! Check your inbox.');
+    hideForgotPassword();
+    closeModal('loginModal');
+  } catch(e){
+    showToast(e.message || 'Could not send reset link. Try again.');
+  } finally {
+    btn.textContent = 'Send Reset Link'; btn.disabled = false;
+  }
+}
+
 async function doLogin(){
   var email = document.querySelector('#loginModal .form-input[type=email]').value.trim();
   var pass  = document.getElementById('li-password') ? document.getElementById('li-password').value : document.querySelector('#loginModal .form-input[type=password]').value;
@@ -1553,7 +1591,7 @@ async function doLogin(){
     showToast('Welcome back, ' + (data.user.name || data.user.email) + '!');
     loadProjects();
   } catch(e){
-    showToast(e.message);
+    showToast(e.message || 'Login failed. Please try again.');
   } finally { btn.textContent = 'Log In →'; btn.disabled = false; }
 }
 
