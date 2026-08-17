@@ -495,15 +495,16 @@ html.is-logged-in #cta-section { display: none !important; }
   .nav-links,.nav-cta{display:none;}
   .hamburger{display:flex;}
   .workflows{grid-template-columns:1fr;}
-  .app-body{grid-template-columns:1fr;padding-bottom:75px;display:block;}
+  .app-body{grid-template-columns:1fr;padding-bottom:75px;display:block;min-height:80vh;}
   .app-sidebar{display:none;}
   .mobile-bottom-nav{display:flex;}
   .footer-grid{grid-template-columns:1fr 1fr;}
   .pricing-grid{grid-template-columns:1fr 1fr;}
   #hero-loggedin{padding-bottom:0;}
-  /* Override absolute positioning on mobile */
-  .app-panel{position:relative !important;inset:auto !important;display:none;opacity:1 !important;transform:none !important;pointer-events:all !important;min-height:60vh;}
-  .app-panel.active{display:block !important;}
+  .app-preview{overflow:visible;}
+  /* Override absolute positioning on mobile - use display not opacity */
+  .app-panel{position:static !important;inset:auto !important;display:none !important;opacity:1 !important;transform:none !important;pointer-events:all !important;min-height:50vh;padding:1rem;}
+  .app-panel.active{display:block !important;opacity:1 !important;}
 }
 @media(max-width:680px){
   .pricing-grid{grid-template-columns:1fr;max-width:360px;margin-left:auto;margin-right:auto;}
