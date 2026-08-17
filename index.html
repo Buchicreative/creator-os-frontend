@@ -351,6 +351,16 @@ function goUpgrade(){
 .pw-strength-bar{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;width:0%;}
 .pw-hint{font-size:0.7rem;margin-top:0.3rem;min-height:1rem;transition:color 0.2s;}
 
+/* PRICING TOGGLE */
+.billing-toggle{display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:2.5rem;}
+.billing-toggle span{font-size:0.88rem;color:var(--muted);font-weight:500;}
+.billing-toggle span.active{color:var(--text);font-weight:600;}
+.toggle-switch{position:relative;width:48px;height:26px;cursor:pointer;}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:26px;transition:background 0.25s;}
+.toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.billing-save{background:linear-gradient(135deg,var(--accent3),#3abf96);color:#000;font-size:0.65rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:50px;margin-left:0.25rem;}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -843,14 +853,28 @@ function goUpgrade(){
       <h2 class="section-title">Simple, Creator-First Pricing</h2>
       <p class="section-desc">Start free, no card needed. Upgrade when you're ready to go unlimited.</p>
     </div>
+
+    <!-- Billing toggle -->
+    <div class="billing-toggle">
+      <span id="toggle-monthly-label" class="active">Monthly</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="billing-toggle-input" onchange="toggleBilling(this.checked)">
+        <span class="toggle-track" id="billing-track"></span>
+        <span class="toggle-knob" id="billing-knob"></span>
+      </label>
+      <span id="toggle-yearly-label">Yearly <span class="billing-save">2 months free</span></span>
+    </div>
+
     <div class="pricing-grid">
       <!-- FREE -->
       <div class="price-card reveal">
-        <div class="price-name">Free</div><div class="price-amount">$0</div><div class="price-period">forever free · no card needed</div>
+        <div class="price-name">Free</div>
+        <div class="price-amount">$0</div>
+        <div class="price-period">forever free · no card needed</div>
         <ul class="price-features">
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 idea generations/day</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 3 content pieces/day</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Script &amp; Caption output</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts &amp; Captions</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize up to 3 mins</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save up to 10 projects</li>
           <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Carousel generator</li>
@@ -858,32 +882,38 @@ function goUpgrade(){
         </ul>
         <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Get Started Free</button>
       </div>
+
       <!-- PRO -->
       <div class="price-card featured reveal">
         <div class="price-badge">Most Popular</div>
-        <div class="price-name">Pro</div><div class="price-amount" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$19</div><div class="price-period">per month · billed monthly</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount" id="pro-price" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$1</div>
+        <div class="price-period" id="pro-period">per month · billed monthly</div>
         <ul class="price-features">
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited idea generation</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts, Captions &amp; Carousels</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full repurposing engine</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize, unlimited + 2K/4K</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resize + 2K/4K</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> AI face tracking</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
-          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Team collaboration</li>
         </ul>
         <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Upgrade to Pro &#x2192;</button>
       </div>
+
       <!-- TEAM -->
       <div class="price-card reveal">
-        <div class="price-name">Team</div><div class="price-amount">$49</div><div class="price-period">per month · up to 5 seats</div>
+        <div class="price-name">Team</div>
+        <div class="price-amount" id="team-price">$4.5</div>
+        <div class="price-period" id="team-period">per member/month · up to 5 seats</div>
         <ul class="price-features">
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Up to 5 team members</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Shared workspace &amp; projects</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Each member gets full Pro access</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Shared projects workspace</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Team brand voice settings</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Admin &amp; usage dashboard</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Admin usage dashboard</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
         </ul>
         <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Start Team Plan &#x2192;</button>
       </div>
@@ -1000,6 +1030,7 @@ function saveAuth(data){
   }
   VR.plan = AUTH.plan;
   updateAuthUI();
+  vrCheckPlan();
 }
 
 function clearAuth(){
@@ -1228,6 +1259,7 @@ async function generateContent(){
   var idea=document.getElementById('createIdeaInput').value.trim();
   var tone=cddValues['cdd-tone']||'Bold';
   if(!idea){ showToast('Please enter a content idea first.'); return; }
+  if(!checkContentPlan(currentFormat)) return;
   var btn=document.getElementById('create-btn'), loading=document.getElementById('create-loading'), output=document.getElementById('createOutput'), actions=document.getElementById('create-actions');
   btn.disabled=true; loading.classList.add('show'); actions.style.display='none'; output.innerHTML='';
   var fmtInstr={script:'Write a high-retention short-form video script. Structure: HOOK (first 3s), BODY (3 points with arrows), CTA (last 3s). No fluff.',carousel:'Create a 7-slide Instagram carousel. Label each slide. SLIDE 1=hook, SLIDES 2-6=value, SLIDE 7=CTA.',caption:'Write an Instagram caption. Hook, value in short lines with arrows, CTA, 5 hashtags.',thread:'Write a Twitter/X thread of 6 tweets. 1/ as hook. Max 280 chars each. End with CTA.'};
@@ -1249,6 +1281,7 @@ async function repurposeContent(){
   var content=document.getElementById('repurposeInput').value.trim();
   var target=cddValues['cdd-repurpose-target']||'Twitter / X Thread';
   if(!content){ showToast('Please paste your content first.'); return; }
+  if(!checkContentPlan('repurpose')) return;
   var btn=document.getElementById('repurpose-btn'), loading=document.getElementById('repurpose-loading'), output=document.getElementById('repurposeOutput'), actions=document.getElementById('repurpose-actions');
   btn.disabled=true; loading.classList.add('show'); actions.style.display='none';
   var instr={'Twitter / X Thread':'Convert to a viral Twitter/X thread. 6 numbered tweets, max 280 chars each. Hook first, CTA last.','LinkedIn Post':'Convert to a professional LinkedIn post. Personal angle, short paragraphs, question at end.','Instagram Caption':'Convert to a punchy Instagram caption with hook, arrows, hashtags.','Reel Script':'Convert to a TikTok/Reel script: HOOK (3s), BODY (3 points), CTA (3s).','YouTube Description':'Convert to YouTube description with overview, timestamps, CTA.','Email Newsletter':'Convert to email newsletter: subject line, opener, numbered body, CTA.'};
@@ -1443,6 +1476,78 @@ function loadSettingsPanel(){
   selectCdd('cdd-settings-platform', savedPlatform);
 }
 function useIdea(idea){ document.getElementById('createIdeaInput').value=idea; switchPanel('create'); }
+/* BILLING TOGGLE */
+var billingYearly = false;
+function toggleBilling(yearly){
+  billingYearly = yearly;
+  var monthLabel  = document.getElementById('toggle-monthly-label');
+  var yearLabel   = document.getElementById('toggle-yearly-label');
+  var track       = document.getElementById('billing-track');
+  var knob        = document.getElementById('billing-knob');
+  var proPrice    = document.getElementById('pro-price');
+  var proPeriod   = document.getElementById('pro-period');
+  var teamPrice   = document.getElementById('team-price');
+  var teamPeriod  = document.getElementById('team-period');
+
+  if(yearly){
+    if(monthLabel) monthLabel.classList.remove('active');
+    if(yearLabel)  yearLabel.classList.add('active');
+    if(track) track.style.background = 'var(--accent)';
+    if(knob)  knob.style.transform   = 'translateX(22px)';
+    if(proPrice)  proPrice.textContent  = '$10';
+    if(proPeriod) proPeriod.textContent = 'per year · save 2 months ($12 value)';
+    if(teamPrice)  teamPrice.textContent  = '$45';
+    if(teamPeriod) teamPeriod.textContent = 'per year · up to 5 seats · save 2 months';
+  } else {
+    if(monthLabel) monthLabel.classList.add('active');
+    if(yearLabel)  yearLabel.classList.remove('active');
+    if(track) track.style.background = 'var(--border)';
+    if(knob)  knob.style.transform   = 'translateX(0)';
+    if(proPrice)  proPrice.textContent  = '$1';
+    if(proPeriod) proPeriod.textContent = 'per month · billed monthly';
+    if(teamPrice)  teamPrice.textContent  = '$4.5';
+    if(teamPeriod) teamPeriod.textContent = 'per member/month · up to 5 seats';
+  }
+}
+
+/* PLAN ENFORCEMENT */
+function vrCheckPlan(){
+  var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+  VR.plan = plan;
+
+  /* 2K/4K locked for free users */
+  document.querySelectorAll('#vr-res-grid .vr-option-card').forEach(function(c, i){
+    if(i >= 2){ /* 2K and 4K */
+      if(plan === 'free'){
+        c.classList.add('locked');
+      } else {
+        c.classList.remove('locked');
+      }
+    }
+  });
+
+  /* AI tracking available to all for now — gate later */
+}
+
+/* AI/Content plan check */
+function checkContentPlan(feature){
+  var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+  if(plan === 'free'){
+    if(feature === 'carousel' || feature === 'thread'){
+      openUpgradePopup(
+        'Pro Feature: ' + (feature === 'carousel' ? 'Carousel Generator' : 'Thread Writer'),
+        (feature === 'carousel' ? 'Carousel creation' : 'Twitter/X thread writing') + ' is available on Pro and Team plans. Upgrade for unlimited access to all content formats.'
+      );
+      return false;
+    }
+    if(feature === 'repurpose'){
+      openUpgradePopup('Pro Feature: Content Repurposer', 'The repurposing engine is available on Pro and Team plans. Turn one post into 6 formats with a single click.');
+      return false;
+    }
+  }
+  return true;
+}
+
 function googleAuth(){
   apiCall('GET', '/auth/google')
     .then(function(data){ window.location.href = data.url; })
@@ -1656,7 +1761,7 @@ function switchPanel(name){
   var idx=panelNames.indexOf(name);
   var items=document.querySelectorAll('.sidebar-item');
   if(idx>=0&&items[idx]) items[idx].classList.add('active');
-  if(name==='videoresize') setTimeout(vrInitDrop,50);
+  if(name==='videoresize'){ setTimeout(vrInitDrop,50); vrCheckPlan(); }
   if(name==='settings') loadSettingsPanel();
 }
 
