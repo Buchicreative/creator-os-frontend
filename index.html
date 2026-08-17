@@ -821,10 +821,10 @@ async function callOpenAI(system, user){
 
 /* FALLBACKS */
 var ideasDB = {
-  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit — and how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days — here\'s what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
-  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead — my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
+  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit. Here is how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days. Here is what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
+  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead: my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
   finance:['3 investing mistakes I made so you don\'t have to','How I paid off $20K debt in 18 months on a normal salary','The budget formula that actually works long-term','Why most people never build real wealth','Passive income: real vs hype','The savings habit nobody talks about','How I built a 6-month emergency fund in a year','5 money moves to make in your 20s'],
-  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting — my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
+  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting: my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
 };
 var fallbackTemplates = {
   script:function(i){ return 'HOOK (0-3s):\n"'+i.split(' ').slice(0,6).join(' ')+'... most people get this completely wrong."\n\nBODY (3-30s):\n\u2192 Point 1: The mistake 90% of people make\n\u2192 Point 2: The strategy that actually works\n\u2192 Point 3: The one shift that changes everything\n\nCTA:\n"Follow for more. Save this \u2014 you\'ll need it."'; },
@@ -1221,7 +1221,7 @@ function openInfoPopup(key){
   var data = {
     'about': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">About Creator OS</h2>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p>
-<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We believe great content shouldn't take all day. Our platform brings together everything a creator needs — idea generation, script writing, carousel creation, thread writing, content repurposing, and AI-powered video resizing — all in one place.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We believe great content shouldn't take all day. Our platform brings together everything a creator needs: idea generation, script writing, carousel creation, thread writing, content repurposing, and AI-powered video resizing. All in one place.</p>
 <p style="color:var(--muted);line-height:1.8;">Creator OS is built and maintained by a small team passionate about empowering creators to do more with less effort.</p>`,
     'careers': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Careers</h2>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We're a small, focused team right now — but we're always on the lookout for talented people who are passionate about helping creators grow.</p>
@@ -1263,7 +1263,7 @@ function openInfoPopup(key){
 <p style="font-weight:600;margin-bottom:0.5rem;">Your Content</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Content you create using Creator OS belongs to you. We claim no ownership over your generated content.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Subscriptions & Payments</p>
-<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis — contact us within 7 days of payment.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis. Contact us within 7 days of payment.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Limitation of Liability</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is provided "as is". We are not liable for any indirect or consequential damages arising from your use of the service.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Contact</p>
@@ -2774,7 +2774,7 @@ document.addEventListener('keydown',function(e){
 
       <details class="faq-item">
         <summary>Is there a free plan?</summary>
-        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects — no credit card required.</p>
+        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects. No credit card required.</p>
       </details>
 
       <details class="faq-item">
@@ -2789,7 +2789,7 @@ document.addEventListener('keydown',function(e){
 
       <details class="faq-item">
         <summary>Does it work for any niche?</summary>
-        <p>Yes. Creator OS supports 23 niches out of the box — from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
+        <p>Yes. Creator OS supports 23 niches out of the box: from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
       </details>
 
       <details class="faq-item">
