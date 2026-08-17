@@ -2449,23 +2449,37 @@ async function vrProcess(){
     ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
     try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
 
-    /* STEP 7: Play first, then tap audio, then start recorder */
+    /* STEP 7: Play → tap audio → build merged stream → start recorder */
     progLbl.textContent = 'Converting... 0%';
 
+    /* Must play first so audio stream is active */
     await procVid.play().catch(function(){ throw new Error('Playback blocked. Try Chrome or Edge.'); });
 
-    /* Tap audio from the playing video element — must be after play() */
-    await new Promise(function(r){ requestAnimationFrame(r); }); /* wait 1 frame */
+    /* Wait 3 frames to ensure audio pipeline is fully active */
+    await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); }); });
+
+    /* Build merged stream with audio BEFORE starting recorder */
     try {
-      var vidStream = procVid.captureStream ? procVid.captureStream() : null;
-      if(vidStream){
-        var audioTracks = vidStream.getAudioTracks();
-        if(audioTracks.length > 0){
-          stream.addTrack(audioTracks[0]);
-          console.log('[VR] Audio track captured from video');
-        }
+      var vidStream = procVid.captureStream ? procVid.captureStream() : (procVid.mozCaptureStream ? procVid.mozCaptureStream() : null);
+      if(vidStream && vidStream.getAudioTracks().length > 0){
+        /* Build a fresh MediaStream with canvas video + video audio */
+        var mergedStream = new MediaStream();
+        mergedStream.addTrack(canvas.captureStream(30).getVideoTracks()[0]);
+        mergedStream.addTrack(vidStream.getAudioTracks()[0]);
+        stream = mergedStream;
+        /* Recreate recorder with merged stream */
+        recorder = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: VR.bitrateMap[VR.res]});
+        chunks = [];
+        recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
+        var doneRes2; doneP = new Promise(function(r){ doneRes2 = r; });
+        recorder.onstop = function(){ doneRes2(); };
+        console.log('[VR] Audio track merged — recording with audio');
+      } else {
+        console.log('[VR] No audio track found — video only');
       }
-    } catch(ae){ console.warn('[VR] Audio not captured:', ae.message); }
+    } catch(ae){
+      console.warn('[VR] Audio merge failed:', ae.message, '— continuing video only');
+    }
 
     recorder.start(250);
 
