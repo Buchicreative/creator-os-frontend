@@ -821,10 +821,10 @@ async function callOpenAI(system, user){
 
 /* FALLBACKS */
 var ideasDB = {
-  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit — and how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days — here\'s what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
-  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead — my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
+  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit. Here is how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days. Here is what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
+  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead: my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
   finance:['3 investing mistakes I made so you don\'t have to','How I paid off $20K debt in 18 months on a normal salary','The budget formula that actually works long-term','Why most people never build real wealth','Passive income: real vs hype','The savings habit nobody talks about','How I built a 6-month emergency fund in a year','5 money moves to make in your 20s'],
-  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting — my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
+  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting: my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
 };
 var fallbackTemplates = {
   script:function(i){ return 'HOOK (0-3s):\n"'+i.split(' ').slice(0,6).join(' ')+'... most people get this completely wrong."\n\nBODY (3-30s):\n\u2192 Point 1: The mistake 90% of people make\n\u2192 Point 2: The strategy that actually works\n\u2192 Point 3: The one shift that changes everything\n\nCTA:\n"Follow for more. Save this \u2014 you\'ll need it."'; },
@@ -1203,6 +1203,25 @@ function checkContentPlan(feature){
     }
   }
   return true;
+}
+
+function openInfoPopup(key){
+  var overlay = document.getElementById('info-popup-overlay');
+  var contentEl = document.getElementById('info-popup-content');
+  var data = {
+    about: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">About Creator OS</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We believe great content should not take all day. Our platform brings together everything a creator needs: idea generation, script writing, carousel creation, thread writing, content repurposing, and AI-powered video resizing.</p><p style="color:var(--muted);line-height:1.8;">Creator OS is built by a small team passionate about empowering creators to do more with less effort.</p>',
+    careers: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Careers</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We are a small, focused team right now, but we are always on the lookout for talented people who are passionate about helping creators grow.</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We do not have any open roles at the moment, but if you are an exceptional designer, developer, or content strategist who believes in what we are building, we would still love to hear from you.</p><p style="color:var(--muted);line-height:1.8;">Send your portfolio or CV to <span style="color:var(--accent);">hello@creatoros.io</span></p>',
+    changelog: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2><div style="border-left:2px solid var(--accent);padding-left:1.25rem;margin-bottom:1.5rem;"><div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div><div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">✦ Initial launch of Creator OS<br>✦ AI idea generation, script writing, captions and threads<br>✦ Carousel creator and content repurposing engine<br>✦ Video resizer with AI face tracking<br>✦ Google OAuth and email authentication<br>✦ Pro and Team subscription plans via Paystack<br>✦ Projects workspace with unlimited storage on Pro<br>✦ Settings panel with 23 content niches</div></div><p style="color:var(--muted);font-size:0.85rem;">More updates coming soon.</p>',
+    privacy: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Privacy Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is committed to protecting your privacy. This policy explains how we collect, use, and protect your information.</p><p style="font-weight:600;margin-bottom:0.5rem;">Information We Collect</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We collect your name, email address, and content preferences when you create an account. We also store content you generate and save as projects.</p><p style="font-weight:600;margin-bottom:0.5rem;">How We Use Your Information</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use your information to provide and improve Creator OS, process payments, and send account-related emails. We do not sell your personal data to third parties.</p><p style="font-weight:600;margin-bottom:0.5rem;">Data Security</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Your data is stored securely on encrypted servers. Passwords are hashed and never stored in plain text.</p><p style="font-weight:600;margin-bottom:0.5rem;">Your Rights</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">You may request deletion of your account and all associated data at any time by contacting us.</p><p style="font-weight:600;margin-bottom:0.5rem;">Contact</p><p style="color:var(--muted);line-height:1.8;">For privacy concerns: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
+    terms: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Terms of Service</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">By using Creator OS, you agree to these terms.</p><p style="font-weight:600;margin-bottom:0.5rem;">Use of Service</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is provided for lawful content creation purposes only. You may not use the platform to generate spam, misleading content, or material that infringes on third-party rights.</p><p style="font-weight:600;margin-bottom:0.5rem;">Your Content</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Content you create using Creator OS belongs to you. We claim no ownership over your generated content.</p><p style="font-weight:600;margin-bottom:0.5rem;">Subscriptions and Payments</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis. Contact us within 48 hours of payment.</p><p style="font-weight:600;margin-bottom:0.5rem;">Contact</p><p style="color:var(--muted);line-height:1.8;"><span style="color:var(--accent);">hello@creatoros.io</span></p>',
+    cookies: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Cookie Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS uses minimal browser storage to provide a better experience.</p><p style="font-weight:600;margin-bottom:0.5rem;">What We Store</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use localStorage to store your authentication token, user preferences, and settings locally on your device. This is essential for keeping you logged in and remembering your settings.</p><p style="font-weight:600;margin-bottom:0.5rem;">Third-Party Services</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use trusted external services for authentication, payments, and typography. These services may set their own cookies as described in their respective privacy policies.</p><p style="font-weight:600;margin-bottom:0.5rem;">Your Control</p><p style="color:var(--muted);line-height:1.8;">You can clear all stored data by logging out or clearing your browser local storage.</p>'
+  };
+  if(contentEl && data[key]) contentEl.innerHTML = data[key];
+  if(overlay) overlay.style.display = 'flex';
+}
+function closeInfoPopup(){
+  var overlay = document.getElementById('info-popup-overlay');
+  if(overlay) overlay.style.display = 'none';
 }
 
 function googleAuth(){
@@ -2693,7 +2712,7 @@ document.addEventListener('keydown',function(e){
 
       <details class="faq-item">
         <summary>Is there a free plan?</summary>
-        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects — no credit card required.</p>
+        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects. No credit card required.</p>
       </details>
 
       <details class="faq-item">
@@ -2708,7 +2727,7 @@ document.addEventListener('keydown',function(e){
 
       <details class="faq-item">
         <summary>Does it work for any niche?</summary>
-        <p>Yes. Creator OS supports 23 niches out of the box — from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
+        <p>Yes. Creator OS supports 23 niches out of the box: from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
       </details>
 
       <details class="faq-item">
@@ -2746,14 +2765,22 @@ document.addEventListener('keydown',function(e){
   <div class="footer-grid">
     <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Creator OS</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
     <div class="footer-col"><h4>Product</h4><ul><li><a href="#">Idea Generator</a></li><li><a href="#">Script Writer</a></li><li><a href="#">Carousel Creator</a></li><li><a href="#">Repurposer</a></li><li><a href="#">Video Resizer</a></li></ul></div>
-    <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Changelog</a></li></ul></div>
-    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a onclick="openInfoPopup('about')" style="cursor:pointer;">About</a></li><li><a onclick="openInfoPopup('careers')" style="cursor:pointer;">Careers</a></li><li><a onclick="openInfoPopup('changelog')" style="cursor:pointer;">Changelog</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a onclick="openInfoPopup('privacy')" style="cursor:pointer;">Privacy Policy</a></li><li><a onclick="openInfoPopup('terms')" style="cursor:pointer;">Terms of Service</a></li><li><a onclick="openInfoPopup('cookies')" style="cursor:pointer;">Cookie Policy</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <p>&#169; 2025 Creator OS. All rights reserved.</p>
     <p>Made for creators who mean business.</p>
   </div>
 </footer>
+
+<!-- INFO POPUP -->
+<div id="info-popup-overlay" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;position:relative;">
+    <button onclick="closeInfoPopup()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;">&#x2715;</button>
+    <div id="info-popup-content"></div>
+  </div>
+</div>
 
 <!-- UPGRADE POPUP -->
 
