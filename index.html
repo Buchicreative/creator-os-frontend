@@ -2365,7 +2365,7 @@ document.addEventListener('keydown',function(e){
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
       <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
-      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
+      <h1 id="hero-greeting" style="min-height:1.2em;"><span id="hero-username"></span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
         <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
