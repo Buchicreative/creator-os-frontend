@@ -1574,6 +1574,14 @@ async function doLogin(){
     closeModal('loginModal');
     showToast('Welcome back, ' + (data.user.name || data.user.email) + '!');
     loadProjects();
+    /* Scroll to dashboard after short delay so modal closes first */
+    setTimeout(function(){
+      var el = document.getElementById('app-section');
+      if(el){
+        var navH = document.getElementById('navbar').offsetHeight;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
+      }
+    }, 350);
   } catch(e){
     showToast(e.message || 'Login failed. Please try again.');
   } finally { btn.textContent = 'Log In →'; btn.disabled = false; }
@@ -1595,6 +1603,14 @@ async function doSignup(){
     closeModal('signupModal');
     showToast('Welcome to Creator OS, ' + data.user.name + '!');
     loadProjects();
+    /* Scroll to dashboard after short delay */
+    setTimeout(function(){
+      var el = document.getElementById('app-section');
+      if(el){
+        var navH = document.getElementById('navbar').offsetHeight;
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior: 'smooth' });
+      }
+    }, 350);
   } catch(e){
     showToast(e.message);
   } finally { btn.textContent = 'Create Free Account →'; btn.disabled = false; }
