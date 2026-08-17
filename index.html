@@ -500,7 +500,14 @@ function startCheckout(planCode){
     try {
       var _t = localStorage.getItem('cos_token');
       var _u = JSON.parse(localStorage.getItem('cos_user') || 'null');
-      if(_t && _u){
+      /* Also check URL hash for OAuth callback token */
+      if(!_t && window.location.hash && window.location.hash.indexOf('access_token') >= 0){
+        var _h = window.location.hash.replace('#','').split('&');
+        for(var _i=0;_i<_h.length;_i++){
+          if(_h[_i].indexOf('access_token=')===0){ _t = decodeURIComponent(_h[_i].split('=')[1]); break; }
+        }
+      }
+      if(_t && _u || _t && window.location.hash.indexOf('access_token') >= 0){
         document.documentElement.classList.add('is-logged-in');
         document.documentElement.classList.remove('is-logged-out');
       } else {
