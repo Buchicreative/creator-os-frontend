@@ -470,19 +470,6 @@ function startCheckout(planCode){
 .toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
 .billing-save{background:rgba(92,240,208,0.15);color:var(--accent3);border:1px solid rgba(92,240,208,0.35);font-size:0.65rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:50px;margin-left:0.25rem;}
 
-/* Hide CTA section for logged-in users */
-html.is-logged-in #cta-section { display: none !important; }
-
-/* FAQ */
-.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.2s;}
-.faq-item:hover{border-color:rgba(124,92,252,0.3);}
-.faq-item[open]{border-color:rgba(124,92,252,0.4);}
-.faq-item summary{padding:1.25rem 1.5rem;font-weight:600;font-size:0.95rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--text);}
-.faq-item summary::-webkit-details-marker{display:none;}
-.faq-item summary::after{content:'+';font-size:1.3rem;color:var(--accent);font-weight:300;transition:transform 0.2s;flex-shrink:0;}
-.faq-item[open] summary::after{content:'-';}
-.faq-item p{padding:0 1.5rem 1.25rem;color:var(--muted);font-size:0.88rem;line-height:1.7;margin:0;}
-
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -533,7 +520,566 @@ html.is-logged-in #cta-section { display: none !important; }
   </script>
 </head>
 <body>
-<div class="upgrade-popup-overlay" id="upgradePopup" style="display:none;">
+
+<div class="blobs"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">&#x2715;</button>
+    <h2>Welcome back</h2>
+    <p class="modal-sub">Log in to your Creator OS account</p>
+    <button class="btn-google" onclick="googleAuth()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <div class="modal-divider">or continue with email</div>
+    <div class="form-group"><label>Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="li-password" class="form-input" placeholder="Your password">
+        <button type="button" class="pw-toggle" onclick="pwToggle('li-password',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="modal-btn" onclick="doLogin()">Log In &#x2192;</button>
+    <div style="text-align:center;margin-top:0.6rem;">
+      <a onclick="doForgotPassword()" style="font-size:0.8rem;color:var(--muted);cursor:pointer;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Forgot your password?</a>
+    </div>
+    <div class="modal-switch">No account? <a onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('signupModal')">&#x2715;</button>
+    <h2>Create account</h2>
+    <p class="modal-sub">Start creating content in minutes, free forever</p>
+    <button class="btn-google" onclick="googleAuth()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Sign up with Google
+    </button>
+    <div class="modal-divider">or sign up with email</div>
+    <div class="form-group"><label>Full Name</label><input type="text" id="su-name" class="form-input" placeholder="Your name"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="su-email" class="form-input" placeholder="you@example.com"></div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="su-password" class="form-input" placeholder="Min. 8 characters" oninput="pwStrength(this,'su-strength-bar','su-hint')">
+        <button type="button" class="pw-toggle" onclick="pwToggle('su-password',this)" tabindex="-1">
+          <svg id="su-eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="pw-strength"><div class="pw-strength-bar" id="su-strength-bar"></div></div>
+      <div class="pw-hint" id="su-hint"></div>
+    </div>
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="su-confirm" class="form-input" placeholder="Re-enter your password" oninput="pwConfirmCheck(this,'su-password','su-confirm-hint')">
+        <button type="button" class="pw-toggle" onclick="pwToggle('su-confirm',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="pw-hint" id="su-confirm-hint"></div>
+    </div>
+    <button class="modal-btn" onclick="doSignup()">Create Free Account &#x2192;</button>
+    <div class="modal-switch">Have an account? <a onclick="switchModal('signupModal','loginModal')">Log in</a></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Creator OS</a>
+  <ul class="nav-links">
+    <li><a onclick="navScrollTo(event,'how')">How it Works</a></li>
+    <li><a onclick="navScrollTo(event,'features')">Features</a></li>
+    <li><a onclick="navScrollTo(event,'pricing')">Pricing</a></li>
+    <li><a onclick="navScrollTo(event,'testimonials')">Reviews</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button id="nav-login-btn" class="btn-ghost" onclick="openModal('loginModal')">Log In</button>
+    <button id="nav-signup-btn" class="btn-primary" onclick="openModal('signupModal')">Start Free &#x2192;</button>
+    <span id="nav-user-name" style="display:none;color:var(--text);font-size:0.875rem;font-weight:500;"></span>
+    <button id="nav-logout-btn" style="display:none;" class="btn-ghost" onclick="doLogout()">Log Out</button>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMenu()">&#x2715;</button>
+
+  <!-- Logged in: show user name -->
+  <div id="mob-user-name" style="display:none;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;"></div>
+
+  <a onclick="toggleMenu();navScrollTo(event,'how')">How it Works</a>
+  <a onclick="toggleMenu();navScrollTo(event,'features')">Features</a>
+  <a onclick="toggleMenu();navScrollTo(event,'pricing')">Pricing</a>
+  <a onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
+
+  <!-- Logged out buttons -->
+  <div id="mob-loggedout-btns" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
+    <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('signupModal')">Start Creating Free &#x2192;</button>
+    <button class="btn-hero-ghost" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('loginModal')">Log In</button>
+  </div>
+
+  <!-- Logged in buttons -->
+  <div id="mob-loggedin-btns" style="display:none;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
+    <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();navScrollTo(event,'app-section')">Go to Dashboard &#x2192;</button>
+    <button class="btn-hero-ghost" style="width:80%;justify-content:center;border-color:rgba(252,92,125,0.3);color:var(--accent2);" onclick="toggleMenu();doLogout()">Log Out</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+
+    <!-- LOGGED OUT STATE -->
+    <div id="hero-loggedout" style="display:none;">
+      <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System, Now Live</div>
+      <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
+      <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content. All powered by AI.</p>
+      <div class="hero-actions">
+        <button class="btn-hero" onclick="openModal('signupModal')">Start Creating Free &#x2192;</button>
+        <a href="javascript:void(0)" onclick="navScrollTo(event,'how')" class="btn-hero-ghost">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          See How It Works
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">50K+</div><div class="stat-label">Creators</div></div>
+        <div class="stat"><div class="stat-num">2M+</div><div class="stat-label">Pieces Generated</div></div>
+        <div class="stat"><div class="stat-num">&lt;5min</div><div class="stat-label">Idea to Content</div></div>
+      </div>
+    </div>
+
+    <!-- LOGGED IN STATE -->
+    <div id="hero-loggedin" style="display:none;">
+      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
+      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
+      <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
+      <div class="hero-actions">
+        <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Go to Dashboard
+        </button>
+        <button class="btn-hero-ghost" onclick="navScrollTo(event,'how')">See How It Works</button>
+      </div>
+      <!-- Quick stats for logged in user -->
+      <div class="hero-stats" id="hero-user-stats">
+        <div class="stat"><div class="stat-num" id="stat-projects">0</div><div class="stat-label">My Projects</div></div>
+        <div class="stat"><div class="stat-num" id="stat-plan">Free</div><div class="stat-label">Current Plan</div></div>
+        <div class="stat"><div class="stat-num">&#x221E;</div><div class="stat-label">Ideas Available</div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- APP PREVIEW -->
+<section id="app-section" style="padding-top:0;padding-bottom:4rem;">
+  <div class="container">
+    <div class="app-preview reveal">
+      <div class="app-bar">
+        <div class="app-dots"><span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span></div>
+        <div class="app-url">app.creatorOS.io/dashboard</div>
+      </div>
+      <div class="app-body">
+        <!-- SIDEBAR -->
+        <div class="app-sidebar">
+          <div class="sidebar-logo">Creator OS</div>
+          <div class="sidebar-item active" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+          <div class="sidebar-item" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>Ideas</div>
+          <div class="sidebar-item" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Create</div>
+          <div class="sidebar-item" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repurpose</div>
+          <div class="sidebar-item" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Projects</div>
+          <div class="sidebar-item" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg>Video Resize</div>
+          <div class="sidebar-item" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
+        </div>
+        <!-- PANELS -->
+        <div class="app-main">
+
+          <!-- DASHBOARD -->
+          <div class="app-panel active" id="panel-dashboard">
+            <div class="app-greeting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span id="greeting-text">Good morning, Creator</span></div>
+            <div class="app-sub-text">Here's your content workspace for today</div>
+            <div class="quick-actions">
+              <div class="qa-btn" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg><div class="qa-label">Generate Ideas</div></div>
+              <div class="qa-btn" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div class="qa-label">Create Content</div></div>
+              <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
+            </div>
+            <div class="trending-label">Trending Ideas</div>
+            <div class="idea-item" onclick="useIdea('5 mistakes new creators make in their first 90 days')"><span class="idea-dot"></span>5 mistakes new creators make in their first 90 days<span class="idea-tag">Script</span></div>
+            <div class="idea-item" onclick="useIdea('How I went from 0 to 10K followers in 90 days')"><span class="idea-dot"></span>How I went from 0 to 10K followers in 90 days<span class="idea-tag">Carousel</span></div>
+            <div class="idea-item" onclick="useIdea('The truth about passive income nobody talks about')"><span class="idea-dot"></span>The truth about passive income nobody talks about<span class="idea-tag">Thread</span></div>
+          </div>
+
+          <!-- IDEAS -->
+          <div class="app-panel" id="panel-ideas">
+            <div class="panel-title">Idea Generator</div>
+            <div class="input-row">
+              <input id="nicheInput" class="app-input" placeholder="Your niche (fitness, design, finance...)">
+              <div class="cdd" id="cdd-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
+              <button class="app-btn-sm" id="ideas-btn" onclick="generateIdeas()">Generate</button>
+            </div>
+            <div class="ai-loading" id="ideas-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Generating ideas...</div>
+            <div id="ideasOutput" class="output-box" style="min-height:180px;"><div class="out-label">Your Ideas</div><div style="color:var(--muted);font-size:0.8rem;">Enter your niche, choose a platform, and click Generate.</div></div>
+          </div>
+
+          <!-- CREATE -->
+          <div class="app-panel" id="panel-create">
+            <div class="panel-title">Content Creator</div>
+            <div class="format-tabs">
+              <div class="format-tab active" onclick="selectTab(this,'script')">Script</div>
+              <div class="format-tab" onclick="selectTab(this,'carousel')">Carousel</div>
+              <div class="format-tab" onclick="selectTab(this,'caption')">Caption</div>
+              <div class="format-tab" onclick="selectTab(this,'thread')">Thread</div>
+            </div>
+            <div class="input-row">
+              <input id="createIdeaInput" class="app-input" placeholder="Paste or type your content idea...">
+              <div class="cdd" id="cdd-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-tone')"><span id="cdd-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Conversational')">Conversational</div></div></div>
+              <button class="app-btn-sm" id="create-btn" onclick="generateContent()">Generate</button>
+            </div>
+            <div class="ai-loading" id="create-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Writing your content...</div>
+            <div id="createOutput" class="output-box" style="min-height:140px;"><div class="out-label" id="createOutputLabel">Script Output</div><div style="color:var(--muted);font-size:0.8rem;">Choose a format, enter an idea, pick a tone, and click Generate.</div></div>
+            <div class="output-actions" id="create-actions" style="display:none;">
+              <button class="copy-btn" onclick="copyOutput('createOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
+              <button class="save-btn" onclick="saveToProjects('createOutput','createIdeaInput')"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
+            </div>
+          </div>
+
+          <!-- REPURPOSE -->
+          <div class="app-panel" id="panel-repurpose">
+            <div class="panel-title">Content Repurposer</div>
+            <textarea id="repurposeInput" class="app-input" style="width:100%;resize:vertical;min-height:80px;margin-bottom:0.6rem;" placeholder="Paste your existing content here..."></textarea>
+            <div class="row-gap">
+              <div class="cdd" id="cdd-repurpose-target" style="flex:1;"><div class="cdd-trigger" onclick="toggleCdd('cdd-repurpose-target')" style="width:100%;"><span id="cdd-repurpose-target-val">Twitter / X Thread</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-repurpose-target-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-repurpose-target','Twitter / X Thread')">Twitter / X Thread</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','LinkedIn Post')">LinkedIn Post</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Instagram Caption')">Instagram Caption</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Reel Script')">Reel Script</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','YouTube Description')">YouTube Description</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Email Newsletter')">Email Newsletter</div></div></div>
+              <button class="app-btn-sm" id="repurpose-btn" onclick="repurposeContent()">Repurpose</button>
+            </div>
+            <div class="ai-loading" id="repurpose-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Repurposing...</div>
+            <div id="repurposeOutput" class="output-box" style="min-height:110px;"><div class="out-label">Repurposed Output</div><div style="color:var(--muted);font-size:0.8rem;">Paste content, pick a target format, then click Repurpose.</div></div>
+            <div class="output-actions" id="repurpose-actions" style="display:none;"><button class="copy-btn" onclick="copyOutput('repurposeOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button></div>
+          </div>
+
+          <!-- PROJECTS -->
+          <div class="app-panel" id="panel-projects">
+            <div class="panel-title">Saved Projects</div>
+            <div id="projects-list"><div class="empty-state" id="projects-empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>No saved projects yet.<br>Create content and save it here.</div></div>
+          </div>
+
+          <!-- VIDEO RESIZE -->
+          <div class="app-panel" id="panel-videoresize">
+            <div class="panel-title">Video Auto Resize</div>
+            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
+            <div class="vr-upload-zone" id="vr-upload-zone">
+              <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
+              <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+              <p>Drag &amp; drop your landscape video here</p>
+              <span>or click to browse. MP4, MOV, WebM supported</span>
+            </div>
+            <div class="vr-meta" id="vr-meta" style="display:none;">
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/></svg><strong id="vr-fname">—</strong></div>
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Duration: <strong id="vr-dur">—</strong></div>
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><strong id="vr-dim">—</strong></div>
+              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><strong id="vr-size">—</strong></div>
+            </div>
+            <div id="vr-options-wrap" style="display:none;">
+              <div class="settings-label" style="margin-bottom:0.45rem;">Output Format</div>
+              <div class="vr-options-grid" id="vr-format-grid">
+                <div class="vr-option-card selected" onclick="vrSelectFormat(this,'9:16')"><div class="vr-opt-title">9:16 Portrait</div><div class="vr-opt-desc">Reels, TikTok, Shorts</div></div>
+                <div class="vr-option-card" onclick="vrSelectFormat(this,'1:1')"><div class="vr-opt-title">1:1 Square</div><div class="vr-opt-desc">Instagram, Facebook</div></div>
+                <div class="vr-option-card" onclick="vrSelectFormat(this,'4:5')"><div class="vr-opt-title">4:5 Portrait</div><div class="vr-opt-desc">Instagram Feed</div></div>
+                <div class="vr-option-card" onclick="vrSelectFormat(this,'16:9')"><div class="vr-opt-title">16:9 Landscape</div><div class="vr-opt-desc">YouTube, Twitter</div></div>
+              </div>
+              <div class="settings-label" style="margin-top:0.65rem;margin-bottom:0.45rem;">Output Resolution</div>
+              <div class="vr-options-grid" id="vr-res-grid">
+                <div class="vr-option-card selected" onclick="vrSelectRes(this,'720p')"><div class="vr-opt-title">720p HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
+                <div class="vr-option-card" onclick="vrSelectRes(this,'1080p')"><div class="vr-opt-title">1080p Full HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
+                <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
+                <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
+                <div>
+                  <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.1rem;">AI Face Tracking</div>
+                  <div id="vr-face-badge" style="font-size:0.72rem;color:var(--muted);background:none;border:none;padding:0;">Best for single-subject videos. For podcasts, tracking follows the most visible face</div>
+                </div>
+                <!-- Toggle switch -->
+                <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex-shrink:0;">
+                  <input type="checkbox" id="vr-tracking-toggle" style="opacity:0;width:0;height:0;position:absolute;" onchange="vrToggleTracking(this.checked)">
+                  <span id="vr-toggle-track" style="position:absolute;inset:0;background:var(--border);border-radius:24px;transition:background 0.25s;"></span>
+                  <span id="vr-toggle-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></span>
+                </label>
+              </div>
+              <div class="vr-preview-wrap" id="vr-preview-wrap">
+                <div class="settings-label" style="margin-bottom:0.45rem;">Preview</div>
+                <div class="vr-canvases">
+                  <div class="vr-canvas-box"><label>Original</label><canvas id="vr-canvas-orig" width="200" height="112"></canvas></div>
+                  <div class="vr-canvas-box"><label id="vr-canvas-out-label">Output (9:16)</label><canvas id="vr-canvas-out" width="63" height="112"></canvas></div>
+                </div>
+              </div>
+              <div class="vr-progress-wrap" id="vr-progress-wrap"><div class="vr-progress-bar-bg"><div class="vr-progress-bar" id="vr-progress-bar"></div></div><div class="vr-progress-label" id="vr-progress-label"></div></div>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.65rem;">
+                <button class="app-btn-sm" id="vr-process-btn" onclick="vrProcess()">Convert Video</button>
+                <button class="app-btn-sm" id="vr-download-btn" style="display:none;background:linear-gradient(135deg,var(--accent3),#3abf96);" onclick="vrDownload()">Download</button>
+                <button class="copy-btn" onclick="vrReset()" style="margin-top:0;"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg> Reset</button>
+              </div>
+            </div>
+            <div id="vr-video-container"></div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div class="app-panel" id="panel-settings">
+            <div class="panel-title">Profile &amp; Settings</div>
+
+            <!-- Display Name -->
+            <div class="settings-row">
+              <label class="settings-label">Display Name</label>
+              <div style="display:flex;gap:0.5rem;">
+                <input id="settings-name" class="app-input" style="flex:1;" placeholder="Your display name" value="">
+              </div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">This is how your name appears on the homepage greeting.</div>
+            </div>
+
+            <!-- Niche -->
+            <div class="settings-row">
+              <label class="settings-label">Your Niche</label>
+              <div class="cdd" id="cdd-settings-niche">
+                <div class="cdd-trigger" onclick="toggleCdd('cdd-settings-niche')" style="width:100%;"><span id="cdd-settings-niche-val">Designer</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                <div class="cdd-menu" id="cdd-settings-niche-menu">
+                  <div class="cdd-option selected" onclick="selectNiche('Designer')">Designer</div>
+                  <div class="cdd-option" onclick="selectNiche('Coach')">Coach</div>
+                  <div class="cdd-option" onclick="selectNiche('Business Owner')">Business Owner</div>
+                  <div class="cdd-option" onclick="selectNiche('Content Creator')">Content Creator</div>
+                  <div class="cdd-option" onclick="selectNiche('Fitness')">Fitness</div>
+                  <div class="cdd-option" onclick="selectNiche('Finance')">Finance</div>
+                  <div class="cdd-option" onclick="selectNiche('Tech')">Tech</div>
+                  <div class="cdd-option" onclick="selectNiche('Photography')">Photography</div>
+                  <div class="cdd-option" onclick="selectNiche('Real Estate')">Real Estate</div>
+                  <div class="cdd-option" onclick="selectNiche('Food &amp; Cooking')">Food &amp; Cooking</div>
+                  <div class="cdd-option" onclick="selectNiche('Travel')">Travel</div>
+                  <div class="cdd-option" onclick="selectNiche('Fashion &amp; Style')">Fashion &amp; Style</div>
+                  <div class="cdd-option" onclick="selectNiche('Beauty &amp; Skincare')">Beauty &amp; Skincare</div>
+                  <div class="cdd-option" onclick="selectNiche('Music')">Music</div>
+                  <div class="cdd-option" onclick="selectNiche('Education')">Education</div>
+                  <div class="cdd-option" onclick="selectNiche('Parenting')">Parenting</div>
+                  <div class="cdd-option" onclick="selectNiche('Health &amp; Wellness')">Health &amp; Wellness</div>
+                  <div class="cdd-option" onclick="selectNiche('Spirituality')">Spirituality</div>
+                  <div class="cdd-option" onclick="selectNiche('Gaming')">Gaming</div>
+                  <div class="cdd-option" onclick="selectNiche('Sports')">Sports</div>
+                  <div class="cdd-option" onclick="selectNiche('Crypto &amp; Web3')">Crypto &amp; Web3</div>
+                  <div class="cdd-option" onclick="selectNiche('Marketing')">Marketing</div>
+                  <div class="cdd-option" onclick="selectNiche('Law &amp; Legal')">Law &amp; Legal</div>
+                  <div class="cdd-option" onclick="selectNiche('Others')">Others (type yours below)</div>
+                </div>
+              </div>
+              <!-- Custom niche input — shows when "Others" is selected -->
+              <div id="custom-niche-wrap" style="display:none;margin-top:0.45rem;">
+                <input id="custom-niche-input" class="app-input" placeholder="Type your niche e.g. Pottery, Astrology, Architecture..." style="width:100%;">
+              </div>
+            </div>
+
+            <!-- Tone -->
+            <div class="settings-row"><label class="settings-label">Content Tone</label><div class="cdd" id="cdd-settings-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-tone')" style="width:100%;"><span id="cdd-settings-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Conversational')">Conversational</div></div></div></div>
+
+            <!-- Platform -->
+            <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','YouTube')">YouTube</div></div></div></div>
+
+            <button class="app-btn-sm" style="width:100%;margin-top:0.5rem;" onclick="saveSettings()">Save Settings</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">The Process</span>
+      <h2 class="section-title">From Idea to Published<br>in 3 Simple Steps</h2>
+      <p class="section-desc">No more staring at blank screens. Creator OS handles the heavy lifting so you can focus on your audience.</p>
+    </div>
+    <div class="how-steps">
+      <div class="step-card reveal"><span class="step-num">01</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Get AI-Powered Ideas</h3><p>Tell us your niche and platform. We generate 8 scroll-stopping, curiosity-driven ideas tailored to you instantly.</p></div>
+      <div class="step-card reveal"><span class="step-num">02</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>Generate Content</h3><p>Pick an idea, choose your format: script, carousel, caption, or thread. AI writes it in your tone in seconds.</p></div>
+      <div class="step-card reveal"><span class="step-num">03</span><div class="step-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" style="stroke:var(--accent3)"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Repurpose Everywhere</h3><p>Turn one piece of content into a thread, reel script, carousel, LinkedIn post, and email. Maximum reach, minimum effort.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">Capabilities</span>
+      <h2 class="section-title">Everything You Need<br>to Create Consistently</h2>
+      <p class="section-desc">Built for creators who are serious about growing their audience without burning out.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Idea Engine</h3><p>Never run out of content ideas. AI generates niche-specific, platform-optimized ideas that actually perform.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Script Generator</h3><p>Hook. Body. CTA. Full short-form video scripts written for maximum retention on any platform.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" stroke="var(--accent3)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div><h3>Carousel Creator</h3><p>7-slide Instagram carousels with punchy copy, structured to educate, get saved, and drive follows.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(254,188,46,0.1);"><svg viewBox="0 0 24 24" stroke="#febc2e"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Content Repurposer</h3><p>Paste any content. Get a Twitter thread, LinkedIn post, caption, reel script, and email newsletter back.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><h3>Content Workspace</h3><p>Save all your drafts and projects in one organized space. Never lose a piece of content again.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg></div><h3>Video Resizer</h3><p>Convert 16:9 landscape videos to 9:16, 1:1, or 4:5 for Reels, TikTok, and Shorts automatically.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section>
+  <div class="container">
+    <div class="workflows">
+      <div class="workflow-text reveal">
+        <span class="section-tag">Your Workflow</span>
+        <h2>Built for the Creator<br>Who Won't Slow Down</h2>
+        <p>Creator OS is more than a tool. It's a daily habit. Log in, generate, create, publish. Repeat.</p>
+        <ul class="workflow-list">
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Personalized to your niche and tone</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile. Create anywhere, anytime</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Save, edit, copy and export in one click</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by the latest GPT-4o AI model</li>
+        </ul>
+      </div>
+      <div class="workflow-visual reveal">
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div><div class="flow-step-text"><h4>Pick a Niche &amp; Topic</h4><p>Designer · Coach · Business · Creator</p></div></div>
+        <div class="flow-arrow">&#x2193;</div>
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" stroke="var(--accent3)"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="flow-step-text"><h4>AI Generates Ideas</h4><p>8 curated, platform-specific ideas</p></div></div>
+        <div class="flow-arrow">&#x2193;</div>
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="flow-step-text"><h4>Choose Format &amp; Generate</h4><p>Script · Carousel · Caption · Thread</p></div></div>
+        <div class="flow-arrow">&#x2193;</div>
+        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(254,188,46,0.1);"><svg viewBox="0 0 24 24" stroke="#febc2e"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div><div class="flow-step-text"><h4>Copy, Save &amp; Publish</h4><p>Export or save to workspace</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" style="background:var(--surface);">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">Social Proof</span>
+      <h2 class="section-title">Creators Are Already Winning</h2>
+      <p class="section-desc">Join thousands of creators who've replaced hours of planning with minutes of creation.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"I used to spend 3 hours planning content for the week. Now I do it in 20 minutes. Absolutely game-changing for my business."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(124,92,252,0.2);color:var(--accent);">AK</div><div><div class="testi-name">Amara K.</div><div class="testi-role">Business Coach · 42K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The repurposing feature alone is worth every cent. I turn one video idea into 5 pieces of content. My engagement tripled."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(92,240,208,0.15);color:var(--accent3);">DO</div><div><div class="testi-name">David O.</div><div class="testi-role">Designer &amp; Creator · 18K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The AI actually sounds like me. I set my tone to bold and educational, and every script it writes just hits."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(252,92,125,0.15);color:var(--accent2);">SR</div><div><div class="testi-name">Sofia R.</div><div class="testi-role">Content Creator · 87K followers</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="center">
+      <span class="section-tag">Pricing</span>
+      <h2 class="section-title">Simple, Creator-First Pricing</h2>
+      <p class="section-desc">Start free, no card needed. Upgrade when you're ready to go unlimited.</p>
+    </div>
+
+    <!-- Billing toggle -->
+    <div class="billing-toggle">
+      <span id="toggle-monthly-label" class="active">Monthly</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="billing-toggle-input" onchange="toggleBilling(this.checked)">
+        <span class="toggle-track" id="billing-track"></span>
+        <span class="toggle-knob" id="billing-knob"></span>
+      </label>
+      <span id="toggle-yearly-label">Yearly <span class="billing-save">2 months free</span></span>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- FREE -->
+      <div class="price-card reveal">
+        <div class="price-name">Free</div>
+        <div class="price-amount">$0</div>
+        <div class="price-period">forever free · no card needed</div>
+        <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 idea generations/day</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 3 content pieces/day</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts &amp; Captions</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize up to 3 mins</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save up to 10 projects</li>
+          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Carousel generator</li>
+          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Repurposing engine</li>
+        </ul>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Get Started Free</button>
+      </div>
+
+      <!-- PRO -->
+      <div class="price-card featured reveal">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount" id="pro-price" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$1</div>
+        <div class="price-period" id="pro-period">per month · billed monthly</div>
+        <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited idea generation</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts, Captions &amp; Carousels</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full repurposing engine</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resize + 2K/4K</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> AI face tracking</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
+        </ul>
+        <button class="btn-hero" id="pro-upgrade-btn" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'pro_yearly':'pro_monthly')">Upgrade to Pro &#x2192;</button>
+      </div>
+
+      <!-- TEAM -->
+      <div class="price-card reveal">
+        <div class="price-name">Team</div>
+        <div class="price-amount" id="team-price">$4.5</div>
+        <div class="price-period" id="team-period">per member/month · up to 5 seats</div>
+        <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Up to 5 team members</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Each member gets full Pro access</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Shared projects workspace</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Team brand voice settings</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
+        </ul>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Start Team Plan &#x2192;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div style="position:relative;z-index:1;">
+    <span class="section-tag">Ready?</span>
+    <h2>Start Creating.<br><span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Stop Overthinking.</span></h2>
+    <p>Join 50,000+ creators who wake up knowing exactly what to post.</p>
+    <button class="btn-hero" onclick="openModal('signupModal')">Get Started For Free &#x2192;</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Creator OS</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
+    <div class="footer-col"><h4>Product</h4><ul><li><a href="#">Idea Generator</a></li><li><a href="#">Script Writer</a></li><li><a href="#">Carousel Creator</a></li><li><a href="#">Repurposer</a></li><li><a href="#">Video Resizer</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Changelog</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>&#169; 2025 Creator OS. All rights reserved.</p>
+    <p>Made for creators who mean business.</p>
+  </div>
+</footer>
+
+<!-- UPGRADE POPUP -->
+<div class="upgrade-popup-overlay" id="upgradePopup">
   <div class="upgrade-popup">
     <button class="upgrade-popup-close" onclick="closeUpgradePopup()">&#x2715;</button>
     <div class="upgrade-popup-icon">
@@ -542,14 +1088,14 @@ html.is-logged-in #cta-section { display: none !important; }
     <h3 id="upgrade-popup-title">Pro Feature</h3>
     <p id="upgrade-popup-desc">AI Face Tracking is only available on the Pro and Team plans. Upgrade to keep your subject perfectly in frame, every single shot.</p>
     <ul class="upgrade-popup-features">
-      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Server-side AI face detection</li>
+      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> MediaPipe AI face detection</li>
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Smooth subject tracking every frame</li>
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resizing</li>
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 2K and 4K output resolution</li>
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI content generation</li>
     </ul>
     <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.85rem;" onclick="goUpgrade()">Upgrade to Pro &#x2192;</button>
-    <div style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);">Starting at &#8358;1,600/month. Cancel anytime.</div>
+    <div style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);">Starting at $19/month. Cancel anytime.</div>
   </div>
 </div>
 
@@ -821,10 +1367,10 @@ async function callOpenAI(system, user){
 
 /* FALLBACKS */
 var ideasDB = {
-  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit. Here is how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days. Here is what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
-  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead: my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
+  fitness:['5 morning habits that changed my physique in 60 days','Why most gym beginners quit — and how to break the cycle','The 20-minute workout that replaced my 1-hour routine','What nobody tells you about building muscle after 30','I tracked my macros for 90 days — here\'s what happened','The diet myth that kept me stuck for years','3 signs you\'re overtraining (and what to do)','How I lost 10kg without giving up my favourite foods'],
+  design:['5 Figma tricks that save me 2 hours every week','Why your portfolio is getting ignored (and how to fix it)','The color palette formula used by top brands','From freelance to design lead — my 3-year journey','The one design principle that changed how I work','Why most designers undercharge (and the fix)','How to present work so clients say yes first time','Fonts that print money: a designer\'s honest guide'],
   finance:['3 investing mistakes I made so you don\'t have to','How I paid off $20K debt in 18 months on a normal salary','The budget formula that actually works long-term','Why most people never build real wealth','Passive income: real vs hype','The savings habit nobody talks about','How I built a 6-month emergency fund in a year','5 money moves to make in your 20s'],
-  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting: my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
+  default:['The one habit that changed my life as a creator','3 things I wish I knew before starting online','Why most creators stay stuck at 1K followers','How to create 30 days of content in one afternoon','The mindset shift that doubled my income this year','From 0 to consistent posting — my honest breakdown','What 90 days of daily content taught me','The content strategy that got me my first 10K followers']
 };
 var fallbackTemplates = {
   script:function(i){ return 'HOOK (0-3s):\n"'+i.split(' ').slice(0,6).join(' ')+'... most people get this completely wrong."\n\nBODY (3-30s):\n\u2192 Point 1: The mistake 90% of people make\n\u2192 Point 2: The strategy that actually works\n\u2192 Point 3: The one shift that changes everything\n\nCTA:\n"Follow for more. Save this \u2014 you\'ll need it."'; },
@@ -1074,31 +1620,6 @@ async function saveSettings(){
   }
 }
 
-async function cancelSubscription(){
-  if(!confirm('Are you sure you want to cancel your subscription? You will keep access until the end of your billing period.')) return;
-
-  var btn = document.querySelector('#cancel-sub-wrap button');
-  if(btn){ btn.textContent = 'Cancelling...'; btn.disabled = true; }
-
-  try {
-    if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
-    await apiCall('POST', '/payments/cancel', {});
-
-    /* Update local plan */
-    AUTH.plan = 'free';
-    localStorage.setItem('cos_plan', 'free');
-    if(AUTH.user){ AUTH.user.plan = 'free'; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
-    VR.plan = 'free';
-    updateAuthUI();
-
-    document.getElementById('cancel-sub-wrap').style.display = 'none';
-    showToast('Subscription cancelled. You have access until end of billing period.');
-  } catch(e){
-    showToast(e.message || 'Could not cancel. Please try again or contact support.');
-    if(btn){ btn.textContent = 'Cancel Subscription'; btn.disabled = false; }
-  }
-}
-
 /* Load saved settings into the panel when it opens */
 function loadSettingsPanel(){
   /* Name */
@@ -1126,11 +1647,6 @@ function loadSettingsPanel(){
   /* Platform */
   var savedPlatform = localStorage.getItem('cos_platform') || 'Instagram';
   selectCdd('cdd-settings-platform', savedPlatform);
-
-  /* Show cancel button only for paid users */
-  var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
-  var cancelWrap = document.getElementById('cancel-sub-wrap');
-  if(cancelWrap) cancelWrap.style.display = (plan !== 'free') ? 'block' : 'none';
 }
 function useIdea(idea){ document.getElementById('createIdeaInput').value=idea; switchPanel('create'); }
 /* BILLING TOGGLE */
@@ -1203,25 +1719,6 @@ function checkContentPlan(feature){
     }
   }
   return true;
-}
-
-function openInfoPopup(key){
-  var overlay = document.getElementById('info-popup-overlay');
-  var contentEl = document.getElementById('info-popup-content');
-  var data = {
-    about: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">About Creator OS</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We believe great content should not take all day. Our platform brings together everything a creator needs: idea generation, script writing, carousel creation, thread writing, content repurposing, and AI-powered video resizing.</p><p style="color:var(--muted);line-height:1.8;">Creator OS is built by a small team passionate about empowering creators to do more with less effort.</p>',
-    careers: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Careers</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We are a small, focused team right now, but we are always on the lookout for talented people who are passionate about helping creators grow.</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We do not have any open roles at the moment, but if you are an exceptional designer, developer, or content strategist who believes in what we are building, we would still love to hear from you.</p><p style="color:var(--muted);line-height:1.8;">Send your portfolio or CV to <span style="color:var(--accent);">hello@creatoros.io</span></p>',
-    changelog: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2><div style="border-left:2px solid var(--accent);padding-left:1.25rem;margin-bottom:1.5rem;"><div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div><div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">✦ Initial launch of Creator OS<br>✦ AI idea generation, script writing, captions and threads<br>✦ Carousel creator and content repurposing engine<br>✦ Video resizer with AI face tracking<br>✦ Google OAuth and email authentication<br>✦ Pro and Team subscription plans via Paystack<br>✦ Projects workspace with unlimited storage on Pro<br>✦ Settings panel with 23 content niches</div></div><p style="color:var(--muted);font-size:0.85rem;">More updates coming soon.</p>',
-    privacy: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Privacy Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is committed to protecting your privacy. This policy explains how we collect, use, and protect your information.</p><p style="font-weight:600;margin-bottom:0.5rem;">Information We Collect</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We collect your name, email address, and content preferences when you create an account. We also store content you generate and save as projects.</p><p style="font-weight:600;margin-bottom:0.5rem;">How We Use Your Information</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use your information to provide and improve Creator OS, process payments, and send account-related emails. We do not sell your personal data to third parties.</p><p style="font-weight:600;margin-bottom:0.5rem;">Data Security</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Your data is stored securely on encrypted servers. Passwords are hashed and never stored in plain text.</p><p style="font-weight:600;margin-bottom:0.5rem;">Your Rights</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">You may request deletion of your account and all associated data at any time by contacting us.</p><p style="font-weight:600;margin-bottom:0.5rem;">Contact</p><p style="color:var(--muted);line-height:1.8;">For privacy concerns: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
-    terms: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Terms of Service</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">By using Creator OS, you agree to these terms.</p><p style="font-weight:600;margin-bottom:0.5rem;">Use of Service</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is provided for lawful content creation purposes only. You may not use the platform to generate spam, misleading content, or material that infringes on third-party rights.</p><p style="font-weight:600;margin-bottom:0.5rem;">Your Content</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Content you create using Creator OS belongs to you. We claim no ownership over your generated content.</p><p style="font-weight:600;margin-bottom:0.5rem;">Subscriptions and Payments</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis. Contact us within 48 hours of payment.</p><p style="font-weight:600;margin-bottom:0.5rem;">Contact</p><p style="color:var(--muted);line-height:1.8;"><span style="color:var(--accent);">hello@creatoros.io</span></p>',
-    cookies: '<h2 style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Cookie Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS uses minimal browser storage to provide a better experience.</p><p style="font-weight:600;margin-bottom:0.5rem;">What We Store</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use localStorage to store your authentication token, user preferences, and settings locally on your device. This is essential for keeping you logged in and remembering your settings.</p><p style="font-weight:600;margin-bottom:0.5rem;">Third-Party Services</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use trusted external services for authentication, payments, and typography. These services may set their own cookies as described in their respective privacy policies.</p><p style="font-weight:600;margin-bottom:0.5rem;">Your Control</p><p style="color:var(--muted);line-height:1.8;">You can clear all stored data by logging out or clearing your browser local storage.</p>'
-  };
-  if(contentEl && data[key]) contentEl.innerHTML = data[key];
-  if(overlay) overlay.style.display = 'flex';
-}
-function closeInfoPopup(){
-  var overlay = document.getElementById('info-popup-overlay');
-  if(overlay) overlay.style.display = 'none';
 }
 
 function googleAuth(){
@@ -1918,8 +2415,7 @@ async function vrProcess(){
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
     console.log('[VR] mime:', mime, 'size:', outW+'x'+outH, 'dur:', dur);
 
-    var canvasStream = canvas.captureStream(30); /* single capture — reused for audio merge */
-    var stream   = canvasStream;
+    var stream   = canvas.captureStream(30);
     var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
     var chunks   = [];
     recorder.ondataavailable = function(e){ if(e.data&&e.data.size>0) chunks.push(e.data); };
@@ -1953,37 +2449,23 @@ async function vrProcess(){
     ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
     try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
 
-    /* STEP 7: Play → tap audio → build merged stream → start recorder */
+    /* STEP 7: Play first, then tap audio, then start recorder */
     progLbl.textContent = 'Converting... 0%';
 
-    /* Must play first so audio stream is active */
     await procVid.play().catch(function(){ throw new Error('Playback blocked. Try Chrome or Edge.'); });
 
-    /* Wait 3 frames to ensure audio pipeline is fully active */
-    await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); }); });
-
-    /* Build merged stream with audio BEFORE starting recorder */
+    /* Tap audio from the playing video element — must be after play() */
+    await new Promise(function(r){ requestAnimationFrame(r); }); /* wait 1 frame */
     try {
-      var vidStream = procVid.captureStream ? procVid.captureStream() : (procVid.mozCaptureStream ? procVid.mozCaptureStream() : null);
-      if(vidStream && vidStream.getAudioTracks().length > 0){
-        /* Build a fresh MediaStream with canvas video + video audio */
-        var mergedStream = new MediaStream();
-        mergedStream.addTrack(canvasStream.getVideoTracks()[0]); /* reuse existing stream */
-        mergedStream.addTrack(vidStream.getAudioTracks()[0]);
-        stream = mergedStream;
-        /* Recreate recorder with merged stream */
-        recorder = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: VR.bitrateMap[VR.res]});
-        chunks = [];
-        recorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) chunks.push(e.data); };
-        var doneRes2; doneP = new Promise(function(r){ doneRes2 = r; });
-        recorder.onstop = function(){ doneRes2(); };
-        console.log('[VR] Audio track merged — recording with audio');
-      } else {
-        console.log('[VR] No audio track found — video only');
+      var vidStream = procVid.captureStream ? procVid.captureStream() : null;
+      if(vidStream){
+        var audioTracks = vidStream.getAudioTracks();
+        if(audioTracks.length > 0){
+          stream.addTrack(audioTracks[0]);
+          console.log('[VR] Audio track captured from video');
+        }
       }
-    } catch(ae){
-      console.warn('[VR] Audio merge failed:', ae.message, '— continuing video only');
-    }
+    } catch(ae){ console.warn('[VR] Audio not captured:', ae.message); }
 
     recorder.start(250);
 
@@ -2161,626 +2643,3 @@ document.addEventListener('keydown',function(e){
 <video id="vr-video" style="position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;opacity:0;pointer-events:none;" playsinline preload="auto"></video>
 </body>
 </html>
-
-<div class="blobs"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
-
-<!-- LOGIN MODAL -->
-<div class="modal-overlay" id="loginModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('loginModal')">&#x2715;</button>
-    <h2>Welcome back</h2>
-    <p class="modal-sub">Log in to your Creator OS account</p>
-    <button class="btn-google" onclick="googleAuth()">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Continue with Google
-    </button>
-    <div class="modal-divider">or continue with email</div>
-    <div class="form-group"><label>Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
-    <div class="form-group">
-      <label>Password</label>
-      <div class="pw-wrap">
-        <input type="password" id="li-password" class="form-input" placeholder="Your password">
-        <button type="button" class="pw-toggle" onclick="pwToggle('li-password',this)" tabindex="-1">
-          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-    <button class="modal-btn" onclick="doLogin()">Log In &#x2192;</button>
-    <div style="text-align:center;margin-top:0.6rem;">
-      <a onclick="doForgotPassword()" style="font-size:0.8rem;color:var(--muted);cursor:pointer;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Forgot your password?</a>
-    </div>
-    <div class="modal-switch">No account? <a onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
-  </div>
-</div>
-
-<!-- SIGNUP MODAL -->
-<div class="modal-overlay" id="signupModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('signupModal')">&#x2715;</button>
-    <h2>Create account</h2>
-    <p class="modal-sub">Start creating content in minutes, free forever</p>
-    <button class="btn-google" onclick="googleAuth()">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Sign up with Google
-    </button>
-    <div class="modal-divider">or sign up with email</div>
-    <div class="form-group"><label>Full Name</label><input type="text" id="su-name" class="form-input" placeholder="Your name"></div>
-    <div class="form-group"><label>Email</label><input type="email" id="su-email" class="form-input" placeholder="you@example.com"></div>
-    <div class="form-group">
-      <label>Password</label>
-      <div class="pw-wrap">
-        <input type="password" id="su-password" class="form-input" placeholder="Min. 8 characters" oninput="pwStrength(this,'su-strength-bar','su-hint')">
-        <button type="button" class="pw-toggle" onclick="pwToggle('su-password',this)" tabindex="-1">
-          <svg id="su-eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-      <div class="pw-strength"><div class="pw-strength-bar" id="su-strength-bar"></div></div>
-      <div class="pw-hint" id="su-hint"></div>
-    </div>
-    <div class="form-group">
-      <label>Confirm Password</label>
-      <div class="pw-wrap">
-        <input type="password" id="su-confirm" class="form-input" placeholder="Re-enter your password" oninput="pwConfirmCheck(this,'su-password','su-confirm-hint')">
-        <button type="button" class="pw-toggle" onclick="pwToggle('su-confirm',this)" tabindex="-1">
-          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-      <div class="pw-hint" id="su-confirm-hint"></div>
-    </div>
-    <button class="modal-btn" onclick="doSignup()">Create Free Account &#x2192;</button>
-    <div class="modal-switch">Have an account? <a onclick="switchModal('signupModal','loginModal')">Log in</a></div>
-  </div>
-</div>
-
-<!-- NAV -->
-<nav id="navbar">
-  <a href="#" class="nav-logo">Creator OS</a>
-  <ul class="nav-links">
-    <li><a onclick="navScrollTo(event,'how')">How it Works</a></li>
-    <li><a onclick="navScrollTo(event,'features')">Features</a></li>
-    <li><a onclick="navScrollTo(event,'pricing')">Pricing</a></li>
-    <li><a onclick="navScrollTo(event,'testimonials')">Reviews</a></li>
-  </ul>
-  <div class="nav-cta">
-    <button id="nav-login-btn" class="btn-ghost" onclick="openModal('loginModal')">Log In</button>
-    <button id="nav-signup-btn" class="btn-primary" onclick="openModal('signupModal')">Start Free &#x2192;</button>
-    <span id="nav-user-name" style="display:none;color:var(--text);font-size:0.875rem;font-weight:500;"></span>
-    <button id="nav-logout-btn" style="display:none;" class="btn-ghost" onclick="doLogout()">Log Out</button>
-  </div>
-  <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
-</nav>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-close" onclick="toggleMenu()">&#x2715;</button>
-
-  <!-- Logged in: show user name -->
-  <div id="mob-user-name" style="display:none;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;"></div>
-
-  <a onclick="toggleMenu();navScrollTo(event,'how')">How it Works</a>
-  <a onclick="toggleMenu();navScrollTo(event,'features')">Features</a>
-  <a onclick="toggleMenu();navScrollTo(event,'pricing')">Pricing</a>
-  <a onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
-
-  <!-- Logged out buttons -->
-  <div id="mob-loggedout-btns" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
-    <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('signupModal')">Start Creating Free &#x2192;</button>
-    <button class="btn-hero-ghost" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('loginModal')">Log In</button>
-  </div>
-
-  <!-- Logged in buttons -->
-  <div id="mob-loggedin-btns" style="display:none;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
-    <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();navScrollTo(event,'app-section')">Go to Dashboard &#x2192;</button>
-    <button class="btn-hero-ghost" style="width:80%;justify-content:center;border-color:rgba(252,92,125,0.3);color:var(--accent2);" onclick="toggleMenu();doLogout()">Log Out</button>
-  </div>
-</div>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-
-    <!-- LOGGED OUT STATE -->
-    <div id="hero-loggedout" style="display:none;">
-      <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System, Now Live</div>
-      <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
-      <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content. All powered by AI.</p>
-      <div class="hero-actions">
-        <button class="btn-hero" onclick="openModal('signupModal')">Start Creating Free &#x2192;</button>
-        <a href="javascript:void(0)" onclick="navScrollTo(event,'how')" class="btn-hero-ghost">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          See How It Works
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat"><div class="stat-num">50K+</div><div class="stat-label">Creators</div></div>
-        <div class="stat"><div class="stat-num">2M+</div><div class="stat-label">Pieces Generated</div></div>
-        <div class="stat"><div class="stat-num">&lt;5min</div><div class="stat-label">Idea to Content</div></div>
-      </div>
-    </div>
-
-    <!-- LOGGED IN STATE -->
-    <div id="hero-loggedin" style="display:none;">
-      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
-      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
-      <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
-      <div class="hero-actions">
-        <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Go to Dashboard
-        </button>
-        <button class="btn-hero-ghost" onclick="navScrollTo(event,'how')">See How It Works</button>
-      </div>
-      <!-- Quick stats for logged in user -->
-      <div class="hero-stats" id="hero-user-stats">
-        <div class="stat"><div class="stat-num" id="stat-projects">0</div><div class="stat-label">My Projects</div></div>
-        <div class="stat"><div class="stat-num" id="stat-plan">Free</div><div class="stat-label">Current Plan</div></div>
-        <div class="stat"><div class="stat-num">&#x221E;</div><div class="stat-label">Ideas Available</div></div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- APP PREVIEW -->
-<section id="app-section" style="padding-top:0;padding-bottom:4rem;">
-  <div class="container">
-    <div class="app-preview reveal">
-      <div class="app-bar">
-        <div class="app-dots"><span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span></div>
-        <div class="app-url">app.creatorOS.io/dashboard</div>
-      </div>
-      <div class="app-body">
-        <!-- SIDEBAR -->
-        <div class="app-sidebar">
-          <div class="sidebar-logo">Creator OS</div>
-          <div class="sidebar-item active" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
-          <div class="sidebar-item" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>Ideas</div>
-          <div class="sidebar-item" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Create</div>
-          <div class="sidebar-item" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repurpose</div>
-          <div class="sidebar-item" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Projects</div>
-          <div class="sidebar-item" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg>Video Resize</div>
-          <div class="sidebar-item" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
-        </div>
-        <!-- PANELS -->
-        <div class="app-main">
-
-          <!-- DASHBOARD -->
-          <div class="app-panel active" id="panel-dashboard">
-            <div class="app-greeting"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span id="greeting-text">Good morning, Creator</span></div>
-            <div class="app-sub-text">Here's your content workspace for today</div>
-            <div class="quick-actions">
-              <div class="qa-btn" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg><div class="qa-label">Generate Ideas</div></div>
-              <div class="qa-btn" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div class="qa-label">Create Content</div></div>
-              <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
-            </div>
-            <div class="trending-label">Trending Ideas</div>
-            <div class="idea-item" onclick="useIdea('5 mistakes new creators make in their first 90 days')"><span class="idea-dot"></span>5 mistakes new creators make in their first 90 days<span class="idea-tag">Script</span></div>
-            <div class="idea-item" onclick="useIdea('How I went from 0 to 10K followers in 90 days')"><span class="idea-dot"></span>How I went from 0 to 10K followers in 90 days<span class="idea-tag">Carousel</span></div>
-            <div class="idea-item" onclick="useIdea('The truth about passive income nobody talks about')"><span class="idea-dot"></span>The truth about passive income nobody talks about<span class="idea-tag">Thread</span></div>
-          </div>
-
-          <!-- IDEAS -->
-          <div class="app-panel" id="panel-ideas">
-            <div class="panel-title">Idea Generator</div>
-            <div class="input-row">
-              <input id="nicheInput" class="app-input" placeholder="Your niche (fitness, design, finance...)">
-              <div class="cdd" id="cdd-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
-              <button class="app-btn-sm" id="ideas-btn" onclick="generateIdeas()">Generate</button>
-            </div>
-            <div class="ai-loading" id="ideas-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Generating ideas...</div>
-            <div id="ideasOutput" class="output-box" style="min-height:180px;"><div class="out-label">Your Ideas</div><div style="color:var(--muted);font-size:0.8rem;">Enter your niche, choose a platform, and click Generate.</div></div>
-          </div>
-
-          <!-- CREATE -->
-          <div class="app-panel" id="panel-create">
-            <div class="panel-title">Content Creator</div>
-            <div class="format-tabs">
-              <div class="format-tab active" onclick="selectTab(this,'script')">Script</div>
-              <div class="format-tab" onclick="selectTab(this,'carousel')">Carousel</div>
-              <div class="format-tab" onclick="selectTab(this,'caption')">Caption</div>
-              <div class="format-tab" onclick="selectTab(this,'thread')">Thread</div>
-            </div>
-            <div class="input-row">
-              <input id="createIdeaInput" class="app-input" placeholder="Paste or type your content idea...">
-              <div class="cdd" id="cdd-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-tone')"><span id="cdd-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-tone','Conversational')">Conversational</div></div></div>
-              <button class="app-btn-sm" id="create-btn" onclick="generateContent()">Generate</button>
-            </div>
-            <div class="ai-loading" id="create-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Writing your content...</div>
-            <div id="createOutput" class="output-box" style="min-height:140px;"><div class="out-label" id="createOutputLabel">Script Output</div><div style="color:var(--muted);font-size:0.8rem;">Choose a format, enter an idea, pick a tone, and click Generate.</div></div>
-            <div class="output-actions" id="create-actions" style="display:none;">
-              <button class="copy-btn" onclick="copyOutput('createOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
-              <button class="save-btn" onclick="saveToProjects('createOutput','createIdeaInput')"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
-            </div>
-          </div>
-
-          <!-- REPURPOSE -->
-          <div class="app-panel" id="panel-repurpose">
-            <div class="panel-title">Content Repurposer</div>
-            <textarea id="repurposeInput" class="app-input" style="width:100%;resize:vertical;min-height:80px;margin-bottom:0.6rem;" placeholder="Paste your existing content here..."></textarea>
-            <div class="row-gap">
-              <div class="cdd" id="cdd-repurpose-target" style="flex:1;"><div class="cdd-trigger" onclick="toggleCdd('cdd-repurpose-target')" style="width:100%;"><span id="cdd-repurpose-target-val">Twitter / X Thread</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-repurpose-target-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-repurpose-target','Twitter / X Thread')">Twitter / X Thread</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','LinkedIn Post')">LinkedIn Post</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Instagram Caption')">Instagram Caption</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Reel Script')">Reel Script</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','YouTube Description')">YouTube Description</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Email Newsletter')">Email Newsletter</div></div></div>
-              <button class="app-btn-sm" id="repurpose-btn" onclick="repurposeContent()">Repurpose</button>
-            </div>
-            <div class="ai-loading" id="repurpose-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Repurposing...</div>
-            <div id="repurposeOutput" class="output-box" style="min-height:110px;"><div class="out-label">Repurposed Output</div><div style="color:var(--muted);font-size:0.8rem;">Paste content, pick a target format, then click Repurpose.</div></div>
-            <div class="output-actions" id="repurpose-actions" style="display:none;"><button class="copy-btn" onclick="copyOutput('repurposeOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button></div>
-          </div>
-
-          <!-- PROJECTS -->
-          <div class="app-panel" id="panel-projects">
-            <div class="panel-title">Saved Projects</div>
-            <div id="projects-list"><div class="empty-state" id="projects-empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>No saved projects yet.<br>Create content and save it here.</div></div>
-          </div>
-
-          <!-- VIDEO RESIZE -->
-          <div class="app-panel" id="panel-videoresize">
-            <div class="panel-title">Video Auto Resize</div>
-            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
-            <div class="vr-upload-zone" id="vr-upload-zone">
-              <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
-              <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-              <p>Drag &amp; drop your landscape video here</p>
-              <span>or click to browse. MP4, MOV, WebM supported</span>
-            </div>
-            <div class="vr-meta" id="vr-meta" style="display:none;">
-              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/></svg><strong id="vr-fname">—</strong></div>
-              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Duration: <strong id="vr-dur">—</strong></div>
-              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><strong id="vr-dim">—</strong></div>
-              <div class="vr-meta-item"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><strong id="vr-size">—</strong></div>
-            </div>
-            <div id="vr-options-wrap" style="display:none;">
-              <div class="settings-label" style="margin-bottom:0.45rem;">Output Format</div>
-              <div class="vr-options-grid" id="vr-format-grid">
-                <div class="vr-option-card selected" onclick="vrSelectFormat(this,'9:16')"><div class="vr-opt-title">9:16 Portrait</div><div class="vr-opt-desc">Reels, TikTok, Shorts</div></div>
-                <div class="vr-option-card" onclick="vrSelectFormat(this,'1:1')"><div class="vr-opt-title">1:1 Square</div><div class="vr-opt-desc">Instagram, Facebook</div></div>
-                <div class="vr-option-card" onclick="vrSelectFormat(this,'4:5')"><div class="vr-opt-title">4:5 Portrait</div><div class="vr-opt-desc">Instagram Feed</div></div>
-                <div class="vr-option-card" onclick="vrSelectFormat(this,'16:9')"><div class="vr-opt-title">16:9 Landscape</div><div class="vr-opt-desc">YouTube, Twitter</div></div>
-              </div>
-              <div class="settings-label" style="margin-top:0.65rem;margin-bottom:0.45rem;">Output Resolution</div>
-              <div class="vr-options-grid" id="vr-res-grid">
-                <div class="vr-option-card selected" onclick="vrSelectRes(this,'720p')"><div class="vr-opt-title">720p HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
-                <div class="vr-option-card" onclick="vrSelectRes(this,'1080p')"><div class="vr-opt-title">1080p Full HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
-                <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
-                <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
-                <div>
-                  <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.1rem;">AI Face Tracking</div>
-                  <div id="vr-face-badge" style="font-size:0.72rem;color:var(--muted);background:none;border:none;padding:0;">Best for single-subject videos. For podcasts, tracking follows the most visible face</div>
-                </div>
-                <!-- Toggle switch -->
-                <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex-shrink:0;">
-                  <input type="checkbox" id="vr-tracking-toggle" style="opacity:0;width:0;height:0;position:absolute;" onchange="vrToggleTracking(this.checked)">
-                  <span id="vr-toggle-track" style="position:absolute;inset:0;background:var(--border);border-radius:24px;transition:background 0.25s;"></span>
-                  <span id="vr-toggle-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></span>
-                </label>
-              </div>
-              <div class="vr-preview-wrap" id="vr-preview-wrap">
-                <div class="settings-label" style="margin-bottom:0.45rem;">Preview</div>
-                <div class="vr-canvases">
-                  <div class="vr-canvas-box"><label>Original</label><canvas id="vr-canvas-orig" width="200" height="112"></canvas></div>
-                  <div class="vr-canvas-box"><label id="vr-canvas-out-label">Output (9:16)</label><canvas id="vr-canvas-out" width="63" height="112"></canvas></div>
-                </div>
-              </div>
-              <div class="vr-progress-wrap" id="vr-progress-wrap"><div class="vr-progress-bar-bg"><div class="vr-progress-bar" id="vr-progress-bar"></div></div><div class="vr-progress-label" id="vr-progress-label"></div></div>
-              <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.65rem;">
-                <button class="app-btn-sm" id="vr-process-btn" onclick="vrProcess()">Convert Video</button>
-                <button class="app-btn-sm" id="vr-download-btn" style="display:none;background:linear-gradient(135deg,var(--accent3),#3abf96);" onclick="vrDownload()">Download</button>
-                <button class="copy-btn" onclick="vrReset()" style="margin-top:0;"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg> Reset</button>
-              </div>
-            </div>
-            <div id="vr-video-container"></div>
-          </div>
-
-          <!-- SETTINGS -->
-          <div class="app-panel" id="panel-settings">
-            <div class="panel-title">Profile &amp; Settings</div>
-
-            <!-- Display Name -->
-            <div class="settings-row">
-              <label class="settings-label">Display Name</label>
-              <div style="display:flex;gap:0.5rem;">
-                <input id="settings-name" class="app-input" style="flex:1;" placeholder="Your display name" value="">
-              </div>
-              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">This is how your name appears on the homepage greeting.</div>
-            </div>
-
-            <!-- Niche -->
-            <div class="settings-row">
-              <label class="settings-label">Your Niche</label>
-              <div class="cdd" id="cdd-settings-niche">
-                <div class="cdd-trigger" onclick="toggleCdd('cdd-settings-niche')" style="width:100%;"><span id="cdd-settings-niche-val">Designer</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-                <div class="cdd-menu" id="cdd-settings-niche-menu">
-                  <div class="cdd-option selected" onclick="selectNiche('Designer')">Designer</div>
-                  <div class="cdd-option" onclick="selectNiche('Coach')">Coach</div>
-                  <div class="cdd-option" onclick="selectNiche('Business Owner')">Business Owner</div>
-                  <div class="cdd-option" onclick="selectNiche('Content Creator')">Content Creator</div>
-                  <div class="cdd-option" onclick="selectNiche('Fitness')">Fitness</div>
-                  <div class="cdd-option" onclick="selectNiche('Finance')">Finance</div>
-                  <div class="cdd-option" onclick="selectNiche('Tech')">Tech</div>
-                  <div class="cdd-option" onclick="selectNiche('Photography')">Photography</div>
-                  <div class="cdd-option" onclick="selectNiche('Real Estate')">Real Estate</div>
-                  <div class="cdd-option" onclick="selectNiche('Food &amp; Cooking')">Food &amp; Cooking</div>
-                  <div class="cdd-option" onclick="selectNiche('Travel')">Travel</div>
-                  <div class="cdd-option" onclick="selectNiche('Fashion &amp; Style')">Fashion &amp; Style</div>
-                  <div class="cdd-option" onclick="selectNiche('Beauty &amp; Skincare')">Beauty &amp; Skincare</div>
-                  <div class="cdd-option" onclick="selectNiche('Music')">Music</div>
-                  <div class="cdd-option" onclick="selectNiche('Education')">Education</div>
-                  <div class="cdd-option" onclick="selectNiche('Parenting')">Parenting</div>
-                  <div class="cdd-option" onclick="selectNiche('Health &amp; Wellness')">Health &amp; Wellness</div>
-                  <div class="cdd-option" onclick="selectNiche('Spirituality')">Spirituality</div>
-                  <div class="cdd-option" onclick="selectNiche('Gaming')">Gaming</div>
-                  <div class="cdd-option" onclick="selectNiche('Sports')">Sports</div>
-                  <div class="cdd-option" onclick="selectNiche('Crypto &amp; Web3')">Crypto &amp; Web3</div>
-                  <div class="cdd-option" onclick="selectNiche('Marketing')">Marketing</div>
-                  <div class="cdd-option" onclick="selectNiche('Law &amp; Legal')">Law &amp; Legal</div>
-                  <div class="cdd-option" onclick="selectNiche('Others')">Others (type yours below)</div>
-                </div>
-              </div>
-              <!-- Custom niche input — shows when "Others" is selected -->
-              <div id="custom-niche-wrap" style="display:none;margin-top:0.45rem;">
-                <input id="custom-niche-input" class="app-input" placeholder="Type your niche e.g. Pottery, Astrology, Architecture..." style="width:100%;">
-              </div>
-            </div>
-
-            <!-- Tone -->
-            <div class="settings-row"><label class="settings-label">Content Tone</label><div class="cdd" id="cdd-settings-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-tone')" style="width:100%;"><span id="cdd-settings-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Conversational')">Conversational</div></div></div></div>
-
-            <!-- Platform -->
-            <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','YouTube')">YouTube</div></div></div></div>
-
-            <button class="app-btn-sm" style="width:100%;margin-top:0.5rem;" onclick="saveSettings()">Save Settings</button>
-
-            <!-- Cancel subscription (only shown for paid users) -->
-            <div id="cancel-sub-wrap" style="display:none;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
-              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;">Subscription</div>
-              <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;">You'll keep access until the end of your billing period.</div>
-              <button class="app-btn-sm" style="width:100%;background:rgba(255,59,48,0.1);color:#ff3b30;border:1px solid rgba(255,59,48,0.2);" onclick="cancelSubscription()">Cancel Subscription</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how">
-  <div class="container">
-    <div class="center">
-      <span class="section-tag">The Process</span>
-      <h2 class="section-title">From Idea to Published<br>in 3 Simple Steps</h2>
-      <p class="section-desc">No more staring at blank screens. Creator OS handles the heavy lifting so you can focus on your audience.</p>
-    </div>
-    <div class="how-steps">
-      <div class="step-card reveal"><span class="step-num">01</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Get AI-Powered Ideas</h3><p>Tell us your niche and platform. We generate 8 scroll-stopping, curiosity-driven ideas tailored to you instantly.</p></div>
-      <div class="step-card reveal"><span class="step-num">02</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><h3>Generate Content</h3><p>Pick an idea, choose your format: script, carousel, caption, or thread. AI writes it in your tone in seconds.</p></div>
-      <div class="step-card reveal"><span class="step-num">03</span><div class="step-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" style="stroke:var(--accent3)"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Repurpose Everywhere</h3><p>Turn one piece of content into a thread, reel script, carousel, LinkedIn post, and email. Maximum reach, minimum effort.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section id="features">
-  <div class="container">
-    <div class="center">
-      <span class="section-tag">Capabilities</span>
-      <h2 class="section-title">Everything You Need<br>to Create Consistently</h2>
-      <p class="section-desc">Built for creators who are serious about growing their audience without burning out.</p>
-    </div>
-    <div class="features-grid">
-      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Idea Engine</h3><p>Never run out of content ideas. AI generates niche-specific, platform-optimized ideas that actually perform.</p></div>
-      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Script Generator</h3><p>Hook. Body. CTA. Full short-form video scripts written for maximum retention on any platform.</p></div>
-      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" stroke="var(--accent3)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div><h3>Carousel Creator</h3><p>7-slide Instagram carousels with punchy copy, structured to educate, get saved, and drive follows.</p></div>
-      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(254,188,46,0.1);"><svg viewBox="0 0 24 24" stroke="#febc2e"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>Content Repurposer</h3><p>Paste any content. Get a Twitter thread, LinkedIn post, caption, reel script, and email newsletter back.</p></div>
-      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><h3>Content Workspace</h3><p>Save all your drafts and projects in one organized space. Never lose a piece of content again.</p></div>
-      <div class="feat-card reveal"><div class="feat-icon-wrap" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg></div><h3>Video Resizer</h3><p>Convert 16:9 landscape videos to 9:16, 1:1, or 4:5 for Reels, TikTok, and Shorts automatically.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- WORKFLOW -->
-<section>
-  <div class="container">
-    <div class="workflows">
-      <div class="workflow-text reveal">
-        <span class="section-tag">Your Workflow</span>
-        <h2>Built for the Creator<br>Who Won't Slow Down</h2>
-        <p>Creator OS is more than a tool. It's a daily habit. Log in, generate, create, publish. Repeat.</p>
-        <ul class="workflow-list">
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Personalized to your niche and tone</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile. Create anywhere, anytime</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Save, edit, copy and export in one click</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by the latest GPT-4o AI model</li>
-        </ul>
-      </div>
-      <div class="workflow-visual reveal">
-        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(124,92,252,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent)"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg></div><div class="flow-step-text"><h4>Pick a Niche &amp; Topic</h4><p>Designer · Coach · Business · Creator</p></div></div>
-        <div class="flow-arrow">&#x2193;</div>
-        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(92,240,208,0.1);"><svg viewBox="0 0 24 24" stroke="var(--accent3)"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="flow-step-text"><h4>AI Generates Ideas</h4><p>8 curated, platform-specific ideas</p></div></div>
-        <div class="flow-arrow">&#x2193;</div>
-        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(252,92,125,0.12);"><svg viewBox="0 0 24 24" stroke="var(--accent2)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="flow-step-text"><h4>Choose Format &amp; Generate</h4><p>Script · Carousel · Caption · Thread</p></div></div>
-        <div class="flow-arrow">&#x2193;</div>
-        <div class="flow-step"><div class="flow-step-icon" style="background:rgba(254,188,46,0.1);"><svg viewBox="0 0 24 24" stroke="#febc2e"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div><div class="flow-step-text"><h4>Copy, Save &amp; Publish</h4><p>Export or save to workspace</p></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section id="testimonials" style="background:var(--surface);">
-  <div class="container">
-    <div class="center">
-      <span class="section-tag">Social Proof</span>
-      <h2 class="section-title">Creators Are Already Winning</h2>
-      <p class="section-desc">Join thousands of creators who've replaced hours of planning with minutes of creation.</p>
-    </div>
-    <div class="testi-grid">
-      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"I used to spend 3 hours planning content for the week. Now I do it in 20 minutes. Absolutely game-changing for my business."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(124,92,252,0.2);color:var(--accent);">AK</div><div><div class="testi-name">Amara K.</div><div class="testi-role">Business Coach · 42K followers</div></div></div></div>
-      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The repurposing feature alone is worth every cent. I turn one video idea into 5 pieces of content. My engagement tripled."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(92,240,208,0.15);color:var(--accent3);">DO</div><div><div class="testi-name">David O.</div><div class="testi-role">Designer &amp; Creator · 18K followers</div></div></div></div>
-      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The AI actually sounds like me. I set my tone to bold and educational, and every script it writes just hits."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(252,92,125,0.15);color:var(--accent2);">SR</div><div><div class="testi-name">Sofia R.</div><div class="testi-role">Content Creator · 87K followers</div></div></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing">
-  <div class="container">
-    <div class="center">
-      <span class="section-tag">Pricing</span>
-      <h2 class="section-title">Simple, Creator-First Pricing</h2>
-      <p class="section-desc">Start free, no card needed. Upgrade when you're ready to go unlimited.</p>
-    </div>
-
-    <!-- Billing toggle -->
-    <div class="billing-toggle">
-      <span id="toggle-monthly-label" class="active">Monthly</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="billing-toggle-input" onchange="toggleBilling(this.checked)">
-        <span class="toggle-track" id="billing-track"></span>
-        <span class="toggle-knob" id="billing-knob"></span>
-      </label>
-      <span id="toggle-yearly-label">Yearly <span class="billing-save">2 months free</span></span>
-    </div>
-
-    <div class="pricing-grid">
-      <!-- FREE -->
-      <div class="price-card reveal">
-        <div class="price-name">Free</div>
-        <div class="price-amount">$0</div>
-        <div class="price-period">forever free · no card needed</div>
-        <ul class="price-features">
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 idea generations/day</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 3 content pieces/day</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts &amp; Captions</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize up to 3 mins</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save up to 10 projects</li>
-          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Carousel generator</li>
-          <li class="cross"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Repurposing engine</li>
-        </ul>
-        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="goUpgrade()">Get Started Free</button>
-      </div>
-
-      <!-- PRO -->
-      <div class="price-card featured reveal">
-        <div class="price-badge">Most Popular</div>
-        <div class="price-name">Pro</div>
-        <div class="price-amount" id="pro-price" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$1</div>
-        <div class="price-period" id="pro-period">per month · billed monthly</div>
-        <ul class="price-features">
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited idea generation</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts, Captions &amp; Carousels</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full repurposing engine</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resize + 2K/4K</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> AI face tracking</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited saved projects</li>
-        </ul>
-        <button class="btn-hero" id="pro-upgrade-btn" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'pro_yearly':'pro_monthly')">Upgrade to Pro &#x2192;</button>
-      </div>
-
-      <!-- TEAM -->
-      <div class="price-card reveal">
-        <div class="price-name">Team</div>
-        <div class="price-amount" id="team-price">$4.5</div>
-        <div class="price-period" id="team-period">per member/month · up to 5 seats</div>
-        <ul class="price-features">
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Up to 5 team members</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Each member gets full Pro access</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Shared projects workspace</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Team brand voice settings</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
-        </ul>
-        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Start Team Plan &#x2192;</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section id="faq" style="padding:5rem 0;">
-  <div class="container">
-    <div class="center" style="margin-bottom:3rem;">
-      <span class="section-tag">FAQ</span>
-      <h2 class="section-title">Questions? Answered.</h2>
-    </div>
-    <div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
-
-      <details class="faq-item">
-        <summary>Is there a free plan?</summary>
-        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects. No credit card required.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Can I cancel my subscription anytime?</summary>
-        <p>Absolutely. You can cancel from your Settings panel at any time. You'll keep full access until the end of your current billing period, then automatically move to the Free plan.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>What AI model powers Creator OS?</summary>
-        <p>Creator OS uses OpenAI's GPT-4 to generate ideas, scripts, carousels, captions, threads, and repurposed content. The video face tracking is powered by a custom OpenCV model running on our servers.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Does it work for any niche?</summary>
-        <p>Yes. Creator OS supports 23 niches out of the box: from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Is my content saved?</summary>
-        <p>Yes. Every piece of content you generate can be saved as a project. Free users can save up to 10 projects; Pro and Team users get unlimited storage.</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>What video formats does the resizer support?</summary>
-        <p>The video resizer accepts MP4, MOV, and WebM files. Output is in MP4 format (or WebM as fallback). Supported aspect ratios: 9:16 (Reels/TikTok/Shorts), 1:1 (Instagram), 4:5 (Feed), and 16:9 (YouTube).</p>
-      </details>
-
-      <details class="faq-item">
-        <summary>Is my data private?</summary>
-        <p>Yes. Your content, projects, and account information are stored securely and never shared with third parties. Content you generate belongs to you.</p>
-      </details>
-
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section" id="cta-section">
-  <div class="cta-glow"></div>
-  <div style="position:relative;z-index:1;">
-    <span class="section-tag">Ready?</span>
-    <h2>Start Creating.<br><span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Stop Overthinking.</span></h2>
-    <p>Join 50,000+ creators who wake up knowing exactly what to post.</p>
-    <button class="btn-hero" onclick="goUpgrade()">Get Started For Free &#x2192;</button>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Creator OS</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
-    <div class="footer-col"><h4>Product</h4><ul><li><a href="#">Idea Generator</a></li><li><a href="#">Script Writer</a></li><li><a href="#">Carousel Creator</a></li><li><a href="#">Repurposer</a></li><li><a href="#">Video Resizer</a></li></ul></div>
-    <div class="footer-col"><h4>Company</h4><ul><li><a onclick="openInfoPopup('about')" style="cursor:pointer;">About</a></li><li><a onclick="openInfoPopup('careers')" style="cursor:pointer;">Careers</a></li><li><a onclick="openInfoPopup('changelog')" style="cursor:pointer;">Changelog</a></li></ul></div>
-    <div class="footer-col"><h4>Legal</h4><ul><li><a onclick="openInfoPopup('privacy')" style="cursor:pointer;">Privacy Policy</a></li><li><a onclick="openInfoPopup('terms')" style="cursor:pointer;">Terms of Service</a></li><li><a onclick="openInfoPopup('cookies')" style="cursor:pointer;">Cookie Policy</a></li></ul></div>
-  </div>
-  <div class="footer-bottom">
-    <p>&#169; 2025 Creator OS. All rights reserved.</p>
-    <p>Made for creators who mean business.</p>
-  </div>
-</footer>
-
-<!-- INFO POPUP -->
-<div id="info-popup-overlay" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;position:relative;">
-    <button onclick="closeInfoPopup()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;">&#x2715;</button>
-    <div id="info-popup-content"></div>
-  </div>
-</div>
-
-<!-- UPGRADE POPUP -->
-
