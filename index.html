@@ -348,7 +348,18 @@ function startCheckout(planCode){
   var url = PAYSTACK_PAGES[planCode];
   if(!url){ showToast('Invalid plan selected.'); return; }
 
-  /* Open directly without email param — Paystack will ask for it */
+  /* Pre-fill email from logged in user */
+  var user = AUTH.user;
+  if(!user) try{ user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+  if(user && user.email){
+    url += (url.indexOf('?') >= 0 ? '&' : '?') + 'email=' + encodeURIComponent(user.email);
+    if(user.name){
+      var parts = user.name.split(' ');
+      url += '&first_name=' + encodeURIComponent(parts[0] || '');
+      if(parts.length > 1) url += '&last_name=' + encodeURIComponent(parts.slice(1).join(' '));
+    }
+  }
+
   showToast('Redirecting to checkout...');
   setTimeout(function(){ window.location.href = url; }, 500);
 }
@@ -1663,7 +1674,18 @@ function startCheckout(planCode){
   var url = PAYSTACK_PAGES[planCode];
   if(!url){ showToast('Invalid plan selected.'); return; }
 
-  /* Open directly without email param — Paystack will ask for it */
+  /* Pre-fill email from logged in user */
+  var user = AUTH.user;
+  if(!user) try{ user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+  if(user && user.email){
+    url += (url.indexOf('?') >= 0 ? '&' : '?') + 'email=' + encodeURIComponent(user.email);
+    if(user.name){
+      var parts = user.name.split(' ');
+      url += '&first_name=' + encodeURIComponent(parts[0] || '');
+      if(parts.length > 1) url += '&last_name=' + encodeURIComponent(parts.slice(1).join(' '));
+    }
+  }
+
   showToast('Redirecting to checkout...');
   setTimeout(function(){ window.location.href = url; }, 500);
 }
