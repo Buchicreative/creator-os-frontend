@@ -520,7 +520,7 @@ html.is-logged-in #cta-section { display: none !important; }
           if(_h[_i].indexOf('access_token=')===0){ _t = decodeURIComponent(_h[_i].split('=')[1]); break; }
         }
       }
-      if(_t && _u){
+      if(_t){
         document.documentElement.classList.add('is-logged-in');
         document.documentElement.classList.remove('is-logged-out');
       } else {
