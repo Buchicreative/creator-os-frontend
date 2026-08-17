@@ -1205,6 +1205,87 @@ function checkContentPlan(feature){
   return true;
 }
 
+
+function scrollToPanel(panel){
+  var el = document.getElementById('app-section');
+  if(el && AUTH.token){
+    var navH = document.getElementById('navbar').offsetHeight;
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - navH - 8, behavior:'smooth' });
+    setTimeout(function(){ switchPanel(panel); }, 400);
+  }
+}
+
+function openInfoPopup(key){
+  var overlay = document.getElementById('info-popup-overlay');
+  var contentEl = document.getElementById('info-popup-content');
+  var data = {
+    'about': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">About Creator OS</h2>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We believe great content shouldn't take all day. Our platform brings together everything a creator needs — idea generation, script writing, carousel creation, thread writing, content repurposing, and AI-powered video resizing — all in one place.</p>
+<p style="color:var(--muted);line-height:1.8;">Creator OS is built and maintained by a small team passionate about empowering creators to do more with less effort.</p>`,
+    'careers': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Careers</h2>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We're a small, focused team right now — but we're always on the lookout for talented people who are passionate about helping creators grow.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We don't have any open roles at the moment, but if you're an exceptional designer, developer, or content strategist who believes in what we're building, we'd still love to hear from you.</p>
+<p style="color:var(--muted);line-height:1.8;">Send your portfolio or CV to <span style="color:var(--accent);">hello@creatoros.io</span></p>`,
+    'changelog': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2>
+<div style="border-left:2px solid var(--accent);padding-left:1.25rem;margin-bottom:1.5rem;">
+  <div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div>
+  <div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">
+    ✦ Initial launch of Creator OS<br>
+    ✦ AI idea generation, script writing, captions & threads<br>
+    ✦ Carousel creator & content repurposing engine<br>
+    ✦ Video resizer with AI face tracking<br>
+    ✦ Google OAuth & email authentication<br>
+    ✦ Pro & Team subscription plans via Paystack<br>
+    ✦ Projects workspace with unlimited storage (Pro)<br>
+    ✦ Settings panel with 23 content niches
+  </div>
+</div>
+<p style="color:var(--muted);font-size:0.85rem;">More updates coming soon. Follow our journey.</p>`,
+    'privacy': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Privacy Policy</h2>
+<p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS ("we", "us", "our") is committed to protecting your privacy. This policy explains how we collect, use, and protect your information.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Information We Collect</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We collect your name, email address, and content preferences when you create an account. We also store content you generate and save as projects on our platform.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">How We Use Your Information</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use your information to provide and improve the Creator OS service, process payments, and send account-related emails. We do not sell your personal data to third parties.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Data Security</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Your data is stored securely using Supabase infrastructure. Passwords are encrypted and never stored in plain text.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Your Rights</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">You may request deletion of your account and all associated data at any time by contacting us at hello@creatoros.io.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Contact</p>
+<p style="color:var(--muted);line-height:1.8;">For privacy concerns, contact us at <span style="color:var(--accent);">hello@creatoros.io</span></p>`,
+    'terms': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Terms of Service</h2>
+<p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">By using Creator OS, you agree to these terms. Please read them carefully.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Use of Service</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is provided for lawful content creation purposes only. You may not use the platform to generate spam, misleading content, or material that infringes on third-party rights.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Your Content</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Content you create using Creator OS belongs to you. We claim no ownership over your generated content.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Subscriptions & Payments</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis — contact us within 7 days of payment.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Limitation of Liability</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is provided "as is". We are not liable for any indirect or consequential damages arising from your use of the service.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Contact</p>
+<p style="color:var(--muted);line-height:1.8;">For questions about these terms: <span style="color:var(--accent);">hello@creatoros.io</span></p>`,
+    'cookies': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Cookie Policy</h2>
+<p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Last updated: August 2026</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS uses minimal browser storage to provide a better experience.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">What We Store</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use localStorage (not cookies) to store your authentication token, user preferences, and settings locally on your device. This is essential for keeping you logged in and remembering your settings.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Third-Party Services</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use Supabase for authentication, Paystack for payments, and Google Fonts for typography. These services may set their own cookies as described in their respective privacy policies.</p>
+<p style="font-weight:600;margin-bottom:0.5rem;">Your Control</p>
+<p style="color:var(--muted);line-height:1.8;">You can clear all stored data by logging out or clearing your browser's local storage. This will sign you out of Creator OS.</p>`,
+  };
+  if(contentEl && data[key]) contentEl.innerHTML = data[key];
+  if(overlay) overlay.style.display = 'flex';
+}
+function closeInfoPopup(){
+  var overlay = document.getElementById('info-popup-overlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
 function googleAuth(){
   var SUPABASE_URL = 'https://jivujemgzqxouqhahzqi.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_iPOYkt8Ed0yMBUfRN14avA_favEJh1W';
@@ -2745,15 +2826,37 @@ document.addEventListener('keydown',function(e){
 <footer>
   <div class="footer-grid">
     <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Creator OS</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
-    <div class="footer-col"><h4>Product</h4><ul><li><a href="#">Idea Generator</a></li><li><a href="#">Script Writer</a></li><li><a href="#">Carousel Creator</a></li><li><a href="#">Repurposer</a></li><li><a href="#">Video Resizer</a></li></ul></div>
-    <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Changelog</a></li></ul></div>
-    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+    <div class="footer-col"><h4>Product</h4><ul>
+      <li><a onclick="goUpgrade();scrollToPanel('ideas')" style="cursor:pointer;">Idea Generator</a></li>
+      <li><a onclick="goUpgrade();scrollToPanel('create')" style="cursor:pointer;">Script Writer</a></li>
+      <li><a onclick="goUpgrade();scrollToPanel('create')" style="cursor:pointer;">Carousel Creator</a></li>
+      <li><a onclick="goUpgrade();scrollToPanel('repurpose')" style="cursor:pointer;">Repurposer</a></li>
+      <li><a onclick="goUpgrade();scrollToPanel('videoresize')" style="cursor:pointer;">Video Resizer</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Company</h4><ul>
+      <li><a onclick="openInfoPopup('about')" style="cursor:pointer;">About</a></li>
+      <li><a onclick="openInfoPopup('careers')" style="cursor:pointer;">Careers</a></li>
+      <li><a onclick="openInfoPopup('changelog')" style="cursor:pointer;">Changelog</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul>
+      <li><a onclick="openInfoPopup('privacy')" style="cursor:pointer;">Privacy Policy</a></li>
+      <li><a onclick="openInfoPopup('terms')" style="cursor:pointer;">Terms of Service</a></li>
+      <li><a onclick="openInfoPopup('cookies')" style="cursor:pointer;">Cookie Policy</a></li>
+    </ul></div>
   </div>
   <div class="footer-bottom">
     <p>&#169; 2025 Creator OS. All rights reserved.</p>
     <p>Made for creators who mean business.</p>
   </div>
 </footer>
+
+<!-- INFO POPUP -->
+<div id="info-popup-overlay" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;position:relative;">
+    <button onclick="closeInfoPopup()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;">&#x2715;</button>
+    <div id="info-popup-content"></div>
+  </div>
+</div>
 
 <!-- UPGRADE POPUP -->
 
