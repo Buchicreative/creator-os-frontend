@@ -11,8 +11,6 @@
 /* Auth state — set by inline head script before paint */
 html.is-logged-out #hero-loggedin  { display: none !important; }
 html.is-logged-out #hero-loggedout { display: block !important; }
-html.is-logged-in #hero-greeting { opacity: 0; transition: opacity 0.15s; }
-html.is-logged-in.auth-ready #hero-greeting { opacity: 1; }
 html.is-logged-in  #hero-loggedout { display: none !important; }
 html.is-logged-in  #hero-loggedin  { display: block !important; }
 
@@ -113,8 +111,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;display:f
 
 /* HERO AUTH STATE — controlled by class on <html> before paint */
 html.is-logged-out #hero-loggedout { display: block !important; }
-html.is-logged-in #hero-greeting { opacity: 0; transition: opacity 0.15s; }
-html.is-logged-in.auth-ready #hero-greeting { opacity: 1; }
 html.is-logged-out #hero-loggedin  { display: none  !important; }
 html.is-logged-in  #hero-loggedin  { display: block !important; }
 html.is-logged-in  #hero-loggedout { display: none  !important; }
@@ -691,7 +687,6 @@ function updateAuthUI(){
     if(_hg){ _hg.innerHTML = (window._preloadGreet||'Hello') + ', <span id="hero-username" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + window._preloadName + '</span>'; _hg.style.visibility = ''; }
     if(_nn){ _nn.textContent = window._preloadName; }
     window._preloadName = null; window._preloadGreet = null;
-    document.documentElement.classList.add('auth-ready');
   }
   var loggedIn = !!AUTH.user;
   var name     = AUTH.user ? (AUTH.user.name || AUTH.user.email.split('@')[0]) : '';
@@ -2309,7 +2304,7 @@ document.addEventListener('keydown',function(e){
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
       <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
-      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
+      <h1 id="hero-greeting" style="min-height:1.2em;"><span id="hero-username"></span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
         <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
