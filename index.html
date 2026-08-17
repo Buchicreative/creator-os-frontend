@@ -146,7 +146,7 @@ section{position:relative;z-index:1;padding:6rem 2rem;scroll-margin-top:72px;}
 .app-dot{width:10px;height:10px;border-radius:50%;}
 .app-dot:nth-child(1){background:#ff5f56;}.app-dot:nth-child(2){background:#febc2e;}.app-dot:nth-child(3){background:#28c840;}
 .app-url{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.75rem;font-size:0.75rem;color:var(--muted);text-align:center;max-width:260px;margin:0 auto;}
-.app-body{display:grid;grid-template-columns:200px 1fr;min-height:520px;position:relative;}
+.app-body{display:grid;grid-template-columns:200px 1fr;min-height:520px;}
 .app-sidebar{background:rgba(0,0,0,0.3);border-right:1px solid var(--border);padding:1.25rem 0.75rem;}
 .sidebar-logo{font-family:'Outfit',sans-serif;font-size:0.95rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem;padding-left:0.5rem;}
 .sidebar-item{display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.7rem;border-radius:8px;font-size:0.82rem;color:var(--muted);margin-bottom:0.2rem;cursor:pointer;transition:all 0.2s;user-select:none;}
@@ -483,28 +483,15 @@ html.is-logged-in #cta-section { display: none !important; }
 .faq-item[open] summary::after{content:'-';}
 .faq-item p{padding:0 1.5rem 1.25rem;color:var(--muted);font-size:0.88rem;line-height:1.7;margin:0;}
 
-/* MOBILE BOTTOM NAV */
-.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,18,0.97);border-top:1px solid var(--border);backdrop-filter:blur(20px);z-index:1000;padding:0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));justify-content:space-around;align-items:center;}
-.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:0.2rem;padding:0.4rem 0.5rem;cursor:pointer;color:var(--muted);transition:color 0.2s;min-width:44px;}
-.mob-nav-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.mob-nav-item span{font-size:0.6rem;font-weight:500;}
-.mob-nav-item.active{color:var(--accent);}
-
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
   .hamburger{display:flex;}
   .workflows{grid-template-columns:1fr;}
-  .app-body{grid-template-columns:1fr;padding-bottom:75px;display:block;min-height:80vh;}
+  .app-body{grid-template-columns:1fr;}
   .app-sidebar{display:none;}
-  .mobile-bottom-nav{display:flex;}
   .footer-grid{grid-template-columns:1fr 1fr;}
   .pricing-grid{grid-template-columns:1fr 1fr;}
-  #hero-loggedin{padding-bottom:0;}
-  .app-preview{overflow:visible;}
-  /* Override absolute positioning on mobile - use display not opacity */
-  .app-panel{position:static !important;inset:auto !important;display:none !important;opacity:1 !important;transform:none !important;pointer-events:all !important;min-height:50vh;padding:1rem;}
-  .app-panel.active{display:block !important;opacity:1 !important;}
 }
 @media(max-width:680px){
   .pricing-grid{grid-template-columns:1fr;max-width:360px;margin-left:auto;margin-right:auto;}
@@ -533,16 +520,9 @@ html.is-logged-in #cta-section { display: none !important; }
           if(_h[_i].indexOf('access_token=')===0){ _t = decodeURIComponent(_h[_i].split('=')[1]); break; }
         }
       }
-      if(_t && (_u || window.location.hash.indexOf('access_token') >= 0)){
+      if(_t && _u || _t && window.location.hash.indexOf('access_token') >= 0){
         document.documentElement.classList.add('is-logged-in');
         document.documentElement.classList.remove('is-logged-out');
-        /* Store name and greeting for updateAuthUI to use */
-        if(_u && _u.name){
-          var _h2 = new Date().getHours();
-          window._preloadName  = _u.name;
-          window._preloadGreet = _h2 < 12 ? 'Good morning' : _h2 < 17 ? 'Good afternoon' : 'Good evening';
-          window._preloadPlan  = _u.plan || 'free';
-        }
       } else {
         document.documentElement.classList.add('is-logged-out');
         document.documentElement.classList.remove('is-logged-in');
@@ -691,16 +671,6 @@ function clearAuth(){
 }
 
 function updateAuthUI(){
-  /* Apply preloaded name/greeting if set by head script */
-  if(window._preloadName){
-    var _hn = document.getElementById('hero-username');
-    var _hg = document.getElementById('hero-greeting');
-    var _nn = document.getElementById('nav-user-name');
-    if(_hn){ _hn.textContent = window._preloadName; _hn.style.visibility = ''; }
-    if(_hg){ _hg.innerHTML = (window._preloadGreet||'Hello') + ', <span id="hero-username" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + window._preloadName + '</span>'; _hg.style.visibility = ''; }
-    if(_nn){ _nn.textContent = window._preloadName; }
-    window._preloadName = null; window._preloadGreet = null;
-  }
   var loggedIn = !!AUTH.user;
   var name     = AUTH.user ? (AUTH.user.name || AUTH.user.email.split('@')[0]) : '';
   var plan     = AUTH.plan || 'free';
@@ -1132,16 +1102,11 @@ async function cancelSubscription(){
 /* Load saved settings into the panel when it opens */
 function loadSettingsPanel(){
   /* Name */
-  var savedUser = AUTH.user;
-  if(!savedUser) try{ savedUser = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
-
-  /* Show account email (read-only) */
-  var emailDisplay = document.getElementById('settings-email-display');
-  if(emailDisplay && savedUser && savedUser.email) emailDisplay.textContent = savedUser.email;
-
-  /* Display name */
   var nameEl = document.getElementById('settings-name');
   if(nameEl){
+    /* Try AUTH.user first, then localStorage */
+    var savedUser = AUTH.user;
+    if(!savedUser) try{ savedUser = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
     nameEl.value = (savedUser && savedUser.name) ? savedUser.name : '';
   }
 
@@ -1606,10 +1571,6 @@ var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize
 function switchPanel(name){
   document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.sidebar-item').forEach(function(s){s.classList.remove('active');});
-  /* Update mobile bottom nav active state */
-  document.querySelectorAll('.mob-nav-item').forEach(function(m){m.classList.remove('active');});
-  var mobItem = document.getElementById('mobnav-'+name);
-  if(mobItem) mobItem.classList.add('active');
   var panel=document.getElementById('panel-'+name);
   if(panel) panel.classList.add('active');
   var idx=panelNames.indexOf(name);
@@ -2321,7 +2282,7 @@ document.addEventListener('keydown',function(e){
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
       <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
-      <h1 id="hero-greeting" style="min-height:1.2em;"><span id="hero-username"></span></h1>
+      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
         <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
@@ -2372,9 +2333,6 @@ document.addEventListener('keydown',function(e){
               <div class="qa-btn" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg><div class="qa-label">Generate Ideas</div></div>
               <div class="qa-btn" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div class="qa-label">Create Content</div></div>
               <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
-              <div class="qa-btn" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><div class="qa-label">Projects</div></div>
-              <div class="qa-btn" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><div class="qa-label">Video Resize</div></div>
-              <div class="qa-btn" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div class="qa-label">Settings</div></div>
             </div>
             <div class="trending-label">Trending Ideas</div>
             <div class="idea-item" onclick="useIdea('5 mistakes new creators make in their first 90 days')"><span class="idea-dot"></span>5 mistakes new creators make in their first 90 days<span class="idea-tag">Script</span></div>
@@ -2499,13 +2457,6 @@ document.addEventListener('keydown',function(e){
           <div class="app-panel" id="panel-settings">
             <div class="panel-title">Profile &amp; Settings</div>
 
-            <!-- Account Email (read-only) -->
-            <div class="settings-row">
-              <label class="settings-label">Account Email</label>
-              <div id="settings-email-display" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;font-size:0.88rem;color:var(--muted);cursor:not-allowed;">—</div>
-              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">This is the email linked to your account. It cannot be changed here.</div>
-            </div>
-
             <!-- Display Name -->
             <div class="settings-row">
               <label class="settings-label">Display Name</label>
@@ -2573,34 +2524,6 @@ document.addEventListener('keydown',function(e){
       </div>
     </div>
   </div>
-
-      <!-- Mobile bottom navigation -->
-      <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-        <div class="mob-nav-item active" id="mobnav-dashboard" onclick="switchPanel('dashboard')">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          <span>Home</span>
-        </div>
-        <div class="mob-nav-item" id="mobnav-ideas" onclick="switchPanel('ideas')">
-          <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
-          <span>Ideas</span>
-        </div>
-        <div class="mob-nav-item" id="mobnav-create" onclick="switchPanel('create')">
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          <span>Create</span>
-        </div>
-        <div class="mob-nav-item" id="mobnav-projects" onclick="switchPanel('projects')">
-          <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          <span>Projects</span>
-        </div>
-        <div class="mob-nav-item" id="mobnav-videoresize" onclick="switchPanel('videoresize')">
-          <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-          <span>Video</span>
-        </div>
-        <div class="mob-nav-item" id="mobnav-settings" onclick="switchPanel('settings')">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>Settings</span>
-        </div>
-      </nav>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -2651,7 +2574,7 @@ document.addEventListener('keydown',function(e){
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Works on mobile. Create anywhere, anytime</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Save, edit, copy and export in one click</li>
-          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by advanced AI technology</li>
+          <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Powered by the latest GPT-4o AI model</li>
         </ul>
       </div>
       <div class="workflow-visual reveal">
@@ -2776,6 +2699,11 @@ document.addEventListener('keydown',function(e){
       <details class="faq-item">
         <summary>Can I cancel my subscription anytime?</summary>
         <p>Absolutely. You can cancel from your Settings panel at any time. You'll keep full access until the end of your current billing period, then automatically move to the Free plan.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What AI model powers Creator OS?</summary>
+        <p>Creator OS uses OpenAI's GPT-4 to generate ideas, scripts, carousels, captions, threads, and repurposed content. The video face tracking is powered by a custom OpenCV model running on our servers.</p>
       </details>
 
       <details class="faq-item">
