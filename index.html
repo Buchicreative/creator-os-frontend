@@ -473,6 +473,16 @@ function startCheckout(planCode){
 /* Hide CTA section for logged-in users */
 html.is-logged-in #cta-section { display: none !important; }
 
+/* FAQ */
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.2s;}
+.faq-item:hover{border-color:rgba(124,92,252,0.3);}
+.faq-item[open]{border-color:rgba(124,92,252,0.4);}
+.faq-item summary{padding:1.25rem 1.5rem;font-weight:600;font-size:0.95rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--text);}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-size:1.3rem;color:var(--accent);font-weight:300;transition:transform 0.2s;flex-shrink:0;}
+.faq-item[open] summary::after{content:'-';}
+.faq-item p{padding:0 1.5rem 1.25rem;color:var(--muted);font-size:0.88rem;line-height:1.7;margin:0;}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -1064,6 +1074,31 @@ async function saveSettings(){
   }
 }
 
+async function cancelSubscription(){
+  if(!confirm('Are you sure you want to cancel your subscription? You will keep access until the end of your billing period.')) return;
+
+  var btn = document.querySelector('#cancel-sub-wrap button');
+  if(btn){ btn.textContent = 'Cancelling...'; btn.disabled = true; }
+
+  try {
+    if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+    await apiCall('POST', '/payments/cancel', {});
+
+    /* Update local plan */
+    AUTH.plan = 'free';
+    localStorage.setItem('cos_plan', 'free');
+    if(AUTH.user){ AUTH.user.plan = 'free'; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+    VR.plan = 'free';
+    updateAuthUI();
+
+    document.getElementById('cancel-sub-wrap').style.display = 'none';
+    showToast('Subscription cancelled. You have access until end of billing period.');
+  } catch(e){
+    showToast(e.message || 'Could not cancel. Please try again or contact support.');
+    if(btn){ btn.textContent = 'Cancel Subscription'; btn.disabled = false; }
+  }
+}
+
 /* Load saved settings into the panel when it opens */
 function loadSettingsPanel(){
   /* Name */
@@ -1091,6 +1126,11 @@ function loadSettingsPanel(){
   /* Platform */
   var savedPlatform = localStorage.getItem('cos_platform') || 'Instagram';
   selectCdd('cdd-settings-platform', savedPlatform);
+
+  /* Show cancel button only for paid users */
+  var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+  var cancelWrap = document.getElementById('cancel-sub-wrap');
+  if(cancelWrap) cancelWrap.style.display = (plan !== 'free') ? 'block' : 'none';
 }
 function useIdea(idea){ document.getElementById('createIdeaInput').value=idea; switchPanel('create'); }
 /* BILLING TOGGLE */
@@ -2471,6 +2511,13 @@ document.addEventListener('keydown',function(e){
             <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','YouTube')">YouTube</div></div></div></div>
 
             <button class="app-btn-sm" style="width:100%;margin-top:0.5rem;" onclick="saveSettings()">Save Settings</button>
+
+            <!-- Cancel subscription (only shown for paid users) -->
+            <div id="cancel-sub-wrap" style="display:none;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;">Subscription</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;">You'll keep access until the end of your billing period.</div>
+              <button class="app-btn-sm" style="width:100%;background:rgba(255,59,48,0.1);color:#ff3b30;border:1px solid rgba(255,59,48,0.2);" onclick="cancelSubscription()">Cancel Subscription</button>
+            </div>
           </div>
 
         </div>
@@ -2631,6 +2678,54 @@ document.addEventListener('keydown',function(e){
         </ul>
         <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Start Team Plan &#x2192;</button>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding:5rem 0;">
+  <div class="container">
+    <div class="center" style="margin-bottom:3rem;">
+      <span class="section-tag">FAQ</span>
+      <h2 class="section-title">Questions? Answered.</h2>
+    </div>
+    <div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+
+      <details class="faq-item">
+        <summary>Is there a free plan?</summary>
+        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects — no credit card required.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Can I cancel my subscription anytime?</summary>
+        <p>Absolutely. You can cancel from your Settings panel at any time. You'll keep full access until the end of your current billing period, then automatically move to the Free plan.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What AI model powers Creator OS?</summary>
+        <p>Creator OS uses OpenAI's GPT-4 to generate ideas, scripts, carousels, captions, threads, and repurposed content. The video face tracking is powered by a custom OpenCV model running on our servers.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Does it work for any niche?</summary>
+        <p>Yes. Creator OS supports 23 niches out of the box — from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is my content saved?</summary>
+        <p>Yes. Every piece of content you generate can be saved as a project. Free users can save up to 10 projects; Pro and Team users get unlimited storage.</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>What video formats does the resizer support?</summary>
+        <p>The video resizer accepts MP4, MOV, and WebM files. Output is in MP4 format (or WebM as fallback). Supported aspect ratios: 9:16 (Reels/TikTok/Shorts), 1:1 (Instagram), 4:5 (Feed), and 16:9 (YouTube).</p>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is my data private?</summary>
+        <p>Yes. Your content, projects, and account information are stored securely and never shared with third parties. Content you generate belongs to you.</p>
+      </details>
+
     </div>
   </div>
 </section>
