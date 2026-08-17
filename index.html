@@ -1356,18 +1356,24 @@ async function saveSettings(){
   var btn = document.querySelector('#panel-settings .app-btn-sm');
   if(btn){ btn.textContent = 'Saving...'; btn.disabled = true; }
 
+  /* Check token from localStorage directly in case AUTH object is stale */
+  var token = AUTH.token || localStorage.getItem('cos_token');
+
   try {
-    if(AUTH.token){
+    if(token){
       /* Save to backend */
       var body = { niche: niche, tone: tone, platform: platform };
-      if(newName && newName !== AUTH.user.name) body.name = newName;
+      if(newName) body.name = newName;
       await apiCall('POST', '/auth/update-profile', body);
 
       /* Update local auth state */
-      if(newName && AUTH.user){
+      if(newName){
+        if(!AUTH.user) AUTH.user = {};
         AUTH.user.name = newName;
         localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
       }
+    } else {
+      throw new Error('Not logged in');
     }
 
     /* Update greeting on homepage immediately */
