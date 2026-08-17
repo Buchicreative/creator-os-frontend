@@ -673,7 +673,12 @@ function clearAuth(){
 }
 
 function updateAuthUI(){
-  var loggedIn = !!AUTH.user;
+  /* Always restore from localStorage if AUTH object is empty */
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
+  if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
+  if(!AUTH.plan)  AUTH.plan = localStorage.getItem('cos_plan') || 'free';
+
+  var loggedIn = !!(AUTH.token && AUTH.user);
   var name     = AUTH.user ? (AUTH.user.name || AUTH.user.email.split('@')[0]) : '';
   var plan     = AUTH.plan || 'free';
 
