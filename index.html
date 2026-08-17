@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Creator OS | Turn Ideas Into Content in Minutes</title>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" href="/favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -673,12 +671,7 @@ function clearAuth(){
 }
 
 function updateAuthUI(){
-  /* Always restore from localStorage if AUTH object is empty */
-  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
-  if(!AUTH.user)  try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
-  if(!AUTH.plan)  AUTH.plan = localStorage.getItem('cos_plan') || 'free';
-
-  var loggedIn = !!(AUTH.token && AUTH.user);
+  var loggedIn = !!AUTH.user;
   var name     = AUTH.user ? (AUTH.user.name || AUTH.user.email.split('@')[0]) : '';
   var plan     = AUTH.plan || 'free';
 
@@ -696,13 +689,6 @@ function updateAuthUI(){
   }
 
   /* ── Hero state swap ── */
-  if(loggedIn){
-    document.documentElement.classList.add('is-logged-in');
-    document.documentElement.classList.remove('is-logged-out');
-  } else {
-    document.documentElement.classList.add('is-logged-out');
-    document.documentElement.classList.remove('is-logged-in');
-  }
   var heroOut = document.getElementById('hero-loggedout');
   var heroIn  = document.getElementById('hero-loggedin');
   if(heroOut) heroOut.style.display = loggedIn ? 'none'  : 'block';
@@ -1238,7 +1224,7 @@ function openInfoPopup(key){
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We believe great content shouldn't take all day. Our platform brings together everything a creator needs: idea generation, script writing, carousel creation, thread writing, content repurposing, and AI-powered video resizing. All in one place.</p>
 <p style="color:var(--muted);line-height:1.8;">Creator OS is built and maintained by a small team passionate about empowering creators to do more with less effort.</p>`,
     'careers': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;">Careers</h2>
-<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We're a small, focused team right now, but we're always on the lookout for talented people who are passionate about helping creators grow.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We're a small, focused team right now — but we're always on the lookout for talented people who are passionate about helping creators grow.</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We don't have any open roles at the moment, but if you're an exceptional designer, developer, or content strategist who believes in what we're building, we'd still love to hear from you.</p>
 <p style="color:var(--muted);line-height:1.8;">Send your portfolio or CV to <span style="color:var(--accent);">hello@creatoros.io</span></p>`,
     'changelog': `<h2 style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2>
@@ -1264,7 +1250,7 @@ function openInfoPopup(key){
 <p style="font-weight:600;margin-bottom:0.5rem;">How We Use Your Information</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use your information to provide and improve the Creator OS service, process payments, and send account-related emails. We do not sell your personal data to third parties.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Data Security</p>
-<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Your data is stored securely on encrypted servers. Passwords are hashed and never stored in plain text.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Your data is stored securely using Supabase infrastructure. Passwords are encrypted and never stored in plain text.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Your Rights</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">You may request deletion of your account and all associated data at any time by contacting us at hello@creatoros.io.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Contact</p>
@@ -1277,7 +1263,7 @@ function openInfoPopup(key){
 <p style="font-weight:600;margin-bottom:0.5rem;">Your Content</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Content you create using Creator OS belongs to you. We claim no ownership over your generated content.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Subscriptions & Payments</p>
-<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis. Contact us within 48 hours of payment.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Paid plans are billed monthly or yearly. You may cancel at any time. Refunds are handled on a case-by-case basis. Contact us within 7 days of payment.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Limitation of Liability</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is provided "as is". We are not liable for any indirect or consequential damages arising from your use of the service.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Contact</p>
@@ -1288,7 +1274,7 @@ function openInfoPopup(key){
 <p style="font-weight:600;margin-bottom:0.5rem;">What We Store</p>
 <p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use localStorage (not cookies) to store your authentication token, user preferences, and settings locally on your device. This is essential for keeping you logged in and remembering your settings.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Third-Party Services</p>
-<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use trusted external services for authentication, payments, and typography. These services may set their own cookies as described in their respective privacy policies.</p>
+<p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use Supabase for authentication, Paystack for payments, and Google Fonts for typography. These services may set their own cookies as described in their respective privacy policies.</p>
 <p style="font-weight:600;margin-bottom:0.5rem;">Your Control</p>
 <p style="color:var(--muted);line-height:1.8;">You can clear all stored data by logging out or clearing your browser's local storage. This will sign you out of Creator OS.</p>`,
   };
@@ -2201,11 +2187,7 @@ function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+
   if(sel) cddValues[id]=sel.textContent.trim();
 });
 
-/* INIT — restore auth session from localStorage then update UI */
-AUTH.token = localStorage.getItem('cos_token');
-try{ AUTH.user = JSON.parse(localStorage.getItem('cos_user')); }catch(e){}
-AUTH.plan  = localStorage.getItem('cos_plan') || 'free';
-
+/* INIT — restore auth session and run after DOM ready */
 if(AUTH.token && AUTH.user){
   updateAuthUI();
   loadProjects();
@@ -2381,7 +2363,7 @@ document.addEventListener('keydown',function(e){
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
       <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
-      <h1 id="hero-greeting" style="min-height:1.2em;"><span id="hero-username"></span></h1>
+      <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
         <button class="btn-hero" onclick="navScrollTo(event,'app-section')">
