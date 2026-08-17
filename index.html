@@ -520,7 +520,7 @@ html.is-logged-in #cta-section { display: none !important; }
           if(_h[_i].indexOf('access_token=')===0){ _t = decodeURIComponent(_h[_i].split('=')[1]); break; }
         }
       }
-      if(_t && _u || _t && window.location.hash.indexOf('access_token') >= 0){
+      if(_t && _u){
         document.documentElement.classList.add('is-logged-in');
         document.documentElement.classList.remove('is-logged-out');
       } else {
@@ -1249,6 +1249,11 @@ function googleAuth(){
     /* Direct redirect approach */
     window.location.href = SUPABASE_URL + '/auth/v1/authorize?provider=google&redirect_to=' + encodeURIComponent(redirectTo);
   });
+}
+
+/* Clean empty hash from URL (leftover from OAuth redirect) */
+if(window.location.hash === '#' || window.location.hash === '') {
+  window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 /* Handle OAuth callback — Supabase redirects back with access_token in URL hash */
