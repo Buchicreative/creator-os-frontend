@@ -689,10 +689,61 @@ function goUpgrade(){
           <!-- SETTINGS -->
           <div class="app-panel" id="panel-settings">
             <div class="panel-title">Profile &amp; Settings</div>
-            <div class="settings-row"><label class="settings-label">Your Niche</label><div class="cdd" id="cdd-settings-niche"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-niche')" style="width:100%;"><span id="cdd-settings-niche-val">Designer</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-niche-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-niche','Designer')">Designer</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Coach')">Coach</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Business Owner')">Business Owner</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Content Creator')">Content Creator</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Fitness')">Fitness</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Finance')">Finance</div><div class="cdd-option" onclick="selectCdd('cdd-settings-niche','Tech')">Tech</div></div></div></div>
+
+            <!-- Display Name -->
+            <div class="settings-row">
+              <label class="settings-label">Display Name</label>
+              <div style="display:flex;gap:0.5rem;">
+                <input id="settings-name" class="app-input" style="flex:1;" placeholder="Your display name" value="">
+              </div>
+              <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">This is how your name appears on the homepage greeting.</div>
+            </div>
+
+            <!-- Niche -->
+            <div class="settings-row">
+              <label class="settings-label">Your Niche</label>
+              <div class="cdd" id="cdd-settings-niche">
+                <div class="cdd-trigger" onclick="toggleCdd('cdd-settings-niche')" style="width:100%;"><span id="cdd-settings-niche-val">Designer</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                <div class="cdd-menu" id="cdd-settings-niche-menu">
+                  <div class="cdd-option selected" onclick="selectNiche('Designer')">Designer</div>
+                  <div class="cdd-option" onclick="selectNiche('Coach')">Coach</div>
+                  <div class="cdd-option" onclick="selectNiche('Business Owner')">Business Owner</div>
+                  <div class="cdd-option" onclick="selectNiche('Content Creator')">Content Creator</div>
+                  <div class="cdd-option" onclick="selectNiche('Fitness')">Fitness</div>
+                  <div class="cdd-option" onclick="selectNiche('Finance')">Finance</div>
+                  <div class="cdd-option" onclick="selectNiche('Tech')">Tech</div>
+                  <div class="cdd-option" onclick="selectNiche('Photography')">Photography</div>
+                  <div class="cdd-option" onclick="selectNiche('Real Estate')">Real Estate</div>
+                  <div class="cdd-option" onclick="selectNiche('Food &amp; Cooking')">Food &amp; Cooking</div>
+                  <div class="cdd-option" onclick="selectNiche('Travel')">Travel</div>
+                  <div class="cdd-option" onclick="selectNiche('Fashion &amp; Style')">Fashion &amp; Style</div>
+                  <div class="cdd-option" onclick="selectNiche('Beauty &amp; Skincare')">Beauty &amp; Skincare</div>
+                  <div class="cdd-option" onclick="selectNiche('Music')">Music</div>
+                  <div class="cdd-option" onclick="selectNiche('Education')">Education</div>
+                  <div class="cdd-option" onclick="selectNiche('Parenting')">Parenting</div>
+                  <div class="cdd-option" onclick="selectNiche('Health &amp; Wellness')">Health &amp; Wellness</div>
+                  <div class="cdd-option" onclick="selectNiche('Spirituality')">Spirituality</div>
+                  <div class="cdd-option" onclick="selectNiche('Gaming')">Gaming</div>
+                  <div class="cdd-option" onclick="selectNiche('Sports')">Sports</div>
+                  <div class="cdd-option" onclick="selectNiche('Crypto &amp; Web3')">Crypto &amp; Web3</div>
+                  <div class="cdd-option" onclick="selectNiche('Marketing')">Marketing</div>
+                  <div class="cdd-option" onclick="selectNiche('Law &amp; Legal')">Law &amp; Legal</div>
+                  <div class="cdd-option" onclick="selectNiche('Others')">Others (type yours below)</div>
+                </div>
+              </div>
+              <!-- Custom niche input — shows when "Others" is selected -->
+              <div id="custom-niche-wrap" style="display:none;margin-top:0.45rem;">
+                <input id="custom-niche-input" class="app-input" placeholder="Type your niche e.g. Pottery, Astrology, Architecture..." style="width:100%;">
+              </div>
+            </div>
+
+            <!-- Tone -->
             <div class="settings-row"><label class="settings-label">Content Tone</label><div class="cdd" id="cdd-settings-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-tone')" style="width:100%;"><span id="cdd-settings-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Conversational')">Conversational</div></div></div></div>
+
+            <!-- Platform -->
             <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','YouTube')">YouTube</div></div></div></div>
-            <button class="app-btn-sm" style="width:100%;margin-top:0.25rem;" onclick="saveSettings()">Save Settings</button>
+
+            <button class="app-btn-sm" style="width:100%;margin-top:0.5rem;" onclick="saveSettings()">Save Settings</button>
           </div>
 
         </div>
@@ -1275,7 +1326,106 @@ function showToast(msg){
   t.textContent=msg; t.style.transform='translateX(-50%) translateY(0)'; t.style.opacity='1';
   clearTimeout(t._timer); t._timer=setTimeout(function(){ t.style.transform='translateX(-50%) translateY(80px)'; t.style.opacity='0'; },2600);
 }
-function saveSettings(){ showToast('Settings saved!'); }
+function selectNiche(val){
+  cddValues['cdd-settings-niche'] = val;
+  var valEl = document.getElementById('cdd-settings-niche-val');
+  if(valEl) valEl.textContent = val;
+  var menu = document.getElementById('cdd-settings-niche-menu');
+  if(menu) menu.querySelectorAll('.cdd-option').forEach(function(o){ o.classList.toggle('selected', o.textContent.trim().startsWith(val)); });
+  closeCdds();
+  /* Show custom input if Others selected */
+  var wrap = document.getElementById('custom-niche-wrap');
+  if(wrap) wrap.style.display = (val === 'Others') ? 'block' : 'none';
+}
+
+async function saveSettings(){
+  /* Get display name */
+  var nameEl = document.getElementById('settings-name');
+  var newName = nameEl ? nameEl.value.trim() : '';
+
+  /* Get niche — use custom input if Others */
+  var niche = cddValues['cdd-settings-niche'] || 'Designer';
+  if(niche === 'Others'){
+    var custom = document.getElementById('custom-niche-input');
+    niche = custom && custom.value.trim() ? custom.value.trim() : 'Others';
+  }
+
+  var tone     = cddValues['cdd-settings-tone'] || 'Bold';
+  var platform = cddValues['cdd-settings-platform'] || 'Instagram';
+
+  var btn = document.querySelector('#panel-settings .app-btn-sm');
+  if(btn){ btn.textContent = 'Saving...'; btn.disabled = true; }
+
+  try {
+    if(AUTH.token){
+      /* Save to backend */
+      var body = { niche: niche, tone: tone, platform: platform };
+      if(newName && newName !== AUTH.user.name) body.name = newName;
+      await apiCall('POST', '/auth/update-profile', body);
+
+      /* Update local auth state */
+      if(newName && AUTH.user){
+        AUTH.user.name = newName;
+        localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
+      }
+    }
+
+    /* Update greeting on homepage immediately */
+    if(newName){
+      var heroUser = document.getElementById('hero-username');
+      var navName  = document.getElementById('nav-user-name');
+      var mobUser  = document.getElementById('mob-user-name');
+      var greet    = document.getElementById('greeting-text');
+      if(heroUser) heroUser.textContent = newName;
+      if(navName)  navName.textContent  = newName;
+      if(mobUser)  mobUser.textContent  = newName;
+      if(greet && AUTH.user){
+        var h = new Date().getHours();
+        var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+        greet.textContent = g + ', ' + newName;
+      }
+    }
+
+    /* Save to localStorage for non-logged-in fallback */
+    localStorage.setItem('cos_niche',    niche);
+    localStorage.setItem('cos_tone',     tone);
+    localStorage.setItem('cos_platform', platform);
+
+    showToast('Settings saved!');
+  } catch(e){
+    /* Still save locally even if backend fails */
+    localStorage.setItem('cos_niche',    niche);
+    localStorage.setItem('cos_tone',     tone);
+    localStorage.setItem('cos_platform', platform);
+    showToast('Saved locally. Changes will sync when back online.');
+  } finally {
+    if(btn){ btn.textContent = 'Save Settings'; btn.disabled = false; }
+  }
+}
+
+/* Load saved settings into the panel when it opens */
+function loadSettingsPanel(){
+  /* Name */
+  var nameEl = document.getElementById('settings-name');
+  if(nameEl && AUTH.user) nameEl.value = AUTH.user.name || '';
+
+  /* Niche */
+  var savedNiche = localStorage.getItem('cos_niche') || 'Designer';
+  selectNiche(savedNiche);
+  if(savedNiche !== 'Others'){
+    cddValues['cdd-settings-niche'] = savedNiche;
+    var valEl = document.getElementById('cdd-settings-niche-val');
+    if(valEl) valEl.textContent = savedNiche;
+  }
+
+  /* Tone */
+  var savedTone = localStorage.getItem('cos_tone') || 'Bold';
+  selectCdd('cdd-settings-tone', savedTone);
+
+  /* Platform */
+  var savedPlatform = localStorage.getItem('cos_platform') || 'Instagram';
+  selectCdd('cdd-settings-platform', savedPlatform);
+}
 function useIdea(idea){ document.getElementById('createIdeaInput').value=idea; switchPanel('create'); }
 function googleAuth(){
   apiCall('GET', '/auth/google')
@@ -1456,6 +1606,7 @@ function switchPanel(name){
   var items=document.querySelectorAll('.sidebar-item');
   if(idx>=0&&items[idx]) items[idx].classList.add('active');
   if(name==='videoresize') setTimeout(vrInitDrop,50);
+  if(name==='settings') loadSettingsPanel();
 }
 
 /* ═══ VIDEO RESIZE ═══ */
