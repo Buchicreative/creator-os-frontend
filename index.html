@@ -483,6 +483,19 @@ html.is-logged-in #cta-section { display: none !important; }
 .faq-item[open] summary::after{content:'-';}
 .faq-item p{padding:0 1.5rem 1.25rem;color:var(--muted);font-size:0.88rem;line-height:1.7;margin:0;}
 
+/* MOBILE BACK BUTTON */
+.panel-back-btn{display:none;}
+@media(max-width:960px){
+  .panel-back-btn{
+    display:inline-flex;align-items:center;gap:0.4rem;
+    background:none;border:none;color:var(--muted);cursor:pointer;
+    font-size:0.82rem;font-weight:600;padding:0 0 1rem 0;
+    transition:color 0.2s;
+  }
+  .panel-back-btn:hover{color:var(--accent);}
+  .panel-back-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .nav-links,.nav-cta{display:none;}
@@ -2401,7 +2414,8 @@ document.addEventListener('keydown',function(e){
 
           <!-- IDEAS -->
           <div class="app-panel" id="panel-ideas">
-            <div class="panel-title">Idea Generator</div>
+            <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
+              <div class="panel-title">Idea Generator</div>
             <div class="input-row">
               <input id="nicheInput" class="app-input" placeholder="Your niche (fitness, design, finance...)">
               <div class="cdd" id="cdd-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
@@ -2413,7 +2427,8 @@ document.addEventListener('keydown',function(e){
 
           <!-- CREATE -->
           <div class="app-panel" id="panel-create">
-            <div class="panel-title">Content Creator</div>
+            <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
+              <div class="panel-title">Content Creator</div>
             <div class="format-tabs">
               <div class="format-tab active" onclick="selectTab(this,'script')">Script</div>
               <div class="format-tab" onclick="selectTab(this,'carousel')">Carousel</div>
@@ -2435,7 +2450,8 @@ document.addEventListener('keydown',function(e){
 
           <!-- REPURPOSE -->
           <div class="app-panel" id="panel-repurpose">
-            <div class="panel-title">Content Repurposer</div>
+            <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
+              <div class="panel-title">Content Repurposer</div>
             <textarea id="repurposeInput" class="app-input" style="width:100%;resize:vertical;min-height:80px;margin-bottom:0.6rem;" placeholder="Paste your existing content here..."></textarea>
             <div class="row-gap">
               <div class="cdd" id="cdd-repurpose-target" style="flex:1;"><div class="cdd-trigger" onclick="toggleCdd('cdd-repurpose-target')" style="width:100%;"><span id="cdd-repurpose-target-val">Twitter / X Thread</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-repurpose-target-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-repurpose-target','Twitter / X Thread')">Twitter / X Thread</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','LinkedIn Post')">LinkedIn Post</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Instagram Caption')">Instagram Caption</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Reel Script')">Reel Script</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','YouTube Description')">YouTube Description</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Email Newsletter')">Email Newsletter</div></div></div>
@@ -2448,13 +2464,15 @@ document.addEventListener('keydown',function(e){
 
           <!-- PROJECTS -->
           <div class="app-panel" id="panel-projects">
-            <div class="panel-title">Saved Projects</div>
+            <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
+              <div class="panel-title">Saved Projects</div>
             <div id="projects-list"><div class="empty-state" id="projects-empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>No saved projects yet.<br>Create content and save it here.</div></div>
           </div>
 
           <!-- VIDEO RESIZE -->
           <div class="app-panel" id="panel-videoresize">
-            <div class="panel-title">Video Auto Resize</div>
+            <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
+              <div class="panel-title">Video Auto Resize</div>
             <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
             <div class="vr-upload-zone" id="vr-upload-zone">
               <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
@@ -2514,7 +2532,8 @@ document.addEventListener('keydown',function(e){
 
           <!-- SETTINGS -->
           <div class="app-panel" id="panel-settings">
-            <div class="panel-title">Profile &amp; Settings</div>
+            <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
+              <div class="panel-title">Profile &amp; Settings</div>
 
             <!-- Account Email (read-only) -->
             <div class="settings-row">
