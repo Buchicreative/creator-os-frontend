@@ -541,7 +541,7 @@ html.is-logged-in #cta-section { display: none !important; }
       <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
     </div>
     <h3 id="upgrade-popup-title">Pro Feature</h3>
-    <p id="upgrade-popup-desc">AI Face Tracking is only available on the Pro and Team plans. Upgrade to keep your subject perfectly in frame, every single shot.</p>
+    <p id="upgrade-popup-desc">AI Face Tracking is only available on the Pro and Creator plans. Upgrade to keep your subject perfectly in frame, every single shot.</p>
     <ul class="upgrade-popup-features">
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Server-side AI face detection</li>
       <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Smooth subject tracking every frame</li>
@@ -733,8 +733,8 @@ function updateAuthUI(){
         planBadge.innerHTML = '<span class="badge-dot"></span> Pro Plan. Unlimited Access &#10024;';
         statPlan.textContent = 'Pro';
       } else if(plan === 'team'){
-        planBadge.innerHTML = '<span class="badge-dot"></span> Team Plan. Unlimited Access &#10024;';
-        statPlan.textContent = 'Team';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Creator Plan. Unlimited Access &#10024;';
+        statPlan.textContent = 'Creator';
       } else {
         planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
         statPlan.textContent = 'Free';
@@ -1171,7 +1171,7 @@ function toggleBilling(yearly){
     if(proPrice)  proPrice.textContent  = '$10';
     if(proPeriod) proPeriod.textContent = 'per year · save 2 months ($12 value)';
     if(teamPrice)  teamPrice.textContent  = '$45';
-    if(teamPeriod) teamPeriod.textContent = 'per year · up to 5 seats · save 2 months';
+    if(teamPeriod) teamPeriod.textContent = 'per year · save 2 months';
   } else {
     if(monthLabel) monthLabel.classList.add('active');
     if(yearLabel)  yearLabel.classList.remove('active');
@@ -1180,7 +1180,7 @@ function toggleBilling(yearly){
     if(proPrice)  proPrice.textContent  = '$1';
     if(proPeriod) proPeriod.textContent = 'per month · billed monthly';
     if(teamPrice)  teamPrice.textContent  = '$4.5';
-    if(teamPeriod) teamPeriod.textContent = 'per member/month · up to 5 seats';
+    if(teamPeriod) teamPeriod.textContent = 'per month';
   }
 }
 
@@ -1210,12 +1210,12 @@ function checkContentPlan(feature){
     if(feature === 'carousel' || feature === 'thread'){
       openUpgradePopup(
         'Pro Feature: ' + (feature === 'carousel' ? 'Carousel Generator' : 'Thread Writer'),
-        (feature === 'carousel' ? 'Carousel creation' : 'Twitter/X thread writing') + ' is available on Pro and Team plans. Upgrade for unlimited access to all content formats.'
+        (feature === 'carousel' ? 'Carousel creation' : 'Twitter/X thread writing') + ' is available on Pro and Creator plans. Upgrade for unlimited access to all content formats.'
       );
       return false;
     }
     if(feature === 'repurpose'){
-      openUpgradePopup('Pro Feature: Content Repurposer', 'The repurposing engine is available on Pro and Team plans. Turn one post into 6 formats with a single click.');
+      openUpgradePopup('Pro Feature: Content Repurposer', 'The repurposing engine is available on Pro and Creator plans. Turn one post into 6 formats with a single click.');
       return false;
     }
   }
@@ -1228,7 +1228,7 @@ function openInfoPopup(key){
   var d={
     about:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">About Creator OS</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p><p style="color:var(--muted);line-height:1.8;">We believe great content should not take all day. Our platform brings together everything a creator needs in one place.</p>',
     careers:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Careers</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We are a small, focused team right now, but we are always on the lookout for talented people passionate about helping creators grow.</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">No open roles at the moment, but if you are an exceptional designer, developer, or content strategist, we would love to hear from you.</p><p style="color:var(--muted);">Send your CV to <span style="color:var(--accent);">hello@creatoros.io</span></p>',
-    changelog:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2><div style="border-left:2px solid var(--accent);padding-left:1.25rem;"><div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div><div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">Launch of Creator OS with AI idea generation, script writing, carousels, captions, threads, repurposing engine, video resizer with AI face tracking, Google OAuth, email auth, Pro and Team plans via Paystack, projects workspace, and settings with 23 niches.</div></div>',
+    changelog:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2><div style="border-left:2px solid var(--accent);padding-left:1.25rem;"><div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div><div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">Launch of Creator OS with AI idea generation, script writing, carousels, captions, threads, repurposing engine, video resizer with AI face tracking, Google OAuth, email auth, Pro and Creator plans via Paystack, projects workspace, and settings with 23 niches.</div></div>',
     privacy:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Privacy Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We collect your name, email, and preferences when you sign up. We store content you generate and save as projects. We do not sell your data to third parties. Your data is stored on encrypted servers. Passwords are hashed. You may request account deletion at any time.</p><p style="color:var(--muted);">Contact: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
     terms:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Terms of Service</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is for lawful content creation only. Content you create belongs to you. Paid plans are billed monthly or yearly and can be cancelled anytime. Refunds are case-by-case — contact us within 48 hours of payment.</p><p style="color:var(--muted);">Contact: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
     cookies:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Cookie Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use localStorage to store your auth token, preferences, and settings locally. We use trusted external services for authentication, payments, and typography. You can clear all data by logging out or clearing browser storage.</p>'
@@ -1819,7 +1819,7 @@ function vrSelectFormat(el, fmt){
 }
 
 function vrSelectRes(el, res){
-  if(el.classList.contains('locked')){ openUpgradePopup('Pro Feature: High Resolution', '2K and 4K output resolution is available on Pro and Team plans. Free users can export up to 1080p Full HD.'); return; }
+  if(el.classList.contains('locked')){ openUpgradePopup('Pro Feature: High Resolution', '2K and 4K output resolution is available on Pro and Creator plans. Free users can export up to 1080p Full HD.'); return; }
   document.querySelectorAll('#vr-res-grid .vr-option-card').forEach(function(c){c.classList.remove('selected');});
   el.classList.add('selected'); VR.res = res;
 
@@ -2461,8 +2461,8 @@ document.addEventListener('keydown',function(e){
               <div class="vr-options-grid" id="vr-res-grid">
                 <div class="vr-option-card selected" onclick="vrSelectRes(this,'720p')"><div class="vr-opt-title">720p HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
                 <div class="vr-option-card" onclick="vrSelectRes(this,'1080p')"><div class="vr-opt-title">1080p Full HD</div><div class="vr-opt-desc">Free &amp; all plans</div></div>
-                <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
-                <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Team only</div></div>
+                <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Creator only</div></div>
+                <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Creator only</div></div>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
                 <div>
@@ -2698,8 +2698,8 @@ document.addEventListener('keydown',function(e){
         <div class="price-amount" id="pro-price" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$1</div>
         <div class="price-period" id="pro-period">per month · billed monthly</div>
         <ul class="price-features">
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited idea generation</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 20 idea generations/day</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 20 content pieces/day</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts, Captions &amp; Carousels</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Full repurposing engine</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resize + 2K/4K</li>
@@ -2709,21 +2709,21 @@ document.addEventListener('keydown',function(e){
         <button class="btn-hero" id="pro-upgrade-btn" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'pro_yearly':'pro_monthly')">Upgrade to Pro &#x2192;</button>
       </div>
 
-      <!-- TEAM -->
+      <!-- CREATOR -->
       <div class="price-card reveal">
-        <div class="price-name">Team</div>
+        <div class="price-name">Creator</div>
         <div class="price-amount" id="team-price">$4.5</div>
-        <div class="price-period" id="team-period">per member/month · up to 5 seats</div>
+        <div class="price-period" id="team-period">per month</div>
         <ul class="price-features">
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited idea generation</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited content creation</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Everything in Pro</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Up to 5 team members</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Each member gets full Pro access</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Shared projects workspace</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Team brand voice settings</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resize + 2K/4K</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> AI face tracking</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
         </ul>
-        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Start Team Plan &#x2192;</button>
+        <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Get Creator Plan &#x2192;</button>
       </div>
     </div>
   </div>
@@ -2755,7 +2755,7 @@ document.addEventListener('keydown',function(e){
 
       <details class="faq-item">
         <summary>Is my content saved?</summary>
-        <p>Yes. Every piece of content you generate can be saved as a project. Free users can save up to 10 projects; Pro and Team users get unlimited storage.</p>
+        <p>Yes. Every piece of content you generate can be saved as a project. Free users can save up to 10 projects; Pro and Creator users get unlimited storage.</p>
       </details>
 
       <details class="faq-item">
