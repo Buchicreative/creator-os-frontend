@@ -898,14 +898,9 @@ async function generateIdeas(){
   btn.disabled=true; loading.classList.add('show'); output.innerHTML='';
   try {
     var ideas;
-    if(OPENAI_KEY){
-      var raw = await callOpenAI('You are a world-class content strategist for '+platform+' creators. Return ONLY a numbered list of ideas, no intro or explanation.','Generate 8 high-performing content ideas for a '+niche+' creator on '+platform+'. Each idea: complete headline, max 12 words. Numbered list only.');
-      ideas = raw.split('\n').filter(function(l){return l.trim();}).map(function(l){return l.replace(/^\d+[\.\)]\s*/,'').trim();}).filter(Boolean);
-    } else {
-      await delay(700);
-      var key = Object.keys(ideasDB).find(function(k){return niche.toLowerCase().includes(k);})||'default';
-      ideas = ideasDB[key];
-    }
+    /* Always use backend — never call OpenAI directly from frontend */
+    var data = await apiCall('POST', '/ai/ideas', { niche: niche, platform: platform });
+    ideas = data.ideas || [];
     renderIdeas(ideas, platform, niche);
   } catch(e){
     output.innerHTML='<div class="out-label">Error</div><div style="color:#ff5f56;font-size:0.8rem;">'+escHtml(e.message)+'</div>';
