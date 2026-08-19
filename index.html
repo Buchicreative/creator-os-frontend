@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crevers | Turn Ideas Into Content in Minutes</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
@@ -2285,7 +2286,7 @@ document.addEventListener('keydown',function(e){
 
 <!-- NAV -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">Crevers</a>
+  <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="text-decoration:none;display:flex;align-items:center;"><img src="/logo.svg" alt="Crevers" style="height:28px;width:auto;"></a>
   <ul class="nav-links">
     <li><a onclick="navScrollTo(event,'how')">How it Works</a></li>
     <li><a onclick="navScrollTo(event,'features')">Features</a></li>
@@ -2383,7 +2384,7 @@ document.addEventListener('keydown',function(e){
       <div class="app-body">
         <!-- SIDEBAR -->
         <div class="app-sidebar">
-          <div class="sidebar-logo">Crevers</div>
+          <div class="sidebar-logo"><img src="/logo.svg" alt="Crevers" style="height:22px;width:auto;"></div>
           <div class="sidebar-item active" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
           <div class="sidebar-item" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>Ideas</div>
           <div class="sidebar-item" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Create</div>
@@ -2830,7 +2831,7 @@ document.addEventListener('keydown',function(e){
 <!-- FOOTER -->
 <footer>
   <div class="footer-grid">
-    <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Crevers</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
+    <div class="footer-brand"><a href="#"><img src="/logo.svg" alt="Crevers" style="height:24px;width:auto;margin-bottom:0.5rem;display:block;"></a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
     <div class="footer-col"><h4>Product</h4><ul>
       <li><a onclick="footerNav('ideas')" style="cursor:pointer;">Idea Generator</a></li>
       <li><a onclick="footerNav('create')" style="cursor:pointer;">Script Writer</a></li>
