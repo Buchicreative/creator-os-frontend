@@ -2439,11 +2439,13 @@ document.addEventListener('keydown',function(e){
           <div class="app-panel" id="panel-ideas">
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Idea Generator</div>
-            <div class="input-row">
-              <input id="nicheInput" class="app-input" placeholder="Your niche (fitness, design, finance...)">
-              <div class="cdd" id="cdd-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
-              <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:nowrap;">
-                <button class="app-btn-sm" id="ideas-btn" onclick="generateIdeas()" style="flex:1;min-width:0;">Generate</button>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem;">
+              <!-- Row 1: Niche input full width -->
+              <input id="nicheInput" class="app-input" style="width:100%;" placeholder="Your niche (fitness, design, finance...)">
+              <!-- Row 2: Platform + Generate + Refresh on same line -->
+              <div style="display:flex;gap:0.5rem;align-items:center;">
+                <div class="cdd" id="cdd-platform" style="flex:1;min-width:0;"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
+                <button class="app-btn-sm" id="ideas-btn" onclick="generateIdeas()" style="flex-shrink:0;white-space:nowrap;">Generate</button>
                 <button onclick="generateIdeas()" title="Refresh ideas" style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.45rem 0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">
                   <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
                 </button>
