@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creator OS | Turn Ideas Into Content in Minutes</title>
+<title>Crevers | Turn Ideas Into Content in Minutes</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1240,11 +1240,11 @@ function openInfoPopup(key){
   var overlay=document.getElementById('info-popup-overlay');
   var el=document.getElementById('info-popup-content');
   var d={
-    about:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">About Creator OS</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p><p style="color:var(--muted);line-height:1.8;">We believe great content should not take all day. Our platform brings together everything a creator needs in one place.</p>',
+    about:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">About Crevers</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Crevers is an AI-powered content creation platform built for modern creators, coaches, business owners, and anyone who wants to grow their online presence without burning out.</p><p style="color:var(--muted);line-height:1.8;">We believe great content should not take all day. Our platform brings together everything a creator needs in one place.</p>',
     careers:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Careers</h2><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We are a small, focused team right now, but we are always on the lookout for talented people passionate about helping creators grow.</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">No open roles at the moment, but if you are an exceptional designer, developer, or content strategist, we would love to hear from you.</p><p style="color:var(--muted);">Send your CV to <span style="color:var(--accent);">hello@creatoros.io</span></p>',
-    changelog:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2><div style="border-left:2px solid var(--accent);padding-left:1.25rem;"><div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div><div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">Launch of Creator OS with AI idea generation, script writing, carousels, captions, threads, repurposing engine, video resizer with AI face tracking, Google OAuth, email auth, Pro and Creator plans via Paystack, projects workspace, and settings with 23 niches.</div></div>',
+    changelog:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1.5rem;">Changelog</h2><div style="border-left:2px solid var(--accent);padding-left:1.25rem;"><div style="font-weight:700;margin-bottom:0.25rem;">v1.0.0 — August 2026</div><div style="color:var(--muted);font-size:0.88rem;line-height:1.8;">Launch of Crevers with AI idea generation, script writing, carousels, captions, threads, repurposing engine, video resizer with AI face tracking, Google OAuth, email auth, Pro and Creator plans via Paystack, projects workspace, and settings with 23 niches.</div></div>',
     privacy:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Privacy Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We collect your name, email, and preferences when you sign up. We store content you generate and save as projects. We do not sell your data to third parties. Your data is stored on encrypted servers. Passwords are hashed. You may request account deletion at any time.</p><p style="color:var(--muted);">Contact: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
-    terms:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Terms of Service</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Creator OS is for lawful content creation only. Content you create belongs to you. Paid plans are billed monthly or yearly and can be cancelled anytime. Refunds are case-by-case — contact us within 48 hours of payment.</p><p style="color:var(--muted);">Contact: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
+    terms:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Terms of Service</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">Crevers is for lawful content creation only. Content you create belongs to you. Paid plans are billed monthly or yearly and can be cancelled anytime. Refunds are case-by-case — contact us within 48 hours of payment.</p><p style="color:var(--muted);">Contact: <span style="color:var(--accent);">hello@creatoros.io</span></p>',
     cookies:'<h2 style="font-family:Outfit,sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;">Cookie Policy</h2><p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem;">Last updated: August 2026</p><p style="color:var(--muted);line-height:1.8;margin-bottom:1rem;">We use localStorage to store your auth token, preferences, and settings locally. We use trusted external services for authentication, payments, and typography. You can clear all data by logging out or clearing browser storage.</p>'
   };
   if(el&&d[key])el.innerHTML=d[key];
@@ -1591,7 +1591,7 @@ async function doSignup(){
     var data = await apiCall('POST', '/auth/signup', { name: name, email: email, password: pass });
     saveAuth(data);
     closeModal('signupModal');
-    showToast('Welcome to Creator OS, ' + data.user.name + '!');
+    showToast('Welcome to Crevers, ' + data.user.name + '!');
     loadProjects();
     /* Scroll to dashboard after short delay */
     setTimeout(function(){
@@ -2220,7 +2220,7 @@ document.addEventListener('keydown',function(e){
   <div class="modal">
     <button class="modal-close" onclick="closeModal('loginModal')">&#x2715;</button>
     <h2>Welcome back</h2>
-    <p class="modal-sub">Log in to your Creator OS account</p>
+    <p class="modal-sub">Log in to your Crevers account</p>
     <button class="btn-google" onclick="googleAuth()">
       <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
       Continue with Google
@@ -2285,7 +2285,7 @@ document.addEventListener('keydown',function(e){
 
 <!-- NAV -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">Creator OS</a>
+  <a href="#" class="nav-logo">Crevers</a>
   <ul class="nav-links">
     <li><a onclick="navScrollTo(event,'how')">How it Works</a></li>
     <li><a onclick="navScrollTo(event,'features')">Features</a></li>
@@ -2378,12 +2378,12 @@ document.addEventListener('keydown',function(e){
     <div class="app-preview reveal">
       <div class="app-bar">
         <div class="app-dots"><span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span></div>
-        <div class="app-url">app.creatorOS.io/dashboard</div>
+        <div class="app-url">app.crevers.io/dashboard</div>
       </div>
       <div class="app-body">
         <!-- SIDEBAR -->
         <div class="app-sidebar">
-          <div class="sidebar-logo">Creator OS</div>
+          <div class="sidebar-logo">Crevers</div>
           <div class="sidebar-item active" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
           <div class="sidebar-item" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>Ideas</div>
           <div class="sidebar-item" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Create</div>
@@ -2618,7 +2618,7 @@ document.addEventListener('keydown',function(e){
     <div class="center">
       <span class="section-tag">The Process</span>
       <h2 class="section-title">From Idea to Published<br>in 3 Simple Steps</h2>
-      <p class="section-desc">No more staring at blank screens. Creator OS handles the heavy lifting so you can focus on your audience.</p>
+      <p class="section-desc">No more staring at blank screens. Crevers handles the heavy lifting so you can focus on your audience.</p>
     </div>
     <div class="how-steps">
       <div class="step-card reveal"><span class="step-num">01</span><div class="step-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg></div><h3>Get AI-Powered Ideas</h3><p>Tell us your niche and platform. We generate 8 scroll-stopping, curiosity-driven ideas tailored to you instantly.</p></div>
@@ -2654,7 +2654,7 @@ document.addEventListener('keydown',function(e){
       <div class="workflow-text reveal">
         <span class="section-tag">Your Workflow</span>
         <h2>Built for the Creator<br>Who Won't Slow Down</h2>
-        <p>Creator OS is more than a tool. It's a daily habit. Log in, generate, create, publish. Repeat.</p>
+        <p>Crevers is more than a tool. It's a daily habit. Log in, generate, create, publish. Repeat.</p>
         <ul class="workflow-list">
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Personalized to your niche and tone</li>
           <li><span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Supports Instagram, TikTok, Twitter &amp; LinkedIn</li>
@@ -2789,7 +2789,7 @@ document.addEventListener('keydown',function(e){
 
       <details class="faq-item">
         <summary>Does it work for any niche?</summary>
-        <p>Yes. Creator OS supports 23 niches out of the box: from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
+        <p>Yes. Crevers supports 23 niches out of the box: from fitness and finance to fashion, real estate, music, gaming, and more. You can also type in a custom niche if yours isn't listed.</p>
       </details>
 
       <details class="faq-item">
@@ -2825,7 +2825,7 @@ document.addEventListener('keydown',function(e){
 <!-- FOOTER -->
 <footer>
   <div class="footer-grid">
-    <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Creator OS</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
+    <div class="footer-brand"><a href="#" class="nav-logo" style="font-size:1.25rem;">Crevers</a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
     <div class="footer-col"><h4>Product</h4><ul>
       <li><a onclick="footerNav('ideas')" style="cursor:pointer;">Idea Generator</a></li>
       <li><a onclick="footerNav('create')" style="cursor:pointer;">Script Writer</a></li>
@@ -2837,7 +2837,7 @@ document.addEventListener('keydown',function(e){
     <div class="footer-col"><h4>Legal</h4><ul><li><a onclick="openInfoPopup('privacy')" style="cursor:pointer;">Privacy Policy</a></li><li><a onclick="openInfoPopup('terms')" style="cursor:pointer;">Terms of Service</a></li><li><a onclick="openInfoPopup('cookies')" style="cursor:pointer;">Cookie Policy</a></li></ul></div>
   </div>
   <div class="footer-bottom">
-    <p>&#169; 2025 Creator OS. All rights reserved.</p>
+    <p>&#169; 2025 Crevers. All rights reserved.</p>
     <p>Made for creators who mean business.</p>
   </div>
 </footer>
