@@ -367,6 +367,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;display:f
 #nav-logout-btn{border-color:rgba(252,92,125,0.3);color:var(--accent2);}
 #nav-logout-btn:hover{border-color:var(--accent2);background:rgba(252,92,125,0.08);}
 
+/* Remove underline from all inline upgrade/plan links */
+.hero-badge a, #hero-plan-badge a, .plan-badge a { text-decoration: none !important; }
+
 /* HERO AUTH STATE — controlled by class on <html> before paint */
 html.is-logged-out #hero-loggedout { display: block !important; }
 html.is-logged-out #hero-loggedin  { display: none  !important; }
@@ -2912,7 +2915,7 @@ document.addEventListener('keydown',function(e){
           <div class="app-panel" id="panel-videoresize">
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Video Auto Resize</div>
-            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a href="#signup" onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
+            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a href="#signup" onclick="openModal('signupModal')" style="text-decoration:none;color:var(--accent2);font-weight:700;">Upgrade to Pro</a> for unlimited.</span></div>
             <div class="vr-upload-zone" id="vr-upload-zone">
               <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
               <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
