@@ -1336,7 +1336,7 @@ function renderProjects(){
       if(e.target.tagName === 'BUTTON') return;
       openProjectPreview(p.id);
     };
-    d.innerHTML='<div style="display:flex;align-items:center;gap:0.45rem;width:100%;"><span class="idea-dot"></span><span style="flex:1;font-weight:600;font-size:0.8rem;">'+escHtml(p.title)+'</span><span class="idea-tag">'+escHtml(p.format)+'</span><button onclick="deleteProject('+p.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.1rem 0.3rem;font-size:0.78rem;" onmouseover="this.style.color=\'#ff5f56\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715;</button></div><div style="font-size:0.7rem;color:var(--muted);padding-left:1rem;">'+escHtml(p.date)+'</div>';
+    d.innerHTML='<div style="display:flex;align-items:center;gap:0.45rem;width:100%;"><span class="idea-dot"></span><span style="flex:1;font-weight:600;font-size:0.8rem;">'+escHtml(p.title)+'</span><span class="idea-tag">'+escHtml(p.format)+'</span><button onclick="deleteProject(\''+p.id+'\')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.1rem 0.3rem;font-size:0.78rem;" onmouseover="this.style.color=\'#ff5f56\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715;</button></div><div style="font-size:0.7rem;color:var(--muted);padding-left:1rem;">'+escHtml(p.date)+'</div>';
     list.appendChild(d);
   });
 }
