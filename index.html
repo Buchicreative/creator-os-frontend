@@ -54,15 +54,112 @@ html.is-logged-out #mob-user-name      { display: none !important; }
 
 :root{--bg:#050508;--surface:#0d0d14;--surface2:#141420;--border:rgba(255,255,255,0.07);--accent:#7c5cfc;--accent2:#fc5c7d;--accent3:#5cf0d0;--text:#f0eeff;--muted:#8885a8;--glow:rgba(124,92,252,0.35);}
 html.light-theme{--bg:#f8f8ff;--surface:#ffffff;--surface2:#f0efff;--border:rgba(124,92,252,0.12);--accent:#7c5cfc;--accent2:#fc5c7d;--accent3:#0ea87a;--text:#1a1825;--muted:#6b6880;--glow:rgba(124,92,252,0.12);}
-html.light-theme body{background:var(--bg);color:var(--text);}
-html.light-theme .blobs{opacity:0.15;}
-html.light-theme .navbar{background:rgba(248,248,255,0.92);border-bottom:1px solid var(--border);}
-html.light-theme .app-preview{box-shadow:0 20px 60px rgba(124,92,252,0.1);}
-html.light-theme .price-card{box-shadow:none;}
-html.light-theme .logo-dark{display:none;}
+html.light-theme body{background:var(--bg) !important;color:var(--text) !important;}
+html.light-theme .blobs{opacity:0.08;}
+html.light-theme body::before{opacity:0.03;}
+
+/* NAV */
+html.light-theme .navbar{background:rgba(248,248,255,0.95) !important;border-bottom:1px solid var(--border);box-shadow:0 1px 20px rgba(124,92,252,0.08);}
+html.light-theme .btn-ghost{border-color:var(--border);color:var(--text);}
+html.light-theme .hamburger span{background:var(--text);}
+html.light-theme .mobile-menu{background:var(--surface);}
+
+/* HERO */
+html.light-theme .hero-badge{background:rgba(124,92,252,0.08);border-color:rgba(124,92,252,0.2);color:var(--accent);}
+html.light-theme .badge-dot{background:var(--accent);}
+html.light-theme .hero-sub{color:var(--muted);}
+html.light-theme .hero-stat-val{color:var(--accent);}
+html.light-theme .hero-stat-lbl{color:var(--muted);}
+html.light-theme .btn-hero-ghost{border-color:var(--border);color:var(--text);}
+
+/* APP PREVIEW */
+html.light-theme .app-preview{background:var(--surface);border-color:var(--border);box-shadow:0 20px 60px rgba(124,92,252,0.1);}
+html.light-theme .app-bar{background:var(--surface2);border-color:var(--border);}
+html.light-theme .app-url{background:rgba(124,92,252,0.05);color:var(--muted);}
+html.light-theme .app-sidebar{background:var(--surface2);border-color:var(--border);}
+html.light-theme .sidebar-item{color:var(--muted);}
+html.light-theme .sidebar-item.active{background:rgba(124,92,252,0.1);color:var(--accent);}
+html.light-theme .app-panel{background:var(--surface);}
+html.light-theme .qa-btn{background:var(--surface2);border-color:var(--border);}
+html.light-theme .qa-btn:hover{border-color:var(--accent);background:rgba(124,92,252,0.05);}
+html.light-theme .qa-label{color:var(--muted);}
+html.light-theme .idea-item{background:var(--surface2);border-color:var(--border);}
+html.light-theme .app-greeting{color:var(--text);}
+html.light-theme .app-sub-text{color:var(--muted);}
+html.light-theme .trending-label{color:var(--muted);}
+
+/* SECTIONS */
+html.light-theme .section-tag{color:var(--accent);}
+html.light-theme .section-title{color:var(--text);}
+html.light-theme .workflow-card{background:var(--surface);border-color:var(--border);}
+html.light-theme .workflow-card h3{color:var(--text);}
+html.light-theme .workflow-card p{color:var(--muted);}
+html.light-theme .feat-card{background:var(--surface2);border-color:var(--border);}
+html.light-theme .feat-card h3{color:var(--text);}
+html.light-theme .feat-card p{color:var(--muted);}
+html.light-theme .feat-icon{background:rgba(124,92,252,0.1);}
+
+/* PRICING */
+html.light-theme .price-card{background:var(--surface);border-color:var(--border);box-shadow:0 4px 20px rgba(124,92,252,0.06);}
+html.light-theme .price-card.featured-card{background:linear-gradient(135deg,rgba(124,92,252,0.08),rgba(252,92,125,0.05));border-color:rgba(124,92,252,0.3);}
+html.light-theme .price-name{color:var(--muted);}
+html.light-theme .price-period{color:var(--muted);}
+html.light-theme .tick{color:var(--muted);}
+html.light-theme .cross{color:#ccc;}
+html.light-theme .billing-toggle-wrap{background:var(--surface2);}
+
+/* FAQ */
+html.light-theme .faq-item{background:var(--surface);border-color:var(--border);}
+html.light-theme .faq-item summary{color:var(--text);}
+html.light-theme .faq-item p{color:var(--muted);}
+
+/* TESTIMONIALS */
+html.light-theme .testimonial-card{background:var(--surface);border-color:var(--border);}
+html.light-theme .t-name{color:var(--text);}
+html.light-theme .t-handle{color:var(--muted);}
+html.light-theme .t-text{color:var(--muted);}
+
+/* PANELS */
+html.light-theme .app-input{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .app-input::placeholder{color:var(--muted);}
+html.light-theme .output-box{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .cdd-trigger{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .cdd-menu{background:var(--surface);border-color:var(--border);}
+html.light-theme .cdd-option{color:var(--text);}
+html.light-theme .cdd-option:hover{background:var(--surface2);}
+html.light-theme .format-card{background:var(--surface2);border-color:var(--border);}
+html.light-theme .format-card.active{border-color:var(--accent);background:rgba(124,92,252,0.08);}
+html.light-theme .panel-title{color:var(--text);}
+html.light-theme .app-btn-sm{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .panel-back-btn{color:var(--muted);}
+html.light-theme .project-card{background:var(--surface2);border-color:var(--border);}
+html.light-theme .proj-title{color:var(--text);}
+html.light-theme .proj-meta{color:var(--muted);}
+html.light-theme .settings-label{color:var(--muted);}
+html.light-theme .settings-row{border-color:var(--border);}
+html.light-theme .niche-chip{background:var(--surface2);border-color:var(--border);color:var(--muted);}
+html.light-theme .niche-chip.active{background:rgba(124,92,252,0.1);border-color:var(--accent);color:var(--accent);}
+
+/* MODALS */
+html.light-theme .modal-box{background:var(--surface);border-color:var(--border);}
+html.light-theme .modal-title{color:var(--text);}
+html.light-theme .modal-sub{color:var(--muted);}
+html.light-theme .form-input{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .form-input::placeholder{color:var(--muted);}
+html.light-theme .form-label{color:var(--muted);}
+
+/* FOOTER */
+html.light-theme footer{background:var(--surface2);border-color:var(--border);}
+html.light-theme .footer-col h4{color:var(--muted);}
+html.light-theme .footer-col ul li a{color:var(--muted);}
+html.light-theme .footer-bottom p{color:var(--muted);}
+html.light-theme .footer-bottom{border-color:var(--border);}
+
+/* LOGO SWITCHING */
+html.light-theme .logo-dark{display:none !important;}
 html.light-theme .logo-light{display:block !important;}
-html:not(.light-theme) .logo-light{display:none;}
-html:not(.light-theme) .logo-dark{display:block;}
+html:not(.light-theme) .logo-light{display:none !important;}
+html:not(.light-theme) .logo-dark{display:block !important;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;scroll-padding-top:72px;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;overflow-x:hidden;line-height:1.6;}
@@ -2367,6 +2464,15 @@ document.addEventListener('keydown',function(e){
   <a onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
 
   <!-- Logged out buttons -->
+  <!-- Theme toggle in mobile menu -->
+  <div style="padding:0.5rem 0;border-bottom:1px solid var(--border);margin-bottom:0.5rem;">
+    <button onclick="toggleTheme()" style="display:flex;align-items:center;gap:0.75rem;background:none;border:none;color:var(--muted);font-size:0.88rem;font-weight:500;cursor:pointer;padding:0.4rem 0;width:100%;font-family:'DM Sans',sans-serif;">
+      <svg class="icon-moon" viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span class="icon-moon">Switch to Light Mode</span>
+      <span class="icon-sun" style="display:none;">Switch to Dark Mode</span>
+    </button>
+  </div>
   <div id="mob-loggedout-btns" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;width:100%;align-items:center;">
     <button class="btn-hero" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('signupModal')">Start Creating Free &#x2192;</button>
     <button class="btn-hero-ghost" style="width:80%;justify-content:center;" onclick="toggleMenu();openModal('loginModal')">Log In</button>
