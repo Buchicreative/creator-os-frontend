@@ -1921,6 +1921,20 @@ function vrLoadScriptMP(src){
 }
 
 function vrToggleTracking(enabled){
+  /* Gate AI tracking for Pro/Creator only */
+  if(enabled){
+    var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+    if(plan === 'free'){
+      /* Reset toggle back to off */
+      var cb = document.querySelector('#vr-face-toggle input[type="checkbox"]');
+      if(cb) cb.checked = false;
+      openUpgradePopup(
+        'Pro Feature: AI Face Tracking',
+        'AI Face Tracking is only available on Pro and Creator plans. Upgrade to keep your subject perfectly in frame, every single shot.'
+      );
+      return;
+    }
+  }
   VR.trackingEnabled = enabled;
   var badge = document.getElementById('vr-face-badge');
   var track = document.getElementById('vr-toggle-track');
