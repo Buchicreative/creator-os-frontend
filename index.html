@@ -1022,7 +1022,7 @@ function updateAuthUI(){
         planBadge.innerHTML = '<span class="badge-dot"></span> Creator Plan. Unlimited Access <svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:3px;" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
         statPlan.textContent = 'Creator';
       } else {
-        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a>';
         statPlan.textContent = 'Free';
       }
     }
@@ -2027,7 +2027,7 @@ function vrHandleFile(file){
     document.getElementById('vr-dur').textContent = vrFmtTime(dur);
     document.getElementById('vr-dim').textContent = vid.videoWidth + 'x' + vid.videoHeight;
     if(VR.plan === 'free' && dur > VR.maxFreeSecs){
-      document.getElementById('vr-plan-msg').innerHTML = 'Free plan: your video is <strong>'+vrFmtTime(dur)+'</strong>. Max is 3:00. <a style="cursor:pointer;color:var(--accent2);font-weight:700;" onclick="openModal(&quot;signupModal&quot;)">Upgrade to Pro</a> for unlimited.';
+      document.getElementById('vr-plan-msg').innerHTML = 'Free plan: your video is <strong>'+vrFmtTime(dur)+'</strong>. Max is 3:00. <a href="#signup" style="cursor:pointer;color:var(--accent2);font-weight:700;" onclick="openModal(&quot;signupModal&quot;)">Upgrade to Pro</a> for unlimited.';
       document.getElementById('vr-plan-notice').classList.add('show');
       document.getElementById('vr-process-btn').disabled = true;
     }
@@ -2653,9 +2653,9 @@ document.addEventListener('keydown',function(e){
     </div>
     <button class="modal-btn" onclick="doLogin()">Log In &#x2192;</button>
     <div style="text-align:center;margin-top:0.6rem;">
-      <a onclick="doForgotPassword()" style="font-size:0.8rem;color:var(--muted);cursor:pointer;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Forgot your password?</a>
+      <a href="#forgot" onclick="doForgotPassword()" style="font-size:0.8rem;color:var(--muted);cursor:pointer;text-decoration:none;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Forgot your password?</a>
     </div>
-    <div class="modal-switch">No account? <a onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
+    <div class="modal-switch">No account? <a href="#signup" onclick="switchModal('loginModal','signupModal')">Sign up free</a></div>
   </div>
 </div>
 
@@ -2694,7 +2694,7 @@ document.addEventListener('keydown',function(e){
       <div class="pw-hint" id="su-confirm-hint"></div>
     </div>
     <button class="modal-btn" onclick="doSignup()">Create Free Account &#x2192;</button>
-    <div class="modal-switch">Have an account? <a onclick="switchModal('signupModal','loginModal')">Log in</a></div>
+    <div class="modal-switch">Have an account? <a href="#login" onclick="switchModal('signupModal','loginModal')">Log in</a></div>
   </div>
 </div>
 
@@ -2702,10 +2702,10 @@ document.addEventListener('keydown',function(e){
 <nav id="navbar">
   <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="text-decoration:none;display:flex;align-items:center;"><img src="/logo.svg" alt="Crevers" class="logo-dark" style="height:28px;width:auto;"><img src="/logo-light.svg" alt="Crevers" class="logo-light" style="height:28px;width:auto;display:none;"></a>
   <ul class="nav-links">
-    <li><a onclick="navScrollTo(event,'how')">How it Works</a></li>
-    <li><a onclick="navScrollTo(event,'features')">Features</a></li>
-    <li><a onclick="navScrollTo(event,'pricing')">Pricing</a></li>
-    <li><a onclick="navScrollTo(event,'testimonials')">Reviews</a></li>
+    <li><a href="#how" href="#how" onclick="navScrollTo(event,'how')">How it Works</a></li>
+    <li><a href="#features" onclick="navScrollTo(event,'features')">Features</a></li>
+    <li><a href="#pricing" onclick="navScrollTo(event,'pricing')">Pricing</a></li>
+    <li><a href="#testimonials" onclick="navScrollTo(event,'testimonials')">Reviews</a></li>
   </ul>
   <div class="nav-cta">
     <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
@@ -2713,7 +2713,7 @@ document.addEventListener('keydown',function(e){
       <svg class="icon-sun" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
     <button id="nav-login-btn" class="btn-ghost" onclick="openModal('loginModal')">Log In</button>
-    <button id="nav-signup-btn" class="btn-primary" onclick="openModal('signupModal')">Start Free &#x2192;</button>
+    <button id="nav-signup-btn" class="btn-primary" href="#signup" onclick="openModal('signupModal')">Start Free &#x2192;</button>
     <span id="nav-user-name" style="display:none;color:var(--text);font-size:0.875rem;font-weight:500;"></span>
     <button id="nav-logout-btn" style="display:none;" class="btn-ghost" onclick="doLogout()">Log Out</button>
   </div>
@@ -2727,10 +2727,10 @@ document.addEventListener('keydown',function(e){
   <!-- Logged in: show user name -->
   <div id="mob-user-name" style="display:none;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem;"></div>
 
-  <a onclick="toggleMenu();navScrollTo(event,'how')">How it Works</a>
-  <a onclick="toggleMenu();navScrollTo(event,'features')">Features</a>
-  <a onclick="toggleMenu();navScrollTo(event,'pricing')">Pricing</a>
-  <a onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
+  <a href="#how" onclick="toggleMenu();navScrollTo(event,'how')">How it Works</a>
+  <a href="#features" onclick="toggleMenu();navScrollTo(event,'features')">Features</a>
+  <a href="#pricing" onclick="toggleMenu();navScrollTo(event,'pricing')">Pricing</a>
+  <a href="#testimonials" onclick="toggleMenu();navScrollTo(event,'testimonials')">Reviews</a>
 
   <!-- Logged out buttons -->
   <!-- Theme toggle in mobile menu -->
@@ -2764,8 +2764,8 @@ document.addEventListener('keydown',function(e){
       <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
       <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content. All powered by AI.</p>
       <div class="hero-actions">
-        <button class="btn-hero" onclick="openModal('signupModal')">Start Creating Free &#x2192;</button>
-        <a href="javascript:void(0)" onclick="navScrollTo(event,'how')" class="btn-hero-ghost">
+        <button class="btn-hero" href="#signup" onclick="openModal('signupModal')">Start Creating Free &#x2192;</button>
+        <a href="javascript:void(0)" href="#how" onclick="navScrollTo(event,'how')" class="btn-hero-ghost">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           See How It Works
         </a>
@@ -2779,7 +2779,7 @@ document.addEventListener('keydown',function(e){
 
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
-      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
+      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;">Upgrade to Pro &#x2192;</a></div>
       <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
@@ -2787,7 +2787,7 @@ document.addEventListener('keydown',function(e){
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           Go to Dashboard
         </button>
-        <button class="btn-hero-ghost" onclick="navScrollTo(event,'how')">See How It Works</button>
+        <button class="btn-hero-ghost" href="#how" href="#how" onclick="navScrollTo(event,'how')">See How It Works</button>
       </div>
       <!-- Quick stats for logged in user -->
       <div class="hero-stats" id="hero-user-stats">
@@ -2909,7 +2909,7 @@ document.addEventListener('keydown',function(e){
           <div class="app-panel" id="panel-videoresize">
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Video Auto Resize</div>
-            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
+            <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a href="#signup" onclick="openModal('signupModal')">Upgrade to Pro</a> for unlimited.</span></div>
             <div class="vr-upload-zone" id="vr-upload-zone">
               <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
               <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
@@ -3265,14 +3265,14 @@ document.addEventListener('keydown',function(e){
   <div class="footer-grid">
     <div class="footer-brand"><a href="#"><img src="/logo.svg" alt="Crevers" class="logo-dark" style="height:24px;width:auto;margin-bottom:0.5rem;display:block;"><img src="/logo-light.svg" alt="Crevers" class="logo-light" style="height:24px;width:auto;margin-bottom:0.5rem;display:none;"></a><p>The all-in-one content operating system for creators who want to grow without burning out.</p></div>
     <div class="footer-col"><h4>Product</h4><ul>
-      <li><a onclick="footerNav('ideas')" style="cursor:pointer;">Idea Generator</a></li>
-      <li><a onclick="footerNav('create')" style="cursor:pointer;">Script Writer</a></li>
-      <li><a onclick="footerNav('create')" style="cursor:pointer;">Carousel Creator</a></li>
-      <li><a onclick="footerNav('repurpose')" style="cursor:pointer;">Repurposer</a></li>
-      <li><a onclick="footerNav('videoresize')" style="cursor:pointer;">Video Resizer</a></li>
+      <li><a href="#app-section" onclick="footerNav('ideas')" style="cursor:pointer;">Idea Generator</a></li>
+      <li><a href="#app-section" onclick="footerNav('create')" style="cursor:pointer;">Script Writer</a></li>
+      <li><a href="#app-section" onclick="footerNav('create')" style="cursor:pointer;">Carousel Creator</a></li>
+      <li><a href="#app-section" onclick="footerNav('repurpose')" style="cursor:pointer;">Repurposer</a></li>
+      <li><a href="#app-section" onclick="footerNav('videoresize')" style="cursor:pointer;">Video Resizer</a></li>
     </ul></div>
-    <div class="footer-col"><h4>Company</h4><ul><li><a onclick="openInfoPopup('about')" style="cursor:pointer;">About</a></li><li><a onclick="openInfoPopup('careers')" style="cursor:pointer;">Careers</a></li><li><a onclick="openInfoPopup('changelog')" style="cursor:pointer;">Changelog</a></li></ul></div>
-    <div class="footer-col"><h4>Legal</h4><ul><li><a onclick="openInfoPopup('privacy')" style="cursor:pointer;">Privacy Policy</a></li><li><a onclick="openInfoPopup('terms')" style="cursor:pointer;">Terms of Service</a></li><li><a onclick="openInfoPopup('cookies')" style="cursor:pointer;">Cookie Policy</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="#about" onclick="openInfoPopup('about')" style="cursor:pointer;">About</a></li><li><a href="#careers" onclick="openInfoPopup('careers')" style="cursor:pointer;">Careers</a></li><li><a href="#changelog" onclick="openInfoPopup('changelog')" style="cursor:pointer;">Changelog</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#privacy" onclick="openInfoPopup('privacy')" style="cursor:pointer;">Privacy Policy</a></li><li><a href="#terms" onclick="openInfoPopup('terms')" style="cursor:pointer;">Terms of Service</a></li><li><a href="#cookies" onclick="openInfoPopup('cookies')" style="cursor:pointer;">Cookie Policy</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <p>&#169; 2026 Crevers. All rights reserved.</p>
