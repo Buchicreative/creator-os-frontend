@@ -27,7 +27,13 @@ http.createServer(function(req, res) {
     var filePath = path.join(__dirname, urlPath);
     fs.readFile(filePath, function(err, data){
       if(err){ res.writeHead(404); res.end('Not found'); return; }
-      res.writeHead(200, { 'Content-Type': MIME[ext] });
+      /* Cache static assets for 30 days */
+      var cacheAge = 60 * 60 * 24 * 30; /* 30 days in seconds */
+      res.writeHead(200, {
+        'Content-Type'  : MIME[ext],
+        'Cache-Control' : 'public, max-age=' + cacheAge + ', immutable',
+        'Vary'          : 'Accept-Encoding',
+      });
       res.end(data);
     });
     return;
