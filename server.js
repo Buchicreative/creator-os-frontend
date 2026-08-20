@@ -10,8 +10,12 @@ const MIME = {
   '.ico' : 'image/x-icon',
   '.png' : 'image/png',
   '.jpg' : 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.css' : 'text/css',
   '.js'  : 'application/javascript',
+  '.xml' : 'application/xml',
+  '.txt' : 'text/plain',
+  '.webp': 'image/webp',
 };
 
 http.createServer(function(req, res) {
