@@ -1944,7 +1944,7 @@ async function doLogout(){
   showToast('Logged out.');
 }
 
-async async function loadProjects(){
+async function loadProjects(){
   if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
   if(!AUTH.token) return;
   try {
