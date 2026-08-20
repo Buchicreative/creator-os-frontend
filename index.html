@@ -2223,11 +2223,11 @@ async function vrProcess(){
     canvas.width = outW; canvas.height = outH;
     var ctx = canvas.getContext('2d', {alpha:false});
 
-    var mimes = ['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
+    var mimes = ['video/mp4;codecs=avc1.42E01E','video/mp4;codecs=avc1','video/webm;codecs=vp9,opus','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
     console.log('[VR] mime:', mime, 'size:', outW+'x'+outH, 'dur:', dur);
 
-    var canvasStream = canvas.captureStream(30); /* single capture — reused for audio merge */
+    var canvasStream = canvas.captureStream(VR._trackFPS || 30); /* single capture — reused for audio merge */
     var stream   = canvasStream;
     var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
     var chunks   = [];
@@ -2294,7 +2294,7 @@ async function vrProcess(){
       console.warn('[VR] Audio merge failed:', ae.message, '— continuing video only');
     }
 
-    recorder.start(250);
+    recorder.start(100);
 
     /* STEP 8: Render loop */
     await new Promise(function(resolve){
@@ -2340,9 +2340,15 @@ async function vrProcess(){
         var pct = Math.min(18+Math.round((procVid.currentTime/dur)*78),97);
         progBar.style.width=pct+'%';
         progLbl.textContent=(faceTimeline.length>0?'AI tracking... ':'Converting... ')+pct+'%';
-        /* Throttle to video fps to reduce CPU load */
-        var frameDelay = Math.max(1000 / (VR._trackFPS || 30), 16);
-        setTimeout(function(){ if(!stopped) rafId = requestAnimationFrame(loop); }, frameDelay);
+        /* Throttle to video fps */
+        var frameDelay = 1000 / (VR._trackFPS || 30);
+        if(frameDelay <= 17){
+          /* 60fps — use rAF directly for smoothness */
+          rafId = requestAnimationFrame(loop);
+        } else {
+          /* Lower fps — throttle with setTimeout */
+          setTimeout(function(){ if(!stopped) rafId = requestAnimationFrame(loop); }, frameDelay - 8);
+        }
       }
       rafId = requestAnimationFrame(loop);
     });
