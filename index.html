@@ -2157,6 +2157,53 @@ async function vrProcess(){
     var srcW = procVid.videoWidth;
     var srcH = procVid.videoHeight;
     var dur  = procVid.duration;
+
+    /* STEP: Detect actual video FPS by measuring frame timestamps */
+    var detectedFPS = await new Promise(function(resolve){
+      if('requestVideoFrameCallback' in HTMLVideoElement.prototype){
+        /* Modern browsers — measure actual frame interval */
+        var frameCount = 0;
+        var firstTime  = null;
+        var lastTime   = null;
+        var tempVid    = document.createElement('video');
+        tempVid.src    = VR.objectURL;
+        tempVid.muted  = true;
+        tempVid.playbackRate = 4; /* Speed up sampling */
+        var cbId;
+        function sampleFrame(now, meta){
+          if(firstTime === null) firstTime = meta.mediaTime;
+          lastTime = meta.mediaTime;
+          frameCount++;
+          if(frameCount >= 10){
+            /* Calculate fps from samples */
+            var elapsed = lastTime - firstTime;
+            var fps = elapsed > 0 ? Math.round((frameCount - 1) / elapsed) : 30;
+            /* Round to common fps values */
+            if(fps <= 24) fps = 24;
+            else if(fps <= 30) fps = 30;
+            else if(fps <= 48) fps = 48;
+            else if(fps <= 60) fps = 60;
+            else fps = 60;
+            tempVid.pause();
+            tempVid.src = '';
+            console.log('[VR] Detected video FPS:', fps);
+            resolve(fps);
+          } else {
+            cbId = tempVid.requestVideoFrameCallback(sampleFrame);
+          }
+        }
+        tempVid.requestVideoFrameCallback(sampleFrame);
+        tempVid.play().catch(function(){ resolve(30); });
+        /* Timeout fallback */
+        setTimeout(function(){ tempVid.pause(); tempVid.src=''; resolve(30); }, 3000);
+      } else {
+        /* Fallback for browsers without requestVideoFrameCallback */
+        resolve(30);
+      }
+    });
+
+    VR._trackFPS = VR._trackFPS || detectedFPS;
+    console.log('[VR] Using FPS:', VR._trackFPS);
     if(!srcW || !srcH || !dur || isNaN(dur)) throw new Error('Could not read video. Please try again.');
 
     /* STEP 3: Output dimensions */
