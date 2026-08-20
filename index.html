@@ -2296,30 +2296,29 @@ async function vrProcess(){
 
     recorder.start(100);
 
-    /* STEP 8: Render loop */
+    /* STEP 8: Render loop — use requestVideoFrameCallback when available for perfect frame sync */
     await new Promise(function(resolve){
       var rafId;
+      var vfcId;
       var stopped = false;
 
-      function stop(){ if(stopped) return; stopped=true; cancelAnimationFrame(rafId); resolve(); }
+      function stop(){
+        if(stopped) return;
+        stopped = true;
+        if(rafId) cancelAnimationFrame(rafId);
+        resolve();
+      }
 
-      /* Safety timeout — stop if video takes too long */
       var safetyTimer = setTimeout(function(){ console.warn('[VR] Safety timeout fired'); stop(); }, (dur+10)*1000);
-
       procVid.onended = function(){ clearTimeout(safetyTimer); stop(); };
 
-      function loop(){
+      function drawFrame(){
         if(stopped) return;
-        if(procVid.ended || procVid.currentTime >= dur - 0.05){
-          ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH);
-          clearTimeout(safetyTimer); stop(); return;
-        }
 
         /* Update crop from face timeline */
         if(faceTimeline.length > 0){
           var ct = procVid.currentTime;
           var lo=null, hi=null;
-          /* Binary search for performance */
           var l=0, r=faceTimeline.length-1;
           while(l<=r){ var m=Math.floor((l+r)/2); if(faceTimeline[m].t<=ct){ lo=faceTimeline[m]; l=m+1; } else { hi=faceTimeline[m]; r=m-1; } }
           var fx=(VR._lastFx!==undefined)?VR._lastFx:0.5;
@@ -2340,17 +2339,40 @@ async function vrProcess(){
         var pct = Math.min(18+Math.round((procVid.currentTime/dur)*78),97);
         progBar.style.width=pct+'%';
         progLbl.textContent=(faceTimeline.length>0?'AI tracking... ':'Converting... ')+pct+'%';
-        /* Throttle to video fps */
-        var frameDelay = 1000 / (VR._trackFPS || 30);
-        if(frameDelay <= 17){
-          /* 60fps — use rAF directly for smoothness */
-          rafId = requestAnimationFrame(loop);
-        } else {
-          /* Lower fps — throttle with setTimeout */
-          setTimeout(function(){ if(!stopped) rafId = requestAnimationFrame(loop); }, frameDelay - 8);
-        }
       }
-      rafId = requestAnimationFrame(loop);
+
+      if('requestVideoFrameCallback' in HTMLVideoElement.prototype){
+        /* Perfect frame sync — fires exactly when new frame is ready */
+        console.log('[VR] Using requestVideoFrameCallback for render loop');
+        function vfcLoop(now, meta){
+          if(stopped) return;
+          if(procVid.ended || procVid.currentTime >= dur - 0.05){
+            drawFrame(); clearTimeout(safetyTimer); stop(); return;
+          }
+          drawFrame();
+          procVid.requestVideoFrameCallback(vfcLoop);
+        }
+        procVid.requestVideoFrameCallback(vfcLoop);
+      } else {
+        /* Fallback: rAF throttled to video fps */
+        console.log('[VR] Falling back to requestAnimationFrame render loop');
+        function loop(){
+          if(stopped) return;
+          if(procVid.ended || procVid.currentTime >= dur - 0.05){
+            drawFrame(); clearTimeout(safetyTimer); stop(); return;
+          }
+          drawFrame();
+          var frameDelay = 1000 / (VR._trackFPS || 30);
+          if(frameDelay <= 17){
+            rafId = requestAnimationFrame(loop);
+          } else {
+            setTimeout(function(){ if(!stopped) rafId = requestAnimationFrame(loop); }, frameDelay - 8);
+          }
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* dummy — replaced below */
     });
 
     procVid.pause();
