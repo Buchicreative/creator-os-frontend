@@ -1269,13 +1269,56 @@ function saveToProjects(outputId, titleId){
     renderProjects(); showToast('Saved to Projects!');
   }
 }
+var _previewProjectId = null;
+
+function openProjectPreview(id){
+  var p = projects.find(function(x){ return x.id === id; });
+  if(!p) return;
+  _previewProjectId = id;
+  document.getElementById('preview-title').textContent = p.title;
+  document.getElementById('preview-format').textContent = p.format + ' · ' + p.date;
+  document.getElementById('preview-content').textContent = p.content || 'No content saved.';
+  document.getElementById('project-preview-overlay').style.display = 'flex';
+}
+
+function closeProjectPreview(){
+  document.getElementById('project-preview-overlay').style.display = 'none';
+  _previewProjectId = null;
+}
+
+function copyProjectContent(){
+  var el = document.getElementById('preview-content');
+  if(!el) return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(el.textContent).then(function(){ showToast('Copied to clipboard!'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = el.textContent;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Copied to clipboard!');
+  }
+}
+
+function deleteProjectFromPreview(){
+  if(!_previewProjectId) return;
+  if(!confirm('Delete this project? This cannot be undone.')) return;
+  deleteProject(_previewProjectId);
+  closeProjectPreview();
+}
+
 function deleteProject(id){
   if(AUTH.token){
-    apiCall('DELETE', '/projects/'+id).catch(function(){});
+    apiCall('DELETE', '/projects/'+id).then(function(){
+      showToast('Project deleted.');
+    }).catch(function(e){ showToast('Could not delete: ' + e.message); });
   }
-  projects=projects.filter(function(p){return p.id!==id;});
-  try{localStorage.setItem('cos_projects',JSON.stringify(projects));}catch(e){}
+  projects = projects.filter(function(p){ return p.id !== id; });
+  try{ localStorage.setItem('cos_projects', JSON.stringify(projects)); }catch(e){}
   renderProjects();
+  updateAuthUI();
 }
 function renderProjects(){
   var list=document.getElementById('projects-list');
@@ -1288,6 +1331,11 @@ function renderProjects(){
   projects.forEach(function(p){
     var d=document.createElement('div'); d.className='idea-item';
     d.style.cssText='flex-direction:column;align-items:flex-start;gap:0.25rem;cursor:default;';
+    d.style.cursor = 'pointer';
+    d.onclick = function(e){
+      if(e.target.tagName === 'BUTTON') return;
+      openProjectPreview(p.id);
+    };
     d.innerHTML='<div style="display:flex;align-items:center;gap:0.45rem;width:100%;"><span class="idea-dot"></span><span style="flex:1;font-weight:600;font-size:0.8rem;">'+escHtml(p.title)+'</span><span class="idea-tag">'+escHtml(p.format)+'</span><button onclick="deleteProject('+p.id+')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.1rem 0.3rem;font-size:0.78rem;" onmouseover="this.style.color=\'#ff5f56\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715;</button></div><div style="font-size:0.7rem;color:var(--muted);padding-left:1rem;">'+escHtml(p.date)+'</div>';
     list.appendChild(d);
   });
