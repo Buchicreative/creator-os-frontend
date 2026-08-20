@@ -2270,10 +2270,9 @@ async function vrProcess(){
         if(faceTimeline.length > 0){
           var ct = procVid.currentTime;
           var lo=null, hi=null;
-          for(var i=0;i<faceTimeline.length;i++){
-            if(faceTimeline[i].t<=ct) lo=faceTimeline[i];
-            if(faceTimeline[i].t>=ct&&!hi) hi=faceTimeline[i];
-          }
+          /* Binary search for performance */
+          var l=0, r=faceTimeline.length-1;
+          while(l<=r){ var m=Math.floor((l+r)/2); if(faceTimeline[m].t<=ct){ lo=faceTimeline[m]; l=m+1; } else { hi=faceTimeline[m]; r=m-1; } }
           var fx=(VR._lastFx!==undefined)?VR._lastFx:0.5;
           var fy=(VR._lastFy!==undefined)?VR._lastFy:0.5;
           if(lo&&hi&&lo!==hi){
@@ -2292,7 +2291,9 @@ async function vrProcess(){
         var pct = Math.min(18+Math.round((procVid.currentTime/dur)*78),97);
         progBar.style.width=pct+'%';
         progLbl.textContent=(faceTimeline.length>0?'AI tracking... ':'Converting... ')+pct+'%';
-        rafId = requestAnimationFrame(loop);
+        /* Throttle to video fps to reduce CPU load */
+        var frameDelay = Math.max(1000 / (VR._trackFPS || 30), 16);
+        setTimeout(function(){ if(!stopped) rafId = requestAnimationFrame(loop); }, frameDelay);
       }
       rafId = requestAnimationFrame(loop);
     });
