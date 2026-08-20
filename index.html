@@ -1944,7 +1944,8 @@ async function doLogout(){
   showToast('Logged out.');
 }
 
-async function loadProjects(){
+async async function loadProjects(){
+  if(!AUTH.token) AUTH.token = localStorage.getItem('cos_token');
   if(!AUTH.token) return;
   try {
     var data = await apiCall('GET', '/projects');
@@ -2600,7 +2601,7 @@ function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+
 /* INIT — restore auth session and run after DOM ready */
 if(AUTH.token && AUTH.user){
   updateAuthUI();
-  loadProjects();
+  loadProjects().then(function(){ updateAuthUI(); }).catch(function(){});
 } else {
   renderProjects();
   updateAuthUI();
