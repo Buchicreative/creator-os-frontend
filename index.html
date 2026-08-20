@@ -1375,7 +1375,26 @@ function vrCheckPlan(){
     }
   });
 
-  /* AI tracking available to all for now — gate later */
+  /* AI Face Tracking — locked for free users */
+  var trackingRow   = document.getElementById('vr-tracking-row');
+  var trackingLabel = document.getElementById('vr-tracking-label');
+  var trackingBadge = document.getElementById('vr-tracking-pro-badge');
+  var trackingInput = document.getElementById('vr-tracking-toggle');
+  var faceBadge     = document.getElementById('vr-face-badge');
+
+  if(plan === 'free'){
+    if(trackingRow)   trackingRow.style.opacity = '0.5';
+    if(trackingLabel) trackingLabel.style.cursor = 'not-allowed';
+    if(trackingInput) trackingInput.disabled = true;
+    if(trackingBadge) trackingBadge.style.display = 'inline-block';
+    if(faceBadge)     faceBadge.textContent = 'Available on Pro and Creator plans';
+  } else {
+    if(trackingRow)   trackingRow.style.opacity = '1';
+    if(trackingLabel) trackingLabel.style.cursor = 'pointer';
+    if(trackingInput) trackingInput.disabled = false;
+    if(trackingBadge) trackingBadge.style.display = 'none';
+    if(faceBadge)     faceBadge.textContent = 'Best for single-subject videos. For podcasts, tracking follows the most visible face';
+  }
 }
 
 /* AI/Content plan check */
@@ -2712,13 +2731,16 @@ document.addEventListener('keydown',function(e){
                 <div class="vr-option-card locked" onclick="vrSelectRes(this,'2k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">2K QHD</div><div class="vr-opt-desc">Pro &amp; Creator only</div></div>
                 <div class="vr-option-card locked" onclick="vrSelectRes(this,'4k')"><div class="vr-pro-badge">Pro</div><div class="vr-opt-title">4K Ultra HD</div><div class="vr-opt-desc">Pro &amp; Creator only</div></div>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
+              <div id="vr-tracking-row" style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;margin:0.65rem 0;">
                 <div>
-                  <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.1rem;">AI Face Tracking</div>
+                  <div style="display:flex;align-items:center;gap:0.4rem;">
+                    <span style="font-size:0.82rem;font-weight:600;color:var(--text);">AI Face Tracking</span>
+                    <span id="vr-tracking-pro-badge" style="display:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:4px;letter-spacing:0.05em;">PRO</span>
+                  </div>
                   <div id="vr-face-badge" style="font-size:0.72rem;color:var(--muted);background:none;border:none;padding:0;">Best for single-subject videos. For podcasts, tracking follows the most visible face</div>
                 </div>
                 <!-- Toggle switch -->
-                <label style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex-shrink:0;">
+                <label id="vr-tracking-label" style="position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex-shrink:0;">
                   <input type="checkbox" id="vr-tracking-toggle" style="opacity:0;width:0;height:0;position:absolute;" onchange="vrToggleTracking(this.checked)">
                   <span id="vr-toggle-track" style="position:absolute;inset:0;background:var(--border);border-radius:24px;transition:background 0.25s;"></span>
                   <span id="vr-toggle-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></span>
