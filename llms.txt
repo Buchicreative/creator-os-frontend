@@ -1,0 +1,34 @@
+# Crevers
+
+> AI-powered content creation platform that helps creators generate ideas, write scripts, create carousels, repurpose content, and resize videos with AI face tracking.
+
+## What Crevers Does
+
+Crevers is a SaaS platform for content creators, coaches, and business owners who want to create content faster without burning out. It uses AI to generate niche-specific content ideas, write full video scripts, create carousel slides, write Twitter/X threads, generate captions, repurpose existing content into multiple formats, and resize videos for different platforms.
+
+## Key Features
+
+- **Idea Generator**: Generate 10 niche-specific content ideas for any platform (Instagram, TikTok, Twitter/X, LinkedIn, YouTube)
+- **Script Writer**: Full short-form video scripts with Hook, Intro, Main Content, Conclusion, and CTA sections
+- **Carousel Creator**: 10-slide Instagram carousel content ready to use in Canva or Figma
+- **Thread Writer**: 8-tweet Twitter/X threads with hook and call to action
+- **Caption Writer**: Detailed Instagram captions with hashtags
+- **Repurposing Engine**: Turn one piece of content into 6 formats (Twitter thread, LinkedIn post, Instagram caption, Reel script, YouTube description, Email newsletter)
+- **AI Video Resizer**: Convert landscape videos to vertical formats (9:16, 1:1, 4:5, 16:9) with AI face tracking
+
+## Pricing
+
+- **Free**: 5 idea generations and 5 content pieces per day. No credit card required.
+- **Pro**: $1/month. 20 AI generations per day. Full access to all content formats, video resizing, and AI face tracking.
+- **Creator**: $4.50/month. Unlimited everything. Priority support and early access to new features.
+
+## Contact
+
+- Website: https://crevers.com
+- Email: hello@crevers.com
+
+## Technical
+
+- Web application accessible at https://crevers.com
+- Requires account creation to use AI features
+- Free plan available without credit card
