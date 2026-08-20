@@ -368,7 +368,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;display:f
 #nav-logout-btn:hover{border-color:var(--accent2);background:rgba(252,92,125,0.08);}
 
 /* Remove underline from all inline upgrade/plan links */
-.hero-badge a, #hero-plan-badge a, .plan-badge a { text-decoration: none !important; }
+.hero-badge a, #hero-plan-badge a, .plan-badge a, .hero-badge a:hover, #hero-plan-badge a:hover { text-decoration: none !important; }
 
 /* HERO AUTH STATE — controlled by class on <html> before paint */
 html.is-logged-out #hero-loggedout { display: block !important; }
@@ -1025,7 +1025,7 @@ function updateAuthUI(){
         planBadge.innerHTML = '<span class="badge-dot"></span> Creator Plan. Unlimited Access <svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:3px;" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
         statPlan.textContent = 'Creator';
       } else {
-        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none;">Upgrade to Pro &#x2192;</a>';
+        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none !important;">Upgrade to Pro &#x2192;</a>';
         statPlan.textContent = 'Free';
       }
     }
@@ -2785,7 +2785,7 @@ document.addEventListener('keydown',function(e){
 
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
-      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none;">Upgrade to Pro &#x2192;</a></div>
+      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none !important;">Upgrade to Pro &#x2192;</a></div>
       <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
