@@ -687,23 +687,25 @@ html:not(.light-theme) .icon-sun{display:none !important;}
   </script>
 </head>
 <body>
-<div class="upgrade-popup-overlay" id="upgradePopup" style="display:none;">
-  <div class="upgrade-popup">
-    <button class="upgrade-popup-close" onclick="closeUpgradePopup()">&#x2715;</button>
-    <div class="upgrade-popup-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<div id="upgradePopup" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:420px;width:100%;position:relative;">
+    <button onclick="closeUpgradePopup()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;">&#x2715;</button>
+    <div style="text-align:center;margin-bottom:1.25rem;">
+      <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;">
+        <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div id="upgrade-popup-title" style="font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:0.4rem;">Pro Feature</div>
+      <div id="upgrade-popup-desc" style="font-size:0.85rem;color:var(--muted);line-height:1.6;">Upgrade to unlock this feature.</div>
     </div>
-    <h3 id="upgrade-popup-title">Pro Feature</h3>
-    <p id="upgrade-popup-desc">AI Face Tracking is only available on the Pro and Creator plans. Upgrade to keep your subject perfectly in frame, every single shot.</p>
-    <ul class="upgrade-popup-features">
-      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Server-side AI face detection</li>
-      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Smooth subject tracking every frame</li>
-      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited video resizing</li>
-      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 2K and 4K output resolution</li>
-      <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI content generation</li>
+    <ul style="list-style:none;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.5rem;">
+      <li style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted);"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent3);fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>20 AI generations per day</li>
+      <li style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted);"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent3);fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>Scripts, Captions, Carousels &amp; Threads</li>
+      <li style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted);"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent3);fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>Full repurposing engine</li>
+      <li style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted);"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent3);fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>2K &amp; 4K video output + AI face tracking</li>
+      <li style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted);"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent3);fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>Unlimited saved projects</li>
     </ul>
-    <button class="btn-hero" style="width:100%;justify-content:center;border-radius:12px;padding:0.85rem;" onclick="goUpgrade()">Upgrade to Pro &#x2192;</button>
-    <div style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);">Starting at &#8358;1,600/month. Cancel anytime.</div>
+    <button onclick="goUpgrade(null);closeUpgradePopup();" style="width:100%;padding:0.85rem;background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:0.5rem;">Upgrade to Pro &#x2192;</button>
+    <div style="text-align:center;font-size:0.72rem;color:var(--muted);">Starting at &#8358;1,600/month. Cancel anytime.</div>
   </div>
 </div>
 
@@ -1656,11 +1658,11 @@ function openUpgradePopup(title, desc){
   if(title && t) t.textContent = title;
   if(desc  && d) d.textContent = desc;
   var el = document.getElementById('upgradePopup');
-  if(el){ el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center'; }
-  document.body.style.overflow = 'hidden';
+  if(el) el.style.display = 'flex';
 }
 function closeUpgradePopup(){
-  document.getElementById('upgradePopup').style.display = 'none';
+  var el = document.getElementById('upgradePopup');
+  if(el) el.style.display = 'none';
   document.body.style.overflow = '';
 }
 /* Close on overlay click */
