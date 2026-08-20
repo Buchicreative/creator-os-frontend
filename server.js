@@ -43,15 +43,32 @@ http.createServer(function(req, res) {
   const file = path.join(__dirname, 'index.html');
   fs.readFile(file, function(err, data) {
     if(err) { res.writeHead(404); res.end('Not found'); return; }
-    res.writeHead(200, {
+    var headers = {
       'Content-Type'                        : 'text/html; charset=utf-8',
       'Cross-Origin-Opener-Policy'          : 'same-origin',
       'Cross-Origin-Embedder-Policy'        : 'require-corp',
       'X-Content-Type-Options'              : 'nosniff',
       'X-Frame-Options'                     : 'SAMEORIGIN',
       'Referrer-Policy'                     : 'strict-origin-when-cross-origin',
-    });
-    res.end(data);
+      'Vary'                                : 'Accept-Encoding',
+    };
+    var acceptEncoding = req.headers['accept-encoding'] || '';
+    if(acceptEncoding.includes('br')){
+      zlib.brotliCompress(data, function(err, compressed){
+        if(err){ res.writeHead(200, headers); res.end(data); return; }
+        res.writeHead(200, Object.assign({}, headers, { 'Content-Encoding': 'br' }));
+        res.end(compressed);
+      });
+    } else if(acceptEncoding.includes('gzip')){
+      zlib.gzip(data, function(err, compressed){
+        if(err){ res.writeHead(200, headers); res.end(data); return; }
+        res.writeHead(200, Object.assign({}, headers, { 'Content-Encoding': 'gzip' }));
+        res.end(compressed);
+      });
+    } else {
+      res.writeHead(200, headers);
+      res.end(data);
+    }
   });
 }).listen(PORT, function() {
   console.log('Creator OS frontend running on port ' + PORT);
