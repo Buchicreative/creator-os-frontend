@@ -6,29 +6,37 @@
 
 Crevers is a SaaS platform for content creators, coaches, and business owners who want to create content faster without burning out. It uses AI to generate niche-specific content ideas, write full video scripts, create carousel slides, write Twitter/X threads, generate captions, repurpose existing content into multiple formats, and resize videos for different platforms.
 
+## Key Pages
+
+- [Home](https://crevers.com)
+- [Features](https://crevers.com/#features)
+- [Pricing](https://crevers.com/#pricing)
+- [FAQ](https://crevers.com/#faq)
+- [How it Works](https://crevers.com/#how)
+
 ## Key Features
 
-- **Idea Generator**: Generate 10 niche-specific content ideas for any platform (Instagram, TikTok, Twitter/X, LinkedIn, YouTube)
-- **Script Writer**: Full short-form video scripts with Hook, Intro, Main Content, Conclusion, and CTA sections
-- **Carousel Creator**: 10-slide Instagram carousel content ready to use in Canva or Figma
-- **Thread Writer**: 8-tweet Twitter/X threads with hook and call to action
-- **Caption Writer**: Detailed Instagram captions with hashtags
-- **Repurposing Engine**: Turn one piece of content into 6 formats (Twitter thread, LinkedIn post, Instagram caption, Reel script, YouTube description, Email newsletter)
-- **AI Video Resizer**: Convert landscape videos to vertical formats (9:16, 1:1, 4:5, 16:9) with AI face tracking
+- [Idea Generator](https://crevers.com/#app-section) — Generate 10 niche-specific content ideas for any platform (Instagram, TikTok, Twitter/X, LinkedIn, YouTube)
+- [Script Writer](https://crevers.com/#app-section) — Full short-form video scripts with Hook, Intro, Main Content, Conclusion, and CTA sections
+- [Carousel Creator](https://crevers.com/#app-section) — 10-slide Instagram carousel content ready to use in Canva or Figma
+- [Thread Writer](https://crevers.com/#app-section) — 8-tweet Twitter/X threads with hook and call to action
+- [Caption Writer](https://crevers.com/#app-section) — Detailed Instagram captions with hashtags
+- [Repurposing Engine](https://crevers.com/#app-section) — Turn one piece of content into 6 formats (Twitter thread, LinkedIn post, Instagram caption, Reel script, YouTube description, Email newsletter)
+- [AI Video Resizer](https://crevers.com/#app-section) — Convert landscape videos to vertical formats with AI face tracking
 
 ## Pricing
 
-- **Free**: 5 idea generations and 5 content pieces per day. No credit card required.
-- **Pro**: $1/month. 20 AI generations per day. Full access to all content formats, video resizing, and AI face tracking.
-- **Creator**: $4.50/month. Unlimited everything. Priority support and early access to new features.
+- [Free Plan](https://crevers.com/#pricing) — $0/month. 5 idea generations and 5 content pieces per day. No credit card required.
+- [Pro Plan](https://crevers.com/#pricing) — $1/month. 20 AI generations per day. Full access to all content formats, video resizing, and AI face tracking.
+- [Creator Plan](https://crevers.com/#pricing) — $4.50/month. Unlimited everything. Priority support and early access to new features.
+
+## Legal
+
+- [Privacy Policy](https://crevers.com/#privacy)
+- [Terms of Service](https://crevers.com/#terms)
+- [Cookie Policy](https://crevers.com/#cookies)
 
 ## Contact
 
-- Website: https://crevers.com
-- Email: hello@crevers.com
-
-## Technical
-
-- Web application accessible at https://crevers.com
-- Requires account creation to use AI features
-- Free plan available without credit card
+- [Website](https://crevers.com)
+- [Email](mailto:hello@crevers.com)
