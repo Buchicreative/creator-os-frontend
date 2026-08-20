@@ -1330,10 +1330,9 @@ function renderProjects(){
   if(empty) empty.style.display='none';
   projects.forEach(function(p){
     var d=document.createElement('div'); d.className='idea-item';
-    d.style.cssText='flex-direction:column;align-items:flex-start;gap:0.25rem;cursor:default;';
-    d.style.cursor = 'pointer';
+    d.style.cssText='flex-direction:column;align-items:flex-start;gap:0.25rem;cursor:pointer;';
     d.onclick = function(e){
-      if(e.target.tagName === 'BUTTON') return;
+      if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
       openProjectPreview(p.id);
     };
     d.innerHTML='<div style="display:flex;align-items:center;gap:0.45rem;width:100%;"><span class="idea-dot"></span><span style="flex:1;font-weight:600;font-size:0.8rem;">'+escHtml(p.title)+'</span><span class="idea-tag">'+escHtml(p.format)+'</span><button onclick="deleteProject(\''+p.id+'\')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.1rem 0.3rem;font-size:0.78rem;" onmouseover="this.style.color=\'#ff5f56\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715;</button></div><div style="font-size:0.7rem;color:var(--muted);padding-left:1rem;">'+escHtml(p.date)+'</div>';
