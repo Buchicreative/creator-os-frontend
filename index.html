@@ -774,6 +774,30 @@ html.light-theme .icon-sun{display:block !important;}
 html:not(.light-theme) .icon-moon{display:block !important;}
 html:not(.light-theme) .icon-sun{display:none !important;}
 
+/* Chat first-time tooltip */
+#chat-tooltip{
+  position:fixed; bottom:92px; right:84px; z-index:5001;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:12px; padding:0.65rem 1rem;
+  font-size:0.78rem; color:var(--text); font-weight:500;
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);
+  white-space:nowrap; pointer-events:none;
+  animation:tooltipPulse 0.4s ease;
+  display:none;
+}
+#chat-tooltip::after{
+  content:''; position:absolute; right:-8px; bottom:14px;
+  border:8px solid transparent;
+  border-left-color:var(--border);
+}
+#chat-tooltip::before{
+  content:''; position:absolute; right:-7px; bottom:15px;
+  border:7px solid transparent;
+  border-left-color:var(--surface);
+  z-index:1;
+}
+@keyframes tooltipPulse{ from{opacity:0;transform:translateX(8px);} to{opacity:1;transform:translateX(0);} }
+
 /* ════════════════════════════════
    AI CHAT BUBBLE
    ════════════════════════════════ */
@@ -2889,7 +2913,29 @@ var CHAT_HISTORY = []; /* [{role:'user'|'assistant', content:'...'}] */
 var CHAT_SENDING = false;
 
 /* ── Toggle chat window ── */
+function showChatTooltip(){
+  /* Show tooltip if user hasn't opened chat before */
+  if(localStorage.getItem('crevers_chat_seen')) return;
+  var tip = document.getElementById('chat-tooltip');
+  if(!tip) return;
+  /* Delay slightly so user settles after login */
+  setTimeout(function(){
+    tip.style.display = 'block';
+    /* Auto-hide after 6 seconds */
+    setTimeout(function(){ hideChatTooltip(); }, 6000);
+  }, 2000);
+}
+
+function hideChatTooltip(){
+  var tip = document.getElementById('chat-tooltip');
+  if(tip) tip.style.display = 'none';
+}
+
 function toggleChat(){
+  /* Hide tooltip and mark as seen on first open */
+  hideChatTooltip();
+  localStorage.setItem('crevers_chat_seen', '1');
+
   CHAT_OPEN = !CHAT_OPEN;
   var win = document.getElementById('chat-window');
   var btn = document.getElementById('chat-bubble-btn');
@@ -3221,8 +3267,11 @@ async function generateVoiceover(){
   </div>
 </div>
 
+<!-- First-time tooltip -->
+<div id="chat-tooltip">✦ Try AI Chat</div>
+
 <!-- Floating bubble button -->
-<button id="chat-bubble-btn" onclick="toggleChat()" title="AI Chat">
+<button id="chat-bubble-btn"  onclick="toggleChat()" title="AI Chat">
   <span id="chat-notif-dot"></span>
   <!-- Chat icon -->
   <svg class="icon-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
