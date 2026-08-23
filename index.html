@@ -439,6 +439,15 @@ section{position:relative;z-index:1;padding:6rem 2rem;scroll-margin-top:72px;}
 .output-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.9rem;font-size:0.8rem;color:var(--text);line-height:1.75;min-height:70px;}
 .out-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);font-weight:600;margin-bottom:0.45rem;}
 .format-tabs{display:flex;gap:0.35rem;margin-bottom:0.9rem;flex-wrap:wrap;}
+.voice-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.85rem;cursor:pointer;transition:all 0.2s;}
+.voice-card:hover{border-color:var(--accent);}
+.voice-card.active{background:rgba(124,92,252,0.1);border-color:var(--accent);}
+.voice-name{font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.voice-desc{font-size:0.72rem;color:var(--muted);}
+.voice-card.active .voice-name{color:var(--accent);}
+.speed-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0.45rem 1rem;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.speed-btn:hover{border-color:var(--accent);color:var(--text);}
+.speed-btn.active{background:rgba(124,92,252,0.1);border-color:var(--accent);color:var(--accent);}
 .format-tab{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:0.35rem 0.7rem;border-radius:6px;cursor:pointer;font-size:0.75rem;font-weight:500;transition:all 0.2s;}
 .format-tab.active,.format-tab:hover{background:rgba(124,92,252,0.15);border-color:var(--accent);color:var(--text);}
 .format-tab.pro-tab.locked{opacity:0.45;cursor:not-allowed;}
@@ -3081,6 +3090,86 @@ function chatNotify(){
   }
 }
 
+
+/* ════════════════════════════════════════
+   VOICEOVER / TTS
+   ════════════════════════════════════════ */
+var TTS_VOICE = 'alloy';
+var TTS_SPEED = 1.0;
+
+function selectVoice(voice, el){
+  TTS_VOICE = voice;
+  document.querySelectorAll('.voice-card').forEach(function(c){ c.classList.remove('active'); });
+  if(el) el.classList.add('active');
+}
+
+function selectSpeed(speed, el){
+  TTS_SPEED = speed;
+  document.querySelectorAll('.speed-btn').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+}
+
+function updateTtsCount(){
+  var inp = document.getElementById('tts-input');
+  var cnt = document.getElementById('tts-char-count');
+  if(!inp || !cnt) return;
+  var len = inp.value.length;
+  cnt.textContent = len + ' / 4096 characters';
+  cnt.style.color = len > 4000 ? 'var(--accent2)' : 'var(--muted)';
+}
+
+async function generateVoiceover(){
+  var text = (document.getElementById('tts-input') || {}).value || '';
+  text = text.trim();
+  if(!text){ showToast('Please enter some text first.'); return; }
+  if(text.length > 4096){ showToast('Text must be under 4096 characters.'); return; }
+  if(!AUTH.token){ showToast('Please log in to use Voiceover.'); return; }
+
+  var btn     = document.getElementById('tts-btn');
+  var loading = document.getElementById('tts-loading');
+  var player  = document.getElementById('tts-player');
+
+  btn.disabled = true;
+  loading.classList.add('show');
+  player.style.display = 'none';
+
+  try {
+    var resp = await fetch(API_BASE + '/ai/tts', {
+      method : 'POST',
+      headers: { 'Authorization': 'Bearer ' + AUTH.token, 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ text: text, voice: TTS_VOICE, speed: TTS_SPEED }),
+    });
+
+    if(!resp.ok){
+      var err = await resp.json().catch(function(){ return { error: 'Request failed.' }; });
+      throw new Error(err.error || 'Request failed.');
+    }
+
+    /* Response is audio blob */
+    var blob    = await resp.blob();
+    var url     = URL.createObjectURL(blob);
+    var audio   = document.getElementById('tts-audio');
+    var dlBtn   = document.getElementById('tts-download-btn');
+    var voLabel = document.getElementById('tts-voice-label');
+
+    audio.src  = url;
+    dlBtn.href = url;
+    var speedLabel = TTS_SPEED === 0.85 ? 'Slow' : TTS_SPEED === 1.15 ? 'Fast' : 'Normal';
+    var voiceName  = TTS_VOICE.charAt(0).toUpperCase() + TTS_VOICE.slice(1);
+    voLabel.textContent = voiceName + ' · ' + speedLabel;
+
+    player.style.display = 'block';
+    audio.play();
+    showToast('Voiceover ready!');
+
+  } catch(e){
+    showToast(e.message || 'Could not generate voiceover.');
+  }
+
+  btn.disabled = false;
+  loading.classList.remove('show');
+}
+
 </script>
 <video id="vr-video" style="position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;opacity:0;pointer-events:none;" playsinline preload="auto"></video>
 
@@ -3334,6 +3423,7 @@ function chatNotify(){
           <div class="sidebar-item" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>Repurpose</div>
           <div class="sidebar-item" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Projects</div>
           <div class="sidebar-item" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M17 7V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2"/><path d="M17 17v2a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-2"/></svg>Video Resize</div>
+          <div class="sidebar-item" onclick="switchPanel('voiceover')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>Voiceover</div>
           <div class="sidebar-item" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</div>
         </div>
         <!-- PANELS -->
@@ -3490,7 +3580,53 @@ function chatNotify(){
           </div>
 
           <!-- SETTINGS -->
-          <div class="app-panel" id="panel-settings">
+          <div id="panel-voiceover" class="app-panel" style="display:none;">
+  <div class="panel-back-btn" onclick="switchPanel('dashboard')">
+    <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>Dashboard
+  </div>
+  <div class="panel-title">Voiceover Generator</div>
+  <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1.25rem;">Paste any text and turn it into a professional voiceover. Download the MP3 and use it anywhere.</p>
+  <div style="margin-bottom:1rem;">
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;">Choose Voice</div>
+    <div id="voice-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.5rem;">
+      <div class="voice-card active" onclick="selectVoice('alloy',this)"><div class="voice-name">Alloy</div><div class="voice-desc">Neutral &amp; balanced</div></div>
+      <div class="voice-card" onclick="selectVoice('echo',this)"><div class="voice-name">Echo</div><div class="voice-desc">Male, conversational</div></div>
+      <div class="voice-card" onclick="selectVoice('onyx',this)"><div class="voice-name">Onyx</div><div class="voice-desc">Deep &amp; authoritative</div></div>
+      <div class="voice-card" onclick="selectVoice('nova',this)"><div class="voice-name">Nova</div><div class="voice-desc">Female, warm</div></div>
+      <div class="voice-card" onclick="selectVoice('shimmer',this)"><div class="voice-name">Shimmer</div><div class="voice-desc">Female, soft &amp; calm</div></div>
+    </div>
+  </div>
+  <div style="margin-bottom:1rem;">
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;">Speed</div>
+    <div style="display:flex;gap:0.5rem;">
+      <button class="speed-btn" onclick="selectSpeed(0.85,this)">Slow</button>
+      <button class="speed-btn active" onclick="selectSpeed(1.0,this)">Normal</button>
+      <button class="speed-btn" onclick="selectSpeed(1.15,this)">Fast</button>
+    </div>
+  </div>
+  <div style="margin-bottom:1rem;">
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;">Your Text</div>
+    <textarea id="tts-input" class="app-input" oninput="updateTtsCount()" placeholder="Paste your script, caption, or any text here..." style="min-height:180px;resize:vertical;width:100%;"></textarea>
+    <div id="tts-char-count" style="font-size:0.7rem;color:var(--muted);margin-top:0.4rem;text-align:right;">0 / 4096 characters</div>
+  </div>
+  <button class="app-btn" id="tts-btn" onclick="generateVoiceover()" style="width:100%;margin-bottom:1rem;">
+    <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    Generate Voiceover
+  </button>
+  <div class="ai-loading" id="tts-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Generating voiceover...</div>
+  <div id="tts-player" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+      <div style="font-size:0.82rem;font-weight:600;color:var(--text);" id="tts-voice-label">Alloy · Normal</div>
+      <a id="tts-download-btn" href="#" download="crevers-voiceover.mp3" style="font-size:0.78rem;color:var(--accent);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:0.3rem;">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download MP3
+      </a>
+    </div>
+    <audio id="tts-audio" controls style="width:100%;border-radius:8px;"></audio>
+  </div>
+</div>
+
+<div class="app-panel" id="panel-settings">
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Profile &amp; Settings</div>
 
