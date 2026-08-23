@@ -2217,7 +2217,7 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.q
 function toggleMenu(){ document.getElementById('mobileMenu').classList.toggle('open'); }
 
 /* PANELS */
-var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','settings'];
+var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','voiceover','settings'];
 function switchPanel(name){
   document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.sidebar-item').forEach(function(s){s.classList.remove('active');});
@@ -3439,6 +3439,7 @@ async function generateVoiceover(){
               <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
               <div class="qa-btn" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><div class="qa-label">Projects</div></div>
               <div class="qa-btn" onclick="switchPanel('videoresize')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><div class="qa-label">Video Resize</div></div>
+              <div class="qa-btn" onclick="switchPanel('voiceover')"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><div class="qa-label">Voiceover</div></div>
               <div class="qa-btn" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div class="qa-label">Settings</div></div>
             </div>
             <div class="trending-label">Trending Ideas</div>
@@ -3580,7 +3581,7 @@ async function generateVoiceover(){
           </div>
 
           <!-- SETTINGS -->
-          <div id="panel-voiceover" class="app-panel" style="display:none;">
+          <div id="panel-voiceover" class="app-panel">
   <div class="panel-back-btn" onclick="switchPanel('dashboard')">
     <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:inline-block;vertical-align:middle;margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>Dashboard
   </div>
