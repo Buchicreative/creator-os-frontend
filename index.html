@@ -776,6 +776,7 @@ html:not(.light-theme) .icon-sun{display:none !important;}
 
 /* Chat first-time tooltip */
 #chat-tooltip{
+  display:none !important; /* HIDDEN — restore when releasing */
   position:fixed; bottom:92px; right:84px; z-index:5001;
   background:var(--surface); border:1px solid var(--border);
   border-radius:12px; padding:0.65rem 1rem;
@@ -802,6 +803,7 @@ html:not(.light-theme) .icon-sun{display:none !important;}
    AI CHAT BUBBLE
    ════════════════════════════════ */
 #chat-bubble-btn{
+  display:none !important; /* HIDDEN — restore when releasing */
   position:fixed; bottom:24px; right:24px; z-index:5000;
   width:56px; height:56px; border-radius:50%;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -826,6 +828,7 @@ html:not(.light-theme) .icon-sun{display:none !important;}
 
 /* Chat window */
 #chat-window{
+  display:none !important; /* HIDDEN — restore when releasing */
   position:fixed; bottom:92px; right:24px; z-index:4999;
   width:380px; height:560px;
   background:var(--surface); border:1px solid var(--border);
@@ -910,7 +913,8 @@ html:not(.light-theme) .icon-sun{display:none !important;}
 
 /* Starter chips */
 #chat-starters{
-  padding:0.75rem 1rem; display:flex; flex-direction:column; gap:0.5rem; flex-shrink:0;
+  display:none !important; /* HIDDEN — restore when releasing */
+  padding:0.75rem 1rem; flex-direction:column; gap:0.5rem; flex-shrink:0;
 }
 .chat-starter-chip{
   background:var(--surface2); border:1px solid var(--border);
