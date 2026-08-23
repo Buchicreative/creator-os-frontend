@@ -3610,7 +3610,7 @@ async function generateVoiceover(){
     <textarea id="tts-input" class="app-input" oninput="updateTtsCount()" placeholder="Paste your script, caption, or any text here..." style="min-height:180px;resize:vertical;width:100%;"></textarea>
     <div id="tts-char-count" style="font-size:0.7rem;color:var(--muted);margin-top:0.4rem;text-align:right;">0 / 4096 characters</div>
   </div>
-  <button class="app-btn" id="tts-btn" onclick="generateVoiceover()" style="width:100%;margin-bottom:1rem;">
+  <button id="tts-btn" onclick="generateVoiceover()" style="width:100%;margin-bottom:1rem;background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;border:none;border-radius:12px;padding:0.8rem 1.25rem;font-size:0.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(124,92,252,0.35);transition:opacity 0.2s;">
     <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
     Generate Voiceover
   </button>
