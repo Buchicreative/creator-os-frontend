@@ -1649,13 +1649,6 @@ function toggleTheme(){
   }
 })();
 
-function void(0){
-  var output = document.getElementById('createOutput');
-  if(!output) return;
-  var text = output.innerText || output.textContent || '';
-  if(!text.trim()) return;
-  openChatWithContent(text.trim());
-}
 
 function googleAuth(){
   var SUPABASE_URL = 'https://jivujemgzqxouqhahzqi.supabase.co';
