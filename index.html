@@ -3084,63 +3084,6 @@ function chatNotify(){
 </script>
 <video id="vr-video" style="position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;opacity:0;pointer-events:none;" playsinline preload="auto"></video>
 
-<!-- ════════════════════════════════
-     AI CHAT BUBBLE
-     ════════════════════════════════ -->
-
-<!-- Chat window -->
-<div id="chat-window">
-  <!-- Header -->
-  <div id="chat-header">
-    <div class="chat-header-left">
-      <div class="chat-ai-avatar">
-        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
-      </div>
-      <div class="chat-header-info">
-        <span class="chat-header-name">Crevers AI</span>
-        <span class="chat-header-status"><span class="chat-status-dot"></span>Online</span>
-      </div>
-    </div>
-    <div class="chat-header-actions">
-      <span id="chat-plan-label" class="chat-plan-badge" style="display:none;"></span>
-      <button class="chat-clear-btn" onclick="clearChat()">Clear</button>
-    </div>
-  </div>
-
-  <!-- Messages -->
-  <div id="chat-messages"></div>
-
-  <!-- Starter chips (shown when chat is empty) -->
-  <div id="chat-starters">
-    <button class="chat-starter-chip" onclick="sendStarterChip(this.textContent)">Help me write a hook for my next video</button>
-    <button class="chat-starter-chip" onclick="sendStarterChip(this.textContent)">Give me 5 content ideas for this week</button>
-    <button class="chat-starter-chip" onclick="sendStarterChip(this.textContent)">How do I make my captions more engaging?</button>
-    <button class="chat-starter-chip" onclick="sendStarterChip(this.textContent)">Review this caption and make it better</button>
-  </div>
-
-  <!-- Usage limit message -->
-  <div id="chat-limit-msg" style="display:none;"></div>
-
-  <!-- Input -->
-  <div id="chat-input-area">
-    <textarea id="chat-input" placeholder="Ask anything about content..." rows="1"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}"
-      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"></textarea>
-    <button id="chat-send-btn" onclick="sendChatMessage()" title="Send">
-      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    </button>
-  </div>
-</div>
-
-<!-- Floating bubble button -->
-<button id="chat-bubble-btn" onclick="toggleChat()" title="AI Chat">
-  <span id="chat-notif-dot"></span>
-  <!-- Chat icon -->
-  <svg class="icon-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  <!-- Close icon -->
-  <svg class="icon-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-</button>
-
 </body>
 </html>
 
