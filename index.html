@@ -2735,7 +2735,7 @@ function filterNicheSuggestions(val){
   dd.innerHTML = matches.map(function(n, i){
     /* Bold the matching prefix */
     var bold = '<strong>' + n.slice(0, val.length) + '</strong>' + n.slice(val.length);
-    return '<div class="niche-suggestion" data-val="'+n+'" onmousedown="selectNicheSuggestion(''+n+'')">' + bold + '</div>';
+    return '<div class="niche-suggestion" data-val="'+n+'" onmousedown="selectNicheSuggestion(this.dataset.val)">' + bold + '</div>';
   }).join('');
 
   dd.style.display = 'block';
