@@ -2785,9 +2785,10 @@ function filterNicheSuggestions(val){
   if(!matches.length){ dd.style.display='none'; _nicheActiveIdx=-1; return; }
 
   dd.innerHTML = matches.map(function(n, i){
-    /* Bold the matching prefix */
-    var bold = '<strong>' + n.slice(0, val.length) + '</strong>' + n.slice(val.length);
-    return '<div class="niche-suggestion" data-val="'+n+'" onmousedown="selectNicheSuggestion(this.dataset.val)">' + bold + '</div>';
+    var prefix = n.slice(0, val.length);
+    var rest   = n.slice(val.length);
+    var bold   = '<span style="color:var(--accent);font-weight:600;">' + prefix + '</span>' + rest;
+    return '<div class="niche-suggestion" data-val="'+n+'" onmousedown="selectNicheSuggestion(this.dataset.val)" style="padding:0.55rem 0.85rem;font-size:0.82rem;font-family:'DM Sans',sans-serif;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);box-sizing:border-box;width:100%;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;">' + bold + '</div>';
   }).join('');
 
   dd.style.display = 'block';
