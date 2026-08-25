@@ -2784,7 +2784,7 @@ function filterNicheSuggestions(val){
 
   if(!matches.length){ dd.style.display='none'; _nicheActiveIdx=-1; return; }
 
-  var itemStyle = 'padding:0.65rem 0.9rem;font-size:0.85rem;font-family:DM Sans,sans-serif;color:var(--muted);cursor:pointer;display:flex;align-items:center;white-space:nowrap;box-sizing:border-box;width:100%;border-bottom:1px solid rgba(124,92,252,0.08);transition:all 0.15s;';
+  var itemStyle = 'padding:0.65rem 0.9rem;font-size:0.85rem;font-family:DM Sans,sans-serif;color:var(--muted);cursor:pointer;display:flex;align-items:center;white-space:nowrap;box-sizing:border-box;width:100%;transition:all 0.15s;';
   dd.innerHTML = matches.map(function(n, i){
     var prefix = n.slice(0, val.length);
     var rest   = n.slice(val.length);
