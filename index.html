@@ -2693,6 +2693,96 @@ document.querySelectorAll('.modal-overlay').forEach(function(el){
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m){closeModal(m.id);});
 });
+
+/* ════════════════════════════════════════
+   NICHE AUTOCOMPLETE
+   ════════════════════════════════════════ */
+var NICHES = [
+  'Acting','Adventure Travel','Affiliate Marketing','Agriculture','Animation',
+  'Architecture','Art & Illustration','Astrology','Automotive','Beauty',
+  'Blogging','Books & Literature','Branding','Business Strategy','Career Development',
+  'Cinematography','Comedy','Cooking & Food','Crypto & Blockchain','Dance',
+  'Dating & Relationships','Design','Digital Marketing','DIY & Crafts','Drawing',
+  'E-commerce','Education','Entrepreneurship','Fashion','Finance & Investing',
+  'Fitness','Food Photography','Freelancing','Gaming','Gardening',
+  'Graphic Design','Health & Wellness','History','Home Decor','Horror',
+  'Interior Design','Journalism','Kids & Parenting','Language Learning','Law',
+  'Leadership','Lifestyle','Marketing','Meditation & Mindfulness','Mental Health',
+  'Music','Nature & Wildlife','NFTs','Nutrition','Online Business',
+  'Parenting','Personal Development','Personal Finance','Pet Care','Philosophy',
+  'Photography','Podcast','Politics','Productivity','Programming & Coding',
+  'Psychology','Public Speaking','Real Estate','Relationships','Religion & Faith',
+  'Science','Self Improvement','Skincare','Social Media','Spirituality',
+  'Sports','Startup','Storytelling','Style & Fashion','Sustainability',
+  'Tech & Gadgets','Travel','UI/UX Design','Videography','Web Development',
+  'Wellness','Writing & Copywriting','YouTube Growth',
+];
+
+var _nicheActiveIdx = -1;
+
+function filterNicheSuggestions(val){
+  var dd = document.getElementById('niche-dropdown');
+  if(!dd) return;
+  var q = val.trim().toLowerCase();
+  if(!q){ dd.style.display='none'; _nicheActiveIdx=-1; return; }
+
+  var matches = NICHES.filter(function(n){
+    return n.toLowerCase().startsWith(q);
+  }).slice(0, 8);
+
+  if(!matches.length){ dd.style.display='none'; _nicheActiveIdx=-1; return; }
+
+  dd.innerHTML = matches.map(function(n, i){
+    /* Bold the matching prefix */
+    var bold = '<strong>' + n.slice(0, val.length) + '</strong>' + n.slice(val.length);
+    return '<div class="niche-suggestion" data-val="'+n+'" onmousedown="selectNicheSuggestion(''+n+'')">' + bold + '</div>';
+  }).join('');
+
+  dd.style.display = 'block';
+  _nicheActiveIdx = -1;
+}
+
+function selectNicheSuggestion(val){
+  var inp = document.getElementById('nicheInput');
+  var dd  = document.getElementById('niche-dropdown');
+  if(inp) inp.value = val;
+  if(dd)  dd.style.display = 'none';
+  _nicheActiveIdx = -1;
+}
+
+function handleNicheKey(e){
+  var dd    = document.getElementById('niche-dropdown');
+  var items = dd ? dd.querySelectorAll('.niche-suggestion') : [];
+  if(!items.length) return;
+
+  if(e.key === 'ArrowDown'){
+    e.preventDefault();
+    _nicheActiveIdx = Math.min(_nicheActiveIdx+1, items.length-1);
+  } else if(e.key === 'ArrowUp'){
+    e.preventDefault();
+    _nicheActiveIdx = Math.max(_nicheActiveIdx-1, -1);
+  } else if(e.key === 'Enter' && _nicheActiveIdx >= 0){
+    e.preventDefault();
+    selectNicheSuggestion(items[_nicheActiveIdx].dataset.val);
+    return;
+  } else if(e.key === 'Escape'){
+    dd.style.display='none'; _nicheActiveIdx=-1; return;
+  } else { return; }
+
+  items.forEach(function(item, i){
+    item.classList.toggle('active', i === _nicheActiveIdx);
+  });
+}
+
+/* Close dropdown when clicking outside */
+document.addEventListener('click', function(e){
+  if(!e.target.closest || !e.target.closest('#nicheInput') && !e.target.closest('#niche-dropdown')){
+    var dd = document.getElementById('niche-dropdown');
+    if(dd) dd.style.display = 'none';
+    _nicheActiveIdx = -1;
+  }
+});
+
 </script>
 <video id="vr-video" style="position:fixed;left:-9999px;top:-9999px;width:640px;height:480px;opacity:0;pointer-events:none;" playsinline preload="auto"></video>
 </body>
@@ -2917,7 +3007,14 @@ document.addEventListener('keydown',function(e){
               <div class="panel-title">Idea Generator</div>
             <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem;">
               <!-- Row 1: Niche input full width -->
-              <input id="nicheInput" class="app-input" style="width:100%;" placeholder="Your niche (fitness, design, finance...)">
+              <div style="position:relative;width:100%;">
+                <input id="nicheInput" class="app-input" style="width:100%;" placeholder="Your niche (fitness, design, finance...)"
+                  oninput="filterNicheSuggestions(this.value)"
+                  onkeydown="handleNicheKey(event)"
+                  onfocus="filterNicheSuggestions(this.value)"
+                  autocomplete="off">
+                <div id="niche-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-top:4px;z-index:200;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.3);max-height:220px;overflow-y:auto;"></div>
+              </div>
               <!-- Row 2: Platform + Generate + Refresh on same line -->
               <div style="display:flex;gap:0.5rem;align-items:center;">
                 <div class="cdd" id="cdd-platform" style="flex:1;min-width:0;"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-platform','YouTube')">YouTube</div></div></div>
