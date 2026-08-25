@@ -933,6 +933,37 @@ var AUTH = {
 })();
 
 /* ── API HELPER ── */
+var _isRefreshing = false;
+var _refreshQueue = [];
+
+async function doTokenRefresh(){
+  if(!AUTH.refresh) return false;
+  try {
+    var r = await fetch(API_BASE + '/auth/refresh', {
+      method  : 'POST',
+      headers : { 'Content-Type': 'application/json' },
+      body    : JSON.stringify({ refresh_token: AUTH.refresh }),
+    });
+    if(!r.ok) return false;
+    var d = await r.json();
+    if(!d.access_token) return false;
+    /* Update tokens */
+    AUTH.token   = d.access_token;
+    AUTH.refresh = d.refresh_token || AUTH.refresh;
+    localStorage.setItem('cos_token',   AUTH.token);
+    localStorage.setItem('cos_refresh', AUTH.refresh);
+    return true;
+  } catch(e){ return false; }
+}
+
+function clearSession(){
+  ['cos_token','cos_user','cos_plan','cos_refresh'].forEach(function(k){ localStorage.removeItem(k); });
+  AUTH.token = null; AUTH.user = null; AUTH.plan = 'free'; AUTH.refresh = null;
+  document.documentElement.classList.remove('is-logged-in');
+  document.documentElement.classList.add('is-logged-out');
+  updateAuthUI();
+}
+
 async function apiCall(method, path, body){
   var opts = {
     method  : method,
@@ -940,19 +971,40 @@ async function apiCall(method, path, body){
   };
   if(AUTH.token) opts.headers['Authorization'] = 'Bearer ' + AUTH.token;
   if(body)       opts.body = JSON.stringify(body);
-  var res  = await fetch(API_BASE + path, opts);
+
+  var res = await fetch(API_BASE + path, opts);
+
+  /* Silent token refresh on 401 */
+  if(res.status === 401 && AUTH.refresh){
+    if(_isRefreshing){
+      /* Wait for ongoing refresh then retry */
+      await new Promise(function(resolve){ _refreshQueue.push(resolve); });
+    } else {
+      _isRefreshing = true;
+      var refreshed = await doTokenRefresh();
+      _isRefreshing = false;
+      _refreshQueue.forEach(function(resolve){ resolve(); });
+      _refreshQueue = [];
+
+      if(refreshed){
+        /* Retry original request with new token */
+        opts.headers['Authorization'] = 'Bearer ' + AUTH.token;
+        res = await fetch(API_BASE + path, opts);
+      } else {
+        /* Refresh failed — log out */
+        clearSession();
+        throw new Error('Session expired. Please log in again.');
+      }
+    }
+  }
+
   var data = await res.json();
   if(!res.ok){
     if(res.status === 401){
-      /* Token expired — clear session */
-      ['cos_token','cos_user','cos_plan','cos_refresh'].forEach(function(k){ localStorage.removeItem(k); });
-      AUTH.token = null; AUTH.user = null; AUTH.plan = 'free';
-      document.documentElement.classList.remove('is-logged-in');
-      document.documentElement.classList.add('is-logged-out');
-      updateAuthUI();
+      clearSession();
       throw new Error('Session expired. Please log in again.');
     }
-    throw new Error(data.error || 'Request failed');
+    throw new Error(data.error || 'Request failed.');
   }
   return data;
 }
