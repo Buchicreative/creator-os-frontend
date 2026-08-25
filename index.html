@@ -2787,7 +2787,7 @@ document.addEventListener('keydown',function(e){
     <span id="nav-user-name" style="display:none;color:var(--text);font-size:0.875rem;font-weight:500;"></span>
     <button id="nav-logout-btn" style="display:none;" class="btn-ghost" onclick="doLogout()">Log Out</button>
   </div>
-  <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu" aria-expanded="false" id="hamburger-btn"><span></span><span></span><span></span></button>
 </nav>
 
 <!-- MOBILE MENU -->
@@ -2825,7 +2825,7 @@ document.addEventListener('keydown',function(e){
 </div>
 
 <!-- HERO -->
-<section class="hero">
+<main id="main-content"><section class="hero">
   <div class="hero-content">
 
     <!-- LOGGED OUT STATE -->
@@ -2981,7 +2981,7 @@ document.addEventListener('keydown',function(e){
               <div class="panel-title">Video Auto Resize</div>
             <div class="vr-plan-notice" id="vr-plan-notice"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span id="vr-plan-msg">Free plan: max 3-minute videos. <a href="#signup" onclick="openModal('signupModal')" style="text-decoration:none;color:var(--accent2);font-weight:700;">Upgrade to Pro</a> for unlimited.</span></div>
             <div class="vr-upload-zone" id="vr-upload-zone">
-              <input type="file" id="vr-file-input" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
+              <input type="file" id="vr-file-input" aria-label="Upload video file" accept="video/*,.mp4,.mov,.avi,.mkv,.webm,.wmv,.flv,.m4v,.3gp,.ts,.mts" onchange="vrHandleFile(this.files[0])">
               <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
               <p>Drag &amp; drop your landscape video here</p>
               <span>or click to browse. MP4, MOV, WebM supported</span>
@@ -3212,8 +3212,8 @@ document.addEventListener('keydown',function(e){
     <!-- Billing toggle -->
     <div class="billing-toggle">
       <span id="toggle-monthly-label" class="active">Monthly</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="billing-toggle-input" onchange="toggleBilling(this.checked)">
+      <label class="toggle-switch" aria-label="Billing period toggle">
+        <input type="checkbox" id="billing-toggle-input" onchange="toggleBilling(this.checked)" aria-label="Toggle between monthly and yearly billing">
         <span class="toggle-track" id="billing-track"></span>
         <span class="toggle-knob" id="billing-knob"></span>
       </label>
@@ -3331,7 +3331,7 @@ document.addEventListener('keydown',function(e){
 </section>
 
 <!-- FOOTER -->
-<footer>
+</main><footer>
   <div class="footer-grid">
     <div class="footer-brand"><a href="#"><img src="/logo.svg" alt="Crevers" class="logo-dark" style="height:24px;width:auto;margin-bottom:0.5rem;display:block;"><img src="/logo-light.svg" alt="Crevers" class="logo-light" style="height:24px;width:auto;margin-bottom:0.5rem;display:none;"></a><p>The all-in-one content operating system for creators who want to grow without burning out.</p>
       <div style="display:flex;gap:0.6rem;margin-top:0.85rem;">
