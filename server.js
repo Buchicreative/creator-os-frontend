@@ -17,7 +17,11 @@ const MIME = {
   '.xml' : 'application/xml',
   '.txt' : 'text/plain',
   '.webp': 'image/webp',
+  '.json': 'application/json',
 };
+
+/* PWA files that need special cache headers */
+const NO_CACHE_FILES = ['/sw.js', '/manifest.json'];
 
 http.createServer(function(req, res) {
   /* Serve static files (favicon etc) */
@@ -28,11 +32,15 @@ http.createServer(function(req, res) {
     var filePath = path.join(__dirname, urlPath);
     fs.readFile(filePath, function(err, data){
       if(err){ res.writeHead(404); res.end('Not found'); return; }
-      /* Cache static assets for 30 days */
-      var cacheAge = 60 * 60 * 24 * 30; /* 30 days in seconds */
+      /* Service worker and manifest must not be cached by browser */
+      var isNoCacheFile = NO_CACHE_FILES.indexOf(urlPath) !== -1;
+      var cacheAge = isNoCacheFile ? 0 : 60 * 60 * 24 * 30;
+      var cacheControl = isNoCacheFile
+        ? 'no-cache, no-store, must-revalidate'
+        : 'public, max-age=' + cacheAge + ', immutable';
       res.writeHead(200, {
         'Content-Type'  : MIME[ext],
-        'Cache-Control' : 'public, max-age=' + cacheAge + ', immutable',
+        'Cache-Control' : cacheControl,
         'Vary'          : 'Accept-Encoding',
       });
       res.end(data);
