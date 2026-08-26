@@ -9,6 +9,9 @@ var SHELL = [
   '/favicon.ico',
   '/logo.svg',
   '/logo-light.svg',
+  '/apple-touch-icon.png',
+  '/icon-192.png',
+  '/icon-512.png',
 ];
 
 /* Install — cache the app shell */
