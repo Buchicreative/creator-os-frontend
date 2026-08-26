@@ -243,6 +243,8 @@ html.light-theme .faq-item p{color:var(--muted);}
 
 /* TESTIMONIALS */
 html.light-theme .testimonial-card{background:var(--surface);border-color:var(--border);}
+html.light-theme #testimonials{background:#7c5cfc !important;}
+html.light-theme #testimonials .testi-card{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.25);}
 html.light-theme .t-name{color:var(--text);}
 html.light-theme .t-handle{color:var(--muted);}
 html.light-theme .t-text{color:var(--muted);}
@@ -496,14 +498,14 @@ section{position:relative;z-index:1;padding:6rem 2rem;scroll-margin-top:72px;}
 
 /* TESTIMONIALS */
 .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3.5rem;}
-.testi-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1.75rem;transition:all 0.3s;}
-.testi-card:hover{transform:translateY(-4px);border-color:rgba(124,92,252,0.2);}
-.testi-stars{color:#febc2e;font-size:0.85rem;margin-bottom:0.9rem;letter-spacing:2px;}
-.testi-quote{font-size:0.93rem;color:var(--text);line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
+.testi-card{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:1.75rem;transition:all 0.3s;}
+.testi-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);}
+.testi-stars{color:#fedf89;font-size:0.85rem;margin-bottom:0.9rem;letter-spacing:2px;}
+.testi-quote{font-size:0.93rem;color:#fff;line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
 .testi-author{display:flex;align-items:center;gap:0.7rem;}
 .testi-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;font-family:'Outfit',sans-serif;flex-shrink:0;}
-.testi-name{font-size:0.88rem;font-weight:600;}
-.testi-role{font-size:0.76rem;color:var(--muted);}
+.testi-name{font-size:0.88rem;font-weight:600;color:#fff;}
+.testi-role{font-size:0.76rem;color:rgba(255,255,255,0.7);}
 
 /* PRICING */
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3.5rem;}
@@ -3347,17 +3349,17 @@ document.addEventListener('click', function(e){
 </section>
 
 <!-- TESTIMONIALS -->
-<section id="testimonials" style="background:var(--surface);">
+<section id="testimonials" style="background:#7c5cfc;">
   <div class="container">
     <div class="center">
-      <span class="section-tag">Social Proof</span>
-      <h2 class="section-title">Creators Are Already Winning</h2>
-      <p class="section-desc">Join thousands of creators who've replaced hours of planning with minutes of creation.</p>
+      <span style="display:inline-block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);padding:0.35rem 0.9rem;border-radius:50px;margin-bottom:1rem;">Social Proof</span>
+      <h2 style="font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:1.25rem;line-height:1.1;color:#fff;background:none;-webkit-text-fill-color:#fff;">Creators Are Already Winning</h2>
+      <p style="color:rgba(255,255,255,0.82);font-size:1rem;margin-bottom:0;">Join thousands of creators who've replaced hours of planning with minutes of creation.</p>
     </div>
     <div class="testi-grid">
-      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"I used to spend 3 hours planning content for the week. Now I do it in 20 minutes. Absolutely game-changing for my business."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(124,92,252,0.2);color:var(--accent);">AK</div><div><div class="testi-name">Amara K.</div><div class="testi-role">Business Coach · 42K followers</div></div></div></div>
-      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The repurposing feature alone is worth every cent. I turn one video idea into 5 pieces of content. My engagement tripled."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(92,240,208,0.15);color:var(--accent3);">DO</div><div><div class="testi-name">David O.</div><div class="testi-role">Designer &amp; Creator · 18K followers</div></div></div></div>
-      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The AI actually sounds like me. I set my tone to bold and educational, and every script it writes just hits."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(252,92,125,0.15);color:var(--accent2);">SR</div><div><div class="testi-name">Sofia R.</div><div class="testi-role">Content Creator · 87K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"I used to spend 3 hours planning content for the week. Now I do it in 20 minutes. Absolutely game-changing for my business."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(255,255,255,0.2);color:#fff;">AK</div><div><div class="testi-name">Amara K.</div><div class="testi-role">Business Coach · 42K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The repurposing feature alone is worth every cent. I turn one video idea into 5 pieces of content. My engagement tripled."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(255,255,255,0.2);color:#fff;">DO</div><div><div class="testi-name">David O.</div><div class="testi-role">Designer &amp; Creator · 18K followers</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-stars">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</div><p class="testi-quote">"The AI actually sounds like me. I set my tone to bold and educational, and every script it writes just hits."</p><div class="testi-author"><div class="testi-avatar" style="background:rgba(255,255,255,0.2);color:#fff;">SR</div><div><div class="testi-name">Sofia R.</div><div class="testi-role">Content Creator · 87K followers</div></div></div></div>
     </div>
   </div>
 </section>
