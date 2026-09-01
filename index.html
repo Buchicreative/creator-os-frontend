@@ -1280,6 +1280,19 @@ function updateAuthUI(){
   }
   if(mobOut) mobOut.style.display = loggedIn ? 'none'  : 'flex';
   if(mobIn)  mobIn.style.display  = loggedIn ? 'flex'  : 'none';
+
+  /* ── Re-run all plan gates with latest plan ── */
+  if(typeof vrCheckPlan === 'function') vrCheckPlan();
+  if(typeof initCreateTabs === 'function') initCreateTabs();
+
+  /* ── Chat plan tag ── */
+  var planTag = document.getElementById('crv-plan-tag');
+  if(planTag){
+    var chatPlan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+    planTag.textContent = chatPlan.charAt(0).toUpperCase() + chatPlan.slice(1);
+    planTag.className = chatPlan;
+    planTag.style.display = AUTH.user ? 'inline-block' : 'none';
+  }
 }
 
 /* GREETING */
