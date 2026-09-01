@@ -2895,6 +2895,17 @@ document.addEventListener('DOMContentLoaded', function(){
   if(AUTH.token && AUTH.user){
     updateAuthUI();
     loadProjects().then(function(){ updateAuthUI(); }).catch(function(){});
+    /* Always fetch fresh plan from backend to catch upgrades/downgrades */
+    apiCall('GET', '/auth/me').then(function(data){
+      if(data && data.plan && data.plan !== AUTH.plan){
+        AUTH.plan = data.plan;
+        localStorage.setItem('cos_plan', data.plan);
+        if(AUTH.user){ AUTH.user.plan = data.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+        VR.plan = data.plan;
+        updateAuthUI();
+        vrCheckPlan();
+      }
+    }).catch(function(){});
   } else {
     renderProjects();
     updateAuthUI();
