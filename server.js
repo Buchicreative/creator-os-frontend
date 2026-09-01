@@ -48,6 +48,17 @@ http.createServer(function(req, res) {
     return;
   }
 
+  /* Admin panel route */
+  if(urlPath === '/crevers-admin-control' || urlPath === '/crevers-admin-control/'){
+    const adminFile = path.join(__dirname, 'admin.html');
+    fs.readFile(adminFile, function(err, data){
+      if(err){ res.writeHead(404); res.end('Not found'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(data);
+    });
+    return;
+  }
+
   /* Default: serve index.html */
   const file = path.join(__dirname, 'index.html');
   fs.readFile(file, function(err, data) {
