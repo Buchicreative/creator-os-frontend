@@ -1263,6 +1263,9 @@ function updateAuthUI(){
     gr.textContent = g2 + (loggedIn ? ', ' + name : ', Creator');
   }
 
+  /* ── Unlock create tabs based on plan ── */
+  if(typeof initCreateTabs === 'function') initCreateTabs();
+
   /* ── Chat plan tag ── */
   var planTag = document.getElementById('crv-plan-tag');
   if(planTag){
