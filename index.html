@@ -2288,7 +2288,7 @@ function switchPanel(name){
   var items=document.querySelectorAll('.sidebar-item');
   if(idx>=0&&items[idx]) items[idx].classList.add('active');
   if(name==='videoresize'){ setTimeout(vrInitDrop,50); vrCheckPlan(); }
-  if(name==='settings'){ initEmailNotifToggle(); }
+  if(name==='settings' && typeof initEmailNotifToggle === 'function'){ initEmailNotifToggle(); }
   if(name==='settings') loadSettingsPanel();
   if(name==='voiceover' && typeof ttsLoadHistory === 'function') ttsLoadHistory();
   if(name==='calendar' && typeof calRender === 'function') calRender();
