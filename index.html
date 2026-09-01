@@ -1263,6 +1263,15 @@ function updateAuthUI(){
     gr.textContent = g2 + (loggedIn ? ', ' + name : ', Creator');
   }
 
+  /* ── Chat plan tag ── */
+  var planTag = document.getElementById('crv-plan-tag');
+  if(planTag){
+    var chatPlan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+    planTag.textContent = chatPlan.charAt(0).toUpperCase() + chatPlan.slice(1);
+    planTag.className = chatPlan;
+    planTag.style.display = AUTH.user ? 'inline-block' : 'none';
+  }
+
   /* ── Mobile menu auth state ── */
   var mobUser    = document.getElementById('mob-user-name');
   var mobOut     = document.getElementById('mob-loggedout-btns');
