@@ -1697,9 +1697,22 @@ function loadSettingsPanel(){
 
   /* Show account email (read-only) */
   var emailDisplay = document.getElementById('settings-email-display');
-  if(emailDisplay && savedUser && savedUser.email) emailDisplay.textContent = savedUser.email;
+  if(emailDisplay) emailDisplay.textContent = (savedUser && savedUser.email) ? savedUser.email : '—';
 
   /* Display name */
+  var nameEl = document.getElementById('settings-name');
+  if(nameEl) nameEl.value = (savedUser && savedUser.name) ? savedUser.name : '';
+
+  /* If still no data, fetch fresh from backend */
+  if(!savedUser && AUTH.token){
+    apiCall('GET', '/auth/me').then(function(data){
+      if(!data || !data.email) return;
+      if(emailDisplay) emailDisplay.textContent = data.email;
+      if(nameEl) nameEl.value = data.name || '';
+    }).catch(function(){});
+  }
+
+  /* Display name backup - keep existing below */
   var nameEl = document.getElementById('settings-name');
   if(nameEl){
     nameEl.value = (savedUser && savedUser.name) ? savedUser.name : '';
