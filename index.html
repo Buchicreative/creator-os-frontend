@@ -4280,12 +4280,12 @@ async function ttsGenerate(){
     <div class="tts-waveform idle" id="tts-waveform"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <audio id="tts-audio" style="width:100%;margin-bottom:0.75rem;" controls></audio>
     <div style="display:flex;gap:8px;">
-      <a id="tts-download-btn" class="gen-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0.65rem 1.25rem;font-size:0.85rem;flex:1;" download="voiceover.mp3">
-        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <a id="tts-download-btn" class="gen-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0.45rem 1rem;font-size:0.78rem;font-weight:600;flex:1;white-space:nowrap;" download="voiceover.mp3">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download MP3
       </a>
-      <button onclick="ttsGenerate()" class="copy-btn" style="padding:0.65rem 1.25rem;display:inline-flex;align-items:center;gap:6px;flex:1;justify-content:center;">
-        <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg>
+      <button onclick="ttsGenerate()" class="copy-btn" style="padding:0.45rem 1rem;display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:1;font-size:0.78rem;white-space:nowrap;">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg>
         Regenerate
       </button>
     </div>
