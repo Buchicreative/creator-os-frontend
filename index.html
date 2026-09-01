@@ -1180,6 +1180,8 @@ function saveAuth(data){
     localStorage.setItem('cos_refresh',     data.refresh_token);
   }
   VR.plan = AUTH.plan;
+  if(typeof vrCheckPlan === 'function') vrCheckPlan();
+  if(typeof initCreateTabs === 'function') initCreateTabs();
   document.documentElement.classList.add('is-logged-in');
   document.documentElement.classList.remove('is-logged-out');
   updateAuthUI();
@@ -2935,6 +2937,19 @@ function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+
 if(AUTH.token && AUTH.user){
   updateAuthUI();
   loadProjects().then(function(){ updateAuthUI(); }).catch(function(){});
+  /* Always fetch fresh plan from backend to unlock Pro/Creator features */
+  apiCall('GET', '/auth/me').then(function(data){
+    if(!data) return;
+    var changed = data.plan && data.plan !== AUTH.plan;
+    AUTH.plan = data.plan || AUTH.plan || 'free';
+    localStorage.setItem('cos_plan', AUTH.plan);
+    if(AUTH.user){ AUTH.user.plan = AUTH.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+    if(data.name){ AUTH.user.name = data.name; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+    /* Re-run all plan gates */
+    if(typeof vrCheckPlan === 'function') vrCheckPlan();
+    if(typeof initCreateTabs === 'function') initCreateTabs();
+    updateAuthUI();
+  }).catch(function(){});
 } else {
   renderProjects();
   updateAuthUI();
