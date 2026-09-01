@@ -2263,6 +2263,7 @@ function switchPanel(name){
   if(name==='settings'){ initEmailNotifToggle(); }
   if(name==='settings') loadSettingsPanel();
   if(name==='voiceover') ttsLoadHistory();
+  if(typeof crvUpdateSuggestions === 'function') crvUpdateSuggestions(name);
 }
 
 /* ═══ VIDEO RESIZE ═══ */
@@ -3565,12 +3566,7 @@ function crvRefineOutput(content, type){
   } catch(e){}
 })();
 
-/* Update suggestions when panel switches */
-var _origSwitchPanel = switchPanel;
-function switchPanel(name){
-  _origSwitchPanel(name);
-  crvUpdateSuggestions(name);
-}
+/* crvUpdateSuggestions called from switchPanel below */
 
 /* ════════ TTS / VOICEOVER ════════ */
 var TTS_VOICE       = 'alloy';
