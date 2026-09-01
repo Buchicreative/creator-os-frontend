@@ -3686,6 +3686,34 @@ function selectPlatformOther(cddId){
     setTimeout(function(){ input.focus(); }, 100);
   }
 }
+
+function updateNotifToggleUI(enabled, track, knob){
+  if(track) track.style.background = enabled ? 'var(--accent3)' : 'var(--border)';
+  if(knob)  knob.style.left        = enabled ? '21px' : '3px';
+}
+
+async function saveEmailNotifPref(enabled){
+  AUTH.emailNotif = enabled;
+  var track = document.getElementById('email-notif-track');
+  var knob  = document.getElementById('email-notif-knob');
+  updateNotifToggleUI(enabled, track, knob);
+  if(!AUTH.token) return;
+  try{
+    await apiCall('POST', '/auth/email-notif', { email_notifications: enabled });
+    showToast(enabled ? 'Email notifications enabled.' : 'Email notifications disabled.');
+  } catch(e){
+    showToast('Could not save preference.');
+  }
+}
+
+function initEmailNotifToggle(){
+  var toggle = document.getElementById('email-notif-toggle');
+  var track  = document.getElementById('email-notif-track');
+  var knob   = document.getElementById('email-notif-knob');
+  var pref   = AUTH.emailNotif !== false; /* default ON */
+  if(toggle) toggle.checked = pref;
+  updateNotifToggleUI(pref, track, knob);
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -4319,9 +4347,9 @@ function selectPlatformOther(cddId){
                   <div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">Tips, reminders and platform updates</div>
                 </div>
                 <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;">
-                  <input type="checkbox" id="email-notif-toggle" style="opacity:0;width:0;height:0;" onchange="saveEmailNotifPref(this.checked)">
-                  <span id="email-notif-track" style="position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:24px;transition:0.3s;"></span>
-                  <span id="email-notif-knob" style="position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:0.3s;"></span>
+                  <input type="checkbox" id="email-notif-toggle" aria-label="Toggle email notifications" checked style="opacity:0;width:0;height:0;position:absolute;" onchange="saveEmailNotifPref(this.checked)">
+                  <span id="email-notif-track" style="position:absolute;cursor:pointer;inset:0;background:var(--accent3);border-radius:24px;transition:0.3s;"></span>
+                  <span id="email-notif-knob" style="position:absolute;height:18px;width:18px;left:21px;bottom:3px;background:#fff;border-radius:50%;transition:0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></span>
                 </label>
               </div>
               <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">You can turn this off at any time.</div>
