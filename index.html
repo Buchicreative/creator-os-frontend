@@ -1178,13 +1178,7 @@ function updateAuthUI(){
   if(mobIn)  mobIn.style.display  = loggedIn ? 'flex'  : 'none';
 }
 
-/* GREETING */
-(function(){
-  var h = new Date().getHours();
-  var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  var el = document.getElementById('greeting-text');
-  if(el) el.textContent = g + ', Creator';
-})();
+/* GREETING — handled by updateAuthUI on DOMContentLoaded */
 
 /* SCROLL REVEAL — mark ready after DOM load, so elements are visible by default */
 window.addEventListener('load', function(){
@@ -2796,14 +2790,16 @@ function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+
   if(sel) cddValues[id]=sel.textContent.trim();
 });
 
-/* INIT — restore auth session and run after DOM ready */
-if(AUTH.token && AUTH.user){
-  updateAuthUI();
-  loadProjects().then(function(){ updateAuthUI(); }).catch(function(){});
-} else {
-  renderProjects();
-  updateAuthUI();
-}
+/* INIT — restore auth session — wait for DOM to be fully ready */
+document.addEventListener('DOMContentLoaded', function(){
+  if(AUTH.token && AUTH.user){
+    updateAuthUI();
+    loadProjects().then(function(){ updateAuthUI(); }).catch(function(){});
+  } else {
+    renderProjects();
+    updateAuthUI();
+  }
+});
 
 /* SCROLL REVEAL */
 var revealObs=new IntersectionObserver(function(entries){
