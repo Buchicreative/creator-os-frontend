@@ -1706,16 +1706,18 @@ function loadSettingsPanel(){
     nameEl.value = displayName;
   }
 
-  /* Always fetch fresh from backend to get latest */
+  /* Always fetch fresh from backend to get latest data */
   if(AUTH.token){
     apiCall('GET', '/auth/me').then(function(data){
       if(!data || !data.email) return;
+      /* Always update email */
       if(emailDisplay) emailDisplay.textContent = data.email;
-      if(nameEl && !nameEl.value) nameEl.value = data.name || data.email.split('@')[0];
+      /* Always update name from backend (most accurate source) */
+      if(nameEl) nameEl.value = data.name || data.email.split('@')[0];
       /* Update cached user */
       if(!AUTH.user) AUTH.user = {};
       AUTH.user.email = data.email;
-      if(data.name) AUTH.user.name = data.name;
+      AUTH.user.name  = data.name || AUTH.user.name;
       localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
     }).catch(function(){});
   }
