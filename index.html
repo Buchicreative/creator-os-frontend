@@ -3668,11 +3668,12 @@ function ttsLoadHistory(){
     if(!wrap || !list || !history.length){ if(wrap) wrap.style.display='none'; return; }
     wrap.style.display = 'block';
     list.innerHTML = history.map(function(h, i){
+      var src = h.dataUrl || h.url || '';
       return '<div class="tts-history-item">' +
         '<div style="min-width:80px;"><div style="font-size:0.72rem;font-weight:600;color:var(--text);text-transform:capitalize;">' + (h.voice||'alloy') + ' ' + (h.speed||1) + 'x</div>' +
         '<div style="font-size:0.62rem;color:var(--muted);">' + ttsTimeAgo(h.ts) + '</div></div>' +
-        '<audio src="' + h.url + '" controls style="flex:1;height:28px;min-width:0;"></audio>' +
-        '<a href="' + h.url + '" download="' + (h.filename||'voiceover') + '.mp3" class="copy-btn" style="padding:4px 10px;font-size:0.68rem;white-space:nowrap;">Save</a>' +
+        '<audio src="' + src + '" controls style="flex:1;height:28px;min-width:0;"></audio>' +
+        '<a href="' + src + '" download="' + (h.filename||'voiceover') + '.mp3" class="copy-btn" style="padding:4px 10px;font-size:0.68rem;white-space:nowrap;">Save</a>' +
         '<button class="tts-history-del" onclick="ttsDeleteHistory(' + i + ')">&#10005;</button>' +
         '</div>';
     }).join('');
@@ -3688,14 +3689,20 @@ function ttsDeleteHistory(idx){
   }catch(e){}
 }
 
-function ttsSaveHistory(url, voice, speed, scriptText){
+function ttsSaveHistory(blob, voice, speed, scriptText){
   try{
     var filename = scriptText.trim().split(/\s+/).slice(0,4).join('-').toLowerCase().replace(/[^a-z0-9-]/g,'') || 'voiceover';
-    var history = JSON.parse(localStorage.getItem(TTS_HISTORY_KEY) || '[]');
-    history.unshift({ url:url, voice:voice, speed:speed, ts:Date.now(), filename:filename });
-    history = history.slice(0, 3);
-    localStorage.setItem(TTS_HISTORY_KEY, JSON.stringify(history));
-    ttsLoadHistory();
+    var reader = new FileReader();
+    reader.onload = function(){
+      try{
+        var history = JSON.parse(localStorage.getItem(TTS_HISTORY_KEY) || '[]');
+        history.unshift({ dataUrl: reader.result, voice:voice, speed:speed, ts:Date.now(), filename:filename });
+        history = history.slice(0, 3);
+        localStorage.setItem(TTS_HISTORY_KEY, JSON.stringify(history));
+        ttsLoadHistory();
+      }catch(e){ console.warn('TTS history save failed:', e.message); }
+    };
+    reader.readAsDataURL(blob);
   }catch(e){}
 }
 
@@ -3725,7 +3732,7 @@ async function ttsGenerate(){
     if(progress) progress.style.display='none';
     if(player) player.style.display='block';
     if(wave){ wave.classList.remove('idle'); setTimeout(function(){ if(wave) wave.classList.add('idle'); },5000); }
-    ttsSaveHistory(url, TTS_VOICE, TTS_SPEED, script);
+    ttsSaveHistory(blob, TTS_VOICE, TTS_SPEED, script);
     showToast('Voiceover ready with '+TTS_VOICE+' voice!');
   } catch(e){
     if(progress) progress.style.display='none';
@@ -4231,20 +4238,20 @@ async function ttsGenerate(){
 
   <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Choose Voice</div>
   <div class="voice-grid">
-    <div class="voice-card selected" onclick="ttsSelectVoice('alloy',this)"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg><div class="voice-card-name">Alloy</div><div class="voice-card-desc">Neutral</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('alloy')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('echo',this)"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div class="voice-card-name">Echo</div><div class="voice-card-desc">Male</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('echo')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('fable',this)"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><div class="voice-card-name">Fable</div><div class="voice-card-desc">Warm</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('fable')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('onyx',this)"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><div class="voice-card-name">Onyx</div><div class="voice-card-desc">Deep</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('onyx')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('nova',this)"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><div class="voice-card-name">Nova</div><div class="voice-card-desc">Energetic</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('nova')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('shimmer',this)"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg><div class="voice-card-name">Shimmer</div><div class="voice-card-desc">Soft</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('shimmer')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
+    <div class="voice-card selected" onclick="ttsSelectVoice('alloy',this)"><div class="voice-card-name">Alloy</div><div class="voice-card-desc">Neutral & Balanced</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('alloy')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
+    <div class="voice-card" onclick="ttsSelectVoice('echo',this)"><div class="voice-card-name">Echo</div><div class="voice-card-desc">Male & Clear</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('echo')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
+    <div class="voice-card" onclick="ttsSelectVoice('fable',this)"><div class="voice-card-name">Fable</div><div class="voice-card-desc">Warm & Expressive</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('fable')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
+    <div class="voice-card" onclick="ttsSelectVoice('onyx',this)"><div class="voice-card-name">Onyx</div><div class="voice-card-desc">Male & Deep</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('onyx')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
+    <div class="voice-card" onclick="ttsSelectVoice('nova',this)"><div class="voice-card-name">Nova</div><div class="voice-card-desc">Female & Energetic</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('nova')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
+    <div class="voice-card" onclick="ttsSelectVoice('shimmer',this)"><div class="voice-card-name">Shimmer</div><div class="voice-card-desc">Female & Soft</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('shimmer')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
   </div>
 
   <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Speed</div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;">
-    <button class="tts-speed-btn" onclick="ttsSetSpeed(0.75,this)">0.75x Slow</button>
-    <button class="tts-speed-btn selected" onclick="ttsSetSpeed(1.0,this)">1x Normal</button>
-    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.25,this)">1.25x Fast</button>
-    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.5,this)">1.5x Very Fast</button>
+    <button class="tts-speed-btn" onclick="ttsSetSpeed(0.75,this)">Slow</button>
+    <button class="tts-speed-btn selected" onclick="ttsSetSpeed(1.0,this)">Normal</button>
+    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.25,this)">Fast</button>
+    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.5,this)">Very Fast</button>
   </div>
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
@@ -4272,12 +4279,12 @@ async function ttsGenerate(){
   <div class="tts-player" id="tts-player" style="display:none;">
     <div class="tts-waveform idle" id="tts-waveform"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     <audio id="tts-audio" style="width:100%;margin-bottom:0.75rem;" controls></audio>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <a id="tts-download-btn" class="gen-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0.65rem 1.25rem;font-size:0.85rem;width:auto;" download="voiceover.mp3">
+    <div style="display:flex;gap:8px;">
+      <a id="tts-download-btn" class="gen-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0.65rem 1.25rem;font-size:0.85rem;flex:1;" download="voiceover.mp3">
         <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download MP3
       </a>
-      <button onclick="ttsGenerate()" class="copy-btn" style="padding:0.65rem 1.25rem;display:inline-flex;align-items:center;gap:6px;">
+      <button onclick="ttsGenerate()" class="copy-btn" style="padding:0.65rem 1.25rem;display:inline-flex;align-items:center;gap:6px;flex:1;justify-content:center;">
         <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg>
         Regenerate
       </button>
