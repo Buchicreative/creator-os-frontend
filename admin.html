@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crevers Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#050508;--surface:#0d0d14;--surface2:#141420;
+  --border:rgba(255,255,255,0.07);--accent:#7c5cfc;--accent2:#fc5c7d;
+  --accent3:#5cf0d0;--text:#f0eeff;--muted:#8885a8;
+}
+html.light-theme{
+  --bg:#f8f8ff;--surface:#ffffff;--surface2:#f0efff;
+  --border:rgba(124,92,252,0.12);--accent:#7c5cfc;--accent2:#fc5c7d;
+  --accent3:#0ea87a;--text:#1a1825;--muted:#6b6880;
+}
+html.light-theme body{background:var(--bg);color:var(--text);}
+html.light-theme .admin-content{background:var(--bg);}
+html.light-theme table{background:transparent;}
+html.light-theme td,html.light-theme th{border-color:var(--border);}
+html.light-theme .cdd-trigger{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .cdd-menu{background:var(--surface);border-color:var(--border);}
+html.light-theme .cdd-option{color:var(--text);}
+html.light-theme .cdd-option:hover{background:var(--surface2);}
+html.light-theme .field-input,html.light-theme .field-textarea,html.light-theme .field-select{background:var(--surface2);border-color:var(--border);color:var(--text);}
+html.light-theme .admin-mobile-menu{background:rgba(248,248,255,0.97);}
+html.light-theme .admin-mobile-nav-item{color:var(--muted);}
+html.light-theme .admin-mobile-nav-item:hover,html.light-theme .admin-mobile-nav-item.active{color:var(--accent);}
+html.light-theme .stat-num{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;height:100%;}
+
+/* ══ LOGIN ══ */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:1rem;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);}
+.login-logo{margin-bottom:0.25rem;}
+.login-logo svg .st0{fill:var(--text);}
+#topbar-logo svg .st0{fill:var(--text);}
+.login-sub{font-size:0.82rem;color:var(--muted);margin-bottom:1.75rem;}
+.login-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;color:var(--text);font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:1rem;}
+.login-input:focus{border-color:var(--accent);}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--accent),#5a3fd6);border:none;border-radius:10px;padding:0.8rem;color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity 0.2s;}
+.login-btn:hover{opacity:0.88;}
+.login-error{font-size:0.78rem;color:var(--accent2);margin-top:0.5rem;display:none;}
+
+/* ══ LAYOUT ══ */
+#admin-screen{height:100vh;flex-direction:row;}
+.admin-sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:sticky;top:0;overflow-y:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.admin-logo{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid var(--border);}
+.admin-logo svg .st0{fill:var(--text);}
+.admin-logo svg .st1{fill:url(#linear-gradient);}
+.admin-logo span{display:block;font-size:0.65rem;font-weight:500;color:var(--muted);margin-top:2px;}
+.admin-nav{flex:1;padding:1rem 0.75rem;}
+.nav-item{display:flex;align-items:center;gap:0.65rem;padding:0.65rem 0.85rem;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-bottom:2px;font-size:0.85rem;font-weight:500;color:var(--muted);border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+.nav-item:hover{background:rgba(124,92,252,0.08);color:var(--text);}
+.nav-item.active{background:rgba(124,92,252,0.12);color:var(--accent);}
+.nav-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.admin-sidebar-bottom{padding:1rem 0.75rem;border-top:1px solid var(--border);}
+.logout-btn{display:flex;align-items:center;gap:0.65rem;padding:0.65rem 0.85rem;border-radius:10px;cursor:pointer;transition:all 0.2s;font-size:0.85rem;font-weight:500;color:var(--muted);border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+.logout-btn:hover{background:rgba(252,92,125,0.08);color:var(--accent2);}
+.logout-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.admin-content{flex:1;overflow-y:auto;background:var(--bg);}
+.admin-topbar{padding:1.25rem 2rem;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.admin-page-title{font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);}
+.admin-refresh{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:0.78rem;padding:0.4rem 0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem;}
+.admin-refresh:hover{border-color:var(--accent);color:var(--accent);}
+.admin-body{padding:1.75rem 2rem;}
+.admin-page{display:none;}
+.admin-page.active{display:block;}
+
+/* ══ STATS CARDS ══ */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:1.75rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.stat-num{font-family:'Outfit',sans-serif;font-size:2.8rem;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-label{font-size:0.85rem;color:var(--muted);margin-top:10px;font-weight:500;}
+
+/* ══ CHARTS ══ */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.75rem;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;width:100%;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.chart-title{font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem;}
+.chart-wrap{display:flex;align-items:center;gap:1.5rem;}
+.pie-legend{display:flex;flex-direction:column;gap:12px;min-width:180px;}
+.pie-legend-item{display:flex;align-items:center;gap:10px;font-size:0.88rem;}
+.pie-legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.pie-legend-label{color:var(--text);font-weight:600;font-size:0.9rem;}
+.pie-legend-val{color:var(--muted);font-size:0.8rem;margin-left:auto;padding-left:1rem;}
+
+/* ══ CDD DROPDOWN (exact from site) ══ */
+.cdd{position:relative;user-select:none;}
+.cdd-trigger{display:flex;align-items:center;justify-content:space-between;gap:0.5rem;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.85rem;border-radius:8px;font-size:0.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color 0.2s;width:100%;white-space:nowrap;}
+.cdd-trigger:hover,.cdd-trigger.open{border-color:var(--accent);}
+.cdd-trigger svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.2s;flex-shrink:0;}
+.cdd-trigger.open svg{transform:rotate(180deg);stroke:var(--accent);}
+.cdd-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:100%;background:var(--surface2);border:1px solid rgba(124,92,252,0.25);border-radius:10px;overflow:hidden;z-index:600;box-shadow:0 16px 40px rgba(0,0,0,0.5);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity 0.18s,transform 0.18s;}
+.cdd-menu.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.cdd-option{padding:0.65rem 0.9rem;font-size:0.85rem;color:var(--muted);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.5rem;white-space:nowrap;}
+.cdd-option:hover{background:var(--surface);color:var(--text);}
+.cdd-option.selected{color:var(--accent);}
+
+/* ══ TABLE ══ */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.5rem;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.table-top{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.table-search{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.85rem;color:var(--text);font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;width:220px;transition:border-color 0.2s;}
+.table-search:focus{border-color:var(--accent);}
+.table-label{font-size:0.82rem;color:var(--muted);}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:0.75rem 1.25rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:0.7rem 1.25rem;font-size:0.82rem;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.03);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.plan-tag{font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.04em;text-transform:uppercase;}
+.plan-tag.free{background:rgba(136,133,168,0.12);color:var(--muted);}
+.plan-tag.pro{background:rgba(124,92,252,0.15);color:var(--accent);}
+.plan-tag.creator{background:rgba(92,240,208,0.12);color:var(--accent3);}
+.table-empty{padding:2.5rem;text-align:center;color:var(--muted);font-size:0.82rem;}
+.view-more-btn{width:100%;padding:0.75rem;background:none;border:none;border-top:1px solid var(--border);color:var(--accent);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+.view-more-btn:hover{background:rgba(124,92,252,0.05);}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1.25rem;border-top:1px solid var(--border);}
+.page-btns{display:flex;gap:0.5rem;}
+.page-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:0.78rem;padding:0.4rem 0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.page-btn:hover{border-color:var(--accent);color:var(--accent);}
+.page-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.page-info{font-size:0.78rem;color:var(--muted);}
+
+/* ══ BROADCAST ══ */
+.broadcast-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.field-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;}
+.field-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;color:var(--text);font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:1rem;}
+.field-input:focus{border-color:var(--accent);}
+.field-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;color:var(--text);font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:1rem;resize:vertical;min-height:160px;}
+.field-textarea:focus{border-color:var(--accent);}
+.send-btn{background:linear-gradient(135deg,var(--accent),#5a3fd6);border:none;border-radius:10px;padding:0.75rem 1.75rem;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:opacity 0.2s;display:inline-flex;align-items:center;gap:0.5rem;}
+.send-btn:hover{opacity:0.88;}
+.send-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.broadcast-status{font-size:0.8rem;margin-top:0.85rem;padding:0.65rem 1rem;border-radius:8px;display:none;}
+.broadcast-status.success{background:rgba(92,240,208,0.1);color:var(--accent3);border:1px solid rgba(92,240,208,0.2);}
+.broadcast-status.error{background:rgba(252,92,125,0.1);color:var(--accent2);border:1px solid rgba(252,92,125,0.2);}
+
+/* ══ REVENUE ══ */
+.revenue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:1.75rem;}
+.rev-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.25rem;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.rev-num{font-family:'Outfit',sans-serif;font-size:2.2rem;font-weight:800;line-height:1;color:var(--accent3);}
+.rev-label{font-size:0.8rem;color:var(--muted);margin-top:8px;}
+.rev-sub{font-size:0.7rem;color:var(--muted);margin-top:3px;}
+
+/* ══ ACTIVITY ══ */
+.activity-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.activity-item{padding:0.85rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:0.75rem;}
+.activity-item:last-child{border-bottom:none;}
+.activity-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.activity-text{color:var(--text);flex:1;font-size:0.82rem;}
+.activity-time{color:var(--muted);font-size:0.72rem;flex-shrink:0;}
+
+/* ══ MISC ══ */
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#admin-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.82rem;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+
+/* ── Hamburger button ── */
+.admin-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;
+  padding:4px;background:none;border:none;flex-shrink:0;}
+.admin-hamburger span{display:block;width:22px;height:2px;background:var(--text);
+  border-radius:2px;transition:transform 0.3s ease,opacity 0.3s ease;}
+.admin-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.admin-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.admin-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── Mobile fullscreen menu ── */
+.admin-mobile-menu{
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(5,5,8,0.97);backdrop-filter:blur(20px);
+  flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
+}
+.admin-mobile-menu.open{display:flex;}
+.admin-mobile-nav-item{
+  font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:700;
+  color:var(--muted);background:none;border:none;cursor:pointer;
+  transition:color 0.2s;display:flex;align-items:center;gap:0.75rem;
+}
+.admin-mobile-nav-item:hover,.admin-mobile-nav-item.active{color:var(--accent);}
+.admin-mobile-nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.admin-mobile-logout{
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;
+  color:var(--accent2);background:none;border:1px solid rgba(252,92,125,0.2);
+  border-radius:10px;padding:0.65rem 1.5rem;cursor:pointer;margin-top:1rem;
+}
+
+@media(max-width:768px){
+  .admin-sidebar{display:none;}
+  .admin-hamburger{display:flex;}
+  #mobile-logout{display:none !important;}
+  #topbar-logo{display:block !important;}
+  #page-title{display:none !important;}
+  #page-title-body{display:block !important;}
+  .charts-row{grid-template-columns:1fr !important;}
+  .stats-grid{grid-template-columns:1fr !important;}
+  .revenue-grid{grid-template-columns:1fr 1fr !important;gap:10px;}
+  .admin-content{width:100%;}
+  .admin-body{padding:1rem;}
+  .admin-topbar{padding:0.85rem 1rem;}
+  .stat-card{padding:1.25rem 1rem;}
+  .rev-card{padding:1.1rem 0.85rem;}
+  .stat-num{font-size:2rem;}
+  .rev-num{font-size:1.7rem;}
+  .chart-card{padding:1rem;overflow:hidden;}
+  .chart-wrap{flex-direction:column;align-items:center;gap:1.5rem;}
+  .pie-legend{min-width:unset;width:100%;}
+  .table-top{flex-direction:column;align-items:flex-start;}
+  .table-search{width:100%;}
+  td,th{padding:0.6rem 0.75rem;font-size:0.78rem;}
+  .broadcast-card{padding:1rem;}
+  .field-input,.field-textarea,.field-select{font-size:0.85rem;}
+  #revenue-breakdown > div{grid-template-columns:1fr !important;}
+  #global-search{width:110px !important;font-size:0.75rem !important;padding:0.35rem 0.6rem !important;}
+  .generators-grid{grid-template-columns:1fr !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo"><svg style="height:30px;width:auto;display:block;margin-bottom:0.75rem;" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 220.59 107.77">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #fff;
+      }
+
+      .st1 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="6.93" y1="12.16" x2="99.6" y2="95.47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c5cfc"/>
+      <stop offset=".15" stop-color="#875cf0"/>
+      <stop offset=".41" stop-color="#a55cd2"/>
+      <stop offset=".76" stop-color="#d55ca2"/>
+      <stop offset="1" stop-color="#fc5c7d"/>
+    </linearGradient>
+  </defs>
+  <path class="st1" d="M85.99,88.56c-4.31,4.54-9.59,8.3-15.52,10.77h-.02c-1.28.54-2.74-.06-3.27-1.34-.53-1.28.07-2.74,1.35-3.27.08-.03.16-.06.25-.09,5.48-1.64,10.74-4.37,15.26-8.14.6-.5,1.5-.42,2,.18.47.56.43,1.38-.06,1.89ZM54.9,99.8c.16-1.79-1.17-3.37-2.96-3.53-5.61-.51-11.06-2.17-15.93-4.84-.06-.03-.12-.07-.18-.09-1.87-.9-4.11-.11-5.01,1.76-.9,1.87-.11,4.11,1.76,5.01h.02c5.94,2.85,12.44,4.44,18.94,4.67,1.71.05,3.21-1.24,3.36-2.97ZM22.75,86.76c1.85-1.45,2.18-4.12.73-5.97h-.01c-3.38-4.34-5.84-9.33-7.19-14.57-.02-.08-.05-.17-.07-.25-.79-2.5-3.47-3.88-5.97-3.09-2.5.79-3.88,3.47-3.09,5.97v.03c2.04,6.4,5.41,12.33,9.77,17.33,1.48,1.68,4.03,1.95,5.82.55ZM9.47,54.57c2.87.46,5.58-1.49,6.04-4.36v-.04c.86-5.28,2.76-10.35,5.66-14.76.09-.13.18-.28.25-.42,1.55-2.85.49-6.42-2.36-7.97-2.85-1.55-6.42-.49-7.97,2.36l-.03.06c-3.28,6.03-5.37,12.68-6,19.44-.25,2.73,1.66,5.25,4.41,5.69ZM23.02,22.66c2.04,2.95,6.08,3.69,9.04,1.66l.04-.03c2.13-1.47,4.38-2.76,6.75-3.79,2.34-1.07,4.79-1.91,7.31-2.49h.01c3.52-.82,5.73-4.31,4.95-7.85-.79-3.55-4.3-5.8-7.86-5.02-3.4.75-6.73,1.85-9.9,3.29-3.15,1.48-6.16,3.27-8.92,5.37-2.74,2.09-3.39,5.99-1.41,8.86ZM63.75,5.35c-.21-.05-.43-.09-.66-.12-3.29-.39-6.27,1.95-6.66,5.24-.39,3.29,1.95,6.27,5.24,6.66,2.61.31,5.22.84,7.79,1.61,2.57.77,5.12,1.74,7.56,3.03l.08.04c1.81.96,4.11.54,5.46-1.11,1.54-1.88,1.27-4.66-.62-6.2-2.58-2.12-5.4-4.03-8.44-5.57-3.04-1.54-6.28-2.75-9.63-3.55l-.12-.03ZM94.01,29.8c-.07-.12-.14-.24-.23-.36-.8-1.01-2.26-1.18-3.27-.38-1.01.8-1.18,2.26-.38,3.27,1.79,2.26,3.42,4.72,4.67,7.38,1.27,2.65,2.23,5.48,2.83,8.39.09.45.52.76.98.71.49-.06.84-.5.79-.99-.36-3.07-.97-6.14-1.86-9.15-.91-3-2.02-5.99-3.5-8.83l-.02-.03Z"/>
+  <g>
+    <path class="st0" d="M68.6,80.55c-9.97,0-14.93-6.58-14.93-16.7s5.25-16.74,15.5-16.74c3.96,0,7.16.95,9.59,2.96,2.29,2.05,3.58,4.87,3.91,8.4h-4.01c-1.43,0-2.48-.67-3.1-1.96-1.1-2.34-3.24-3.53-6.39-3.53-6.15,0-8.87,4.34-8.87,10.88s2.62,10.83,8.68,10.83c4.15,0,6.54-2.29,7.25-5.87h6.44c-.62,7.49-5.87,11.74-14.07,11.74Z"/>
+    <path class="st0" d="M85.87,67.05c.19-8.16,4.53-12.21,12.98-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M113.97,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.54-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.31c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM109.15,64.71h9.49c-.38-3.34-1.95-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M150.04,54.84l-8.92,25.24h-6.73l-8.87-25.24h7.01l5.1,17.7,4.39-15.46c.48-1.48,1.53-2.24,3.1-2.24h4.91Z"/>
+    <path class="st0" d="M162.73,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.55-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.32c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM157.91,64.71h9.49c-.38-3.34-1.96-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M177.09,67.05c.19-8.16,4.53-12.21,12.97-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M204.95,75.49c2.67,0,4.01-.76,4.01-2.39,0-1.29-2.19-2.34-6.53-3.1-5.58-1-8.44-3.48-8.49-7.44,0-5.44,4.29-8.02,10.07-8.11,3.24,0,5.82.72,7.73,2.15,1.86,1.48,2.86,3.53,3,6.15h-4.01c-1.48-.05-2.43-.57-2.81-1.57-.43-1.1-1.72-1.72-3.82-1.72-2.48,0-3.72.67-3.72,1.96s1.62,2.29,4.91,2.91c4.29.86,7.11,1.96,8.49,3.24,1.19,1.24,1.77,2.77,1.77,4.48,0,6.2-4.87,8.49-11.54,8.49-3.53,0-6.2-.76-7.92-2.24-1.91-1.43-2.86-3.63-2.86-6.54h6.49c.14,2.77,2.15,3.72,5.25,3.72Z"/>
+  </g>
+</svg></div>
+    <div class="login-sub">Admin Control Panel</div>
+    <input type="password" class="login-input" id="admin-pass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') doAdminLogin()">
+    <button class="login-btn" onclick="doAdminLogin()">Access Dashboard</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="admin-screen" style="display:none;">
+  <div class="admin-sidebar">
+    <div class="admin-logo"><svg style="height:26px;width:auto;display:block;" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 220.59 107.77">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0 { fill: var(--text); }
+
+      .st1 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="6.93" y1="12.16" x2="99.6" y2="95.47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c5cfc"/>
+      <stop offset=".15" stop-color="#875cf0"/>
+      <stop offset=".41" stop-color="#a55cd2"/>
+      <stop offset=".76" stop-color="#d55ca2"/>
+      <stop offset="1" stop-color="#fc5c7d"/>
+    </linearGradient>
+  </defs>
+  <path class="st1" d="M85.99,88.56c-4.31,4.54-9.59,8.3-15.52,10.77h-.02c-1.28.54-2.74-.06-3.27-1.34-.53-1.28.07-2.74,1.35-3.27.08-.03.16-.06.25-.09,5.48-1.64,10.74-4.37,15.26-8.14.6-.5,1.5-.42,2,.18.47.56.43,1.38-.06,1.89ZM54.9,99.8c.16-1.79-1.17-3.37-2.96-3.53-5.61-.51-11.06-2.17-15.93-4.84-.06-.03-.12-.07-.18-.09-1.87-.9-4.11-.11-5.01,1.76-.9,1.87-.11,4.11,1.76,5.01h.02c5.94,2.85,12.44,4.44,18.94,4.67,1.71.05,3.21-1.24,3.36-2.97ZM22.75,86.76c1.85-1.45,2.18-4.12.73-5.97h-.01c-3.38-4.34-5.84-9.33-7.19-14.57-.02-.08-.05-.17-.07-.25-.79-2.5-3.47-3.88-5.97-3.09-2.5.79-3.88,3.47-3.09,5.97v.03c2.04,6.4,5.41,12.33,9.77,17.33,1.48,1.68,4.03,1.95,5.82.55ZM9.47,54.57c2.87.46,5.58-1.49,6.04-4.36v-.04c.86-5.28,2.76-10.35,5.66-14.76.09-.13.18-.28.25-.42,1.55-2.85.49-6.42-2.36-7.97-2.85-1.55-6.42-.49-7.97,2.36l-.03.06c-3.28,6.03-5.37,12.68-6,19.44-.25,2.73,1.66,5.25,4.41,5.69ZM23.02,22.66c2.04,2.95,6.08,3.69,9.04,1.66l.04-.03c2.13-1.47,4.38-2.76,6.75-3.79,2.34-1.07,4.79-1.91,7.31-2.49h.01c3.52-.82,5.73-4.31,4.95-7.85-.79-3.55-4.3-5.8-7.86-5.02-3.4.75-6.73,1.85-9.9,3.29-3.15,1.48-6.16,3.27-8.92,5.37-2.74,2.09-3.39,5.99-1.41,8.86ZM63.75,5.35c-.21-.05-.43-.09-.66-.12-3.29-.39-6.27,1.95-6.66,5.24-.39,3.29,1.95,6.27,5.24,6.66,2.61.31,5.22.84,7.79,1.61,2.57.77,5.12,1.74,7.56,3.03l.08.04c1.81.96,4.11.54,5.46-1.11,1.54-1.88,1.27-4.66-.62-6.2-2.58-2.12-5.4-4.03-8.44-5.57-3.04-1.54-6.28-2.75-9.63-3.55l-.12-.03ZM94.01,29.8c-.07-.12-.14-.24-.23-.36-.8-1.01-2.26-1.18-3.27-.38-1.01.8-1.18,2.26-.38,3.27,1.79,2.26,3.42,4.72,4.67,7.38,1.27,2.65,2.23,5.48,2.83,8.39.09.45.52.76.98.71.49-.06.84-.5.79-.99-.36-3.07-.97-6.14-1.86-9.15-.91-3-2.02-5.99-3.5-8.83l-.02-.03Z"/>
+  <g>
+    <path class="st0" d="M68.6,80.55c-9.97,0-14.93-6.58-14.93-16.7s5.25-16.74,15.5-16.74c3.96,0,7.16.95,9.59,2.96,2.29,2.05,3.58,4.87,3.91,8.4h-4.01c-1.43,0-2.48-.67-3.1-1.96-1.1-2.34-3.24-3.53-6.39-3.53-6.15,0-8.87,4.34-8.87,10.88s2.62,10.83,8.68,10.83c4.15,0,6.54-2.29,7.25-5.87h6.44c-.62,7.49-5.87,11.74-14.07,11.74Z"/>
+    <path class="st0" d="M85.87,67.05c.19-8.16,4.53-12.21,12.98-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M113.97,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.54-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.31c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM109.15,64.71h9.49c-.38-3.34-1.95-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M150.04,54.84l-8.92,25.24h-6.73l-8.87-25.24h7.01l5.1,17.7,4.39-15.46c.48-1.48,1.53-2.24,3.1-2.24h4.91Z"/>
+    <path class="st0" d="M162.73,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.55-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.32c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM157.91,64.71h9.49c-.38-3.34-1.96-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M177.09,67.05c.19-8.16,4.53-12.21,12.97-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M204.95,75.49c2.67,0,4.01-.76,4.01-2.39,0-1.29-2.19-2.34-6.53-3.1-5.58-1-8.44-3.48-8.49-7.44,0-5.44,4.29-8.02,10.07-8.11,3.24,0,5.82.72,7.73,2.15,1.86,1.48,2.86,3.53,3,6.15h-4.01c-1.48-.05-2.43-.57-2.81-1.57-.43-1.1-1.72-1.72-3.82-1.72-2.48,0-3.72.67-3.72,1.96s1.62,2.29,4.91,2.91c4.29.86,7.11,1.96,8.49,3.24,1.19,1.24,1.77,2.77,1.77,4.48,0,6.2-4.87,8.49-11.54,8.49-3.53,0-6.2-.76-7.92-2.24-1.91-1.43-2.86-3.63-2.86-6.54h6.49c.14,2.77,2.15,3.72,5.25,3.72Z"/>
+  </g>
+</svg><span>Admin Panel</span></div>
+    <nav class="admin-nav">
+      <button class="nav-item active" onclick="switchTab('overview')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('users')">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Users</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('revenue')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Revenue</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('broadcast')">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span>Broadcast</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('activity')">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>Activity</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('generators')">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Top Users</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('adminlog')" style="position:relative;">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Admin Log</span>
+        <span id="new-user-badge" style="display:none;position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--accent2);"></span>
+      </button>
+    </nav>
+    <div class="admin-sidebar-bottom">
+      <button class="logout-btn" onclick="toggleAdminTheme()" style="margin-bottom:4px;">
+        <svg id="admin-theme-icon-desk" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="admin-theme-label-desk">Light Mode</span>
+      </button>
+      <button class="logout-btn" onclick="adminLogout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Log Out</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="admin-topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem;flex:1;">
+        <button class="admin-hamburger" id="admin-hamburger-btn" onclick="toggleAdminMenu()" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div id="topbar-logo" style="display:none;"><svg style="height:24px;width:auto;display:block;" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 220.59 107.77">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0 { fill: var(--text); }
+
+      .st1 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="6.93" y1="12.16" x2="99.6" y2="95.47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c5cfc"/>
+      <stop offset=".15" stop-color="#875cf0"/>
+      <stop offset=".41" stop-color="#a55cd2"/>
+      <stop offset=".76" stop-color="#d55ca2"/>
+      <stop offset="1" stop-color="#fc5c7d"/>
+    </linearGradient>
+  </defs>
+  <path class="st1" d="M85.99,88.56c-4.31,4.54-9.59,8.3-15.52,10.77h-.02c-1.28.54-2.74-.06-3.27-1.34-.53-1.28.07-2.74,1.35-3.27.08-.03.16-.06.25-.09,5.48-1.64,10.74-4.37,15.26-8.14.6-.5,1.5-.42,2,.18.47.56.43,1.38-.06,1.89ZM54.9,99.8c.16-1.79-1.17-3.37-2.96-3.53-5.61-.51-11.06-2.17-15.93-4.84-.06-.03-.12-.07-.18-.09-1.87-.9-4.11-.11-5.01,1.76-.9,1.87-.11,4.11,1.76,5.01h.02c5.94,2.85,12.44,4.44,18.94,4.67,1.71.05,3.21-1.24,3.36-2.97ZM22.75,86.76c1.85-1.45,2.18-4.12.73-5.97h-.01c-3.38-4.34-5.84-9.33-7.19-14.57-.02-.08-.05-.17-.07-.25-.79-2.5-3.47-3.88-5.97-3.09-2.5.79-3.88,3.47-3.09,5.97v.03c2.04,6.4,5.41,12.33,9.77,17.33,1.48,1.68,4.03,1.95,5.82.55ZM9.47,54.57c2.87.46,5.58-1.49,6.04-4.36v-.04c.86-5.28,2.76-10.35,5.66-14.76.09-.13.18-.28.25-.42,1.55-2.85.49-6.42-2.36-7.97-2.85-1.55-6.42-.49-7.97,2.36l-.03.06c-3.28,6.03-5.37,12.68-6,19.44-.25,2.73,1.66,5.25,4.41,5.69ZM23.02,22.66c2.04,2.95,6.08,3.69,9.04,1.66l.04-.03c2.13-1.47,4.38-2.76,6.75-3.79,2.34-1.07,4.79-1.91,7.31-2.49h.01c3.52-.82,5.73-4.31,4.95-7.85-.79-3.55-4.3-5.8-7.86-5.02-3.4.75-6.73,1.85-9.9,3.29-3.15,1.48-6.16,3.27-8.92,5.37-2.74,2.09-3.39,5.99-1.41,8.86ZM63.75,5.35c-.21-.05-.43-.09-.66-.12-3.29-.39-6.27,1.95-6.66,5.24-.39,3.29,1.95,6.27,5.24,6.66,2.61.31,5.22.84,7.79,1.61,2.57.77,5.12,1.74,7.56,3.03l.08.04c1.81.96,4.11.54,5.46-1.11,1.54-1.88,1.27-4.66-.62-6.2-2.58-2.12-5.4-4.03-8.44-5.57-3.04-1.54-6.28-2.75-9.63-3.55l-.12-.03ZM94.01,29.8c-.07-.12-.14-.24-.23-.36-.8-1.01-2.26-1.18-3.27-.38-1.01.8-1.18,2.26-.38,3.27,1.79,2.26,3.42,4.72,4.67,7.38,1.27,2.65,2.23,5.48,2.83,8.39.09.45.52.76.98.71.49-.06.84-.5.79-.99-.36-3.07-.97-6.14-1.86-9.15-.91-3-2.02-5.99-3.5-8.83l-.02-.03Z"/>
+  <g>
+    <path class="st0" d="M68.6,80.55c-9.97,0-14.93-6.58-14.93-16.7s5.25-16.74,15.5-16.74c3.96,0,7.16.95,9.59,2.96,2.29,2.05,3.58,4.87,3.91,8.4h-4.01c-1.43,0-2.48-.67-3.1-1.96-1.1-2.34-3.24-3.53-6.39-3.53-6.15,0-8.87,4.34-8.87,10.88s2.62,10.83,8.68,10.83c4.15,0,6.54-2.29,7.25-5.87h6.44c-.62,7.49-5.87,11.74-14.07,11.74Z"/>
+    <path class="st0" d="M85.87,67.05c.19-8.16,4.53-12.21,12.98-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M113.97,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.54-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.31c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM109.15,64.71h9.49c-.38-3.34-1.95-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M150.04,54.84l-8.92,25.24h-6.73l-8.87-25.24h7.01l5.1,17.7,4.39-15.46c.48-1.48,1.53-2.24,3.1-2.24h4.91Z"/>
+    <path class="st0" d="M162.73,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.55-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.32c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM157.91,64.71h9.49c-.38-3.34-1.96-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M177.09,67.05c.19-8.16,4.53-12.21,12.97-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M204.95,75.49c2.67,0,4.01-.76,4.01-2.39,0-1.29-2.19-2.34-6.53-3.1-5.58-1-8.44-3.48-8.49-7.44,0-5.44,4.29-8.02,10.07-8.11,3.24,0,5.82.72,7.73,2.15,1.86,1.48,2.86,3.53,3,6.15h-4.01c-1.48-.05-2.43-.57-2.81-1.57-.43-1.1-1.72-1.72-3.82-1.72-2.48,0-3.72.67-3.72,1.96s1.62,2.29,4.91,2.91c4.29.86,7.11,1.96,8.49,3.24,1.19,1.24,1.77,2.77,1.77,4.48,0,6.2-4.87,8.49-11.54,8.49-3.53,0-6.2-.76-7.92-2.24-1.91-1.43-2.86-3.63-2.86-6.54h6.49c.14,2.77,2.15,3.72,5.25,3.72Z"/>
+  </g>
+</svg></div>
+        <div class="admin-page-title" id="page-title">Overview</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="global-search" placeholder="Search user..." style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.85rem;color:var(--text);font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;width:200px;transition:border-color 0.2s;" oninput="globalSearch(this.value)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+
+
+      <button class="admin-refresh" onclick="adminLogout()" style="display:none;" id="mobile-logout">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </button>
+      </div>
+    </div>
+
+    <div class="admin-body">
+      <!-- Page title shown inside body on mobile -->
+      <div id="page-title-body" style="display:none;font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;">Overview</div>
+
+      <!-- OVERVIEW -->
+      <div class="admin-page active" id="tab-overview">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="st-total">—</div><div class="stat-label">Total Users</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-week">—</div><div class="stat-label">New This Week</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-today">—</div><div class="stat-label">Active Today</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-free">—</div><div class="stat-label">Free Users</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-paid">—</div><div class="stat-label">Paid Users</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-pro">—</div><div class="stat-label">Pro Plan</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-creator">—</div><div class="stat-label">Creator Plan</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-gens">—</div><div class="stat-label">Total Generations</div></div>
+          <div class="stat-card"><div class="stat-num" id="st-conversion">—</div><div class="stat-label">Conversion Rate</div></div>
+        </div>
+
+        <div class="charts-row">
+          <!-- Pie chart -->
+          <div class="chart-card">
+            <div class="chart-title">User Plan Distribution</div>
+            <div class="chart-wrap" style="justify-content:center;gap:3rem;">
+              <canvas id="pie-chart" width="180" height="180" style="flex-shrink:0;"></canvas>
+              <div class="pie-legend" id="pie-legend"></div>
+            </div>
+          </div>
+          <!-- Churn over time -->
+          <div class="chart-card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+              <div class="chart-title" style="margin-bottom:0;">Churn Over Time</div>
+              <div class="cdd" id="cdd-churn-range">
+                <div class="cdd-trigger" onclick="toggleCddAdmin('cdd-churn-range')" style="padding:0.4rem 0.7rem;font-size:0.78rem;">
+                  <span id="cdd-churn-range-val">Last 3 Days</span>
+                  <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="cdd-menu" id="cdd-churn-range-menu" style="right:0;left:auto;min-width:140px;">
+                  <div class="cdd-option selected" onclick="selectChurnRange(3,'Last 3 Days')">Last 3 Days</div>
+                  <div class="cdd-option" onclick="selectChurnRange(7,'Last 7 Days')">Last 7 Days</div>
+                  <div class="cdd-option" onclick="selectChurnRange(30,'Last 30 Days')">Last 30 Days</div>
+                  <div class="cdd-option" onclick="selectChurnRange(60,'Last 60 Days')">Last 60 Days</div>
+                  <div class="cdd-option" onclick="selectChurnRange(90,'Last 3 Months')">Last 3 Months</div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;" id="churn-total-label">0 cancellations</div>
+            <canvas id="churn-chart" height="160"></canvas>
+          </div>
+        </div>
+
+        <!-- Activity Breakdown — full width below charts -->
+        <div class="chart-card" style="margin-bottom:1.75rem;">
+          <div class="chart-title">Activity Breakdown</div>
+          <canvas id="bar-chart" width="100%" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="admin-page" id="tab-users">
+        <div class="table-card">
+          <div class="table-top">
+            <div class="table-label" id="user-count-label">Loading...</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <input class="table-search" id="user-search" placeholder="Search name or email..." oninput="filterUsers()">
+              <button class="admin-refresh" onclick="exportCSV()" style="white-space:nowrap;">
+                <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Signed Up</th><th>Last Active</th><th>Generations</th></tr></thead>
+              <tbody id="users-tbody"><tr><td colspan="6" class="table-empty"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+          <button class="view-more-btn" id="view-more-btn" onclick="viewMoreUsers()" style="display:none;">View more users ↓</button>
+          <div class="pagination" id="user-pagination" style="display:none;">
+            <div class="page-info" id="page-info"></div>
+            <div class="page-btns">
+              <button class="page-btn" id="prev-btn" onclick="changePage(-1)">← Prev</button>
+              <button class="page-btn" id="next-btn" onclick="changePage(1)">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVENUE -->
+      <div class="admin-page" id="tab-revenue">
+        <div class="revenue-grid">
+          <div class="rev-card"><div class="rev-num" id="rev-total">—</div><div class="rev-label">Total Revenue (All Time)</div><div class="rev-sub">From payment logs</div></div>
+          <div class="rev-card"><div class="rev-num" id="rev-mrr">—</div><div class="rev-label">Monthly Recurring Revenue</div><div class="rev-sub">Estimated MRR</div></div>
+          <div class="rev-card"><div class="rev-num" id="rev-arr">—</div><div class="rev-label">Annual Run Rate</div><div class="rev-sub">MRR × 12</div></div>
+          <div class="rev-card"><div class="rev-num" id="rev-pro-rev">—</div><div class="rev-label">Pro Plan Revenue</div><div class="rev-sub">$1/mo per user</div></div>
+          <div class="rev-card"><div class="rev-num" id="rev-creator-rev">—</div><div class="rev-label">Creator Plan Revenue</div><div class="rev-sub">$4.50/mo per user</div></div>
+          <div class="rev-card"><div class="rev-num" id="rev-pro-count">—</div><div class="rev-label">Pro Subscribers</div></div>
+          <div class="rev-card"><div class="rev-num" id="rev-creator-count">—</div><div class="rev-label">Creator Subscribers</div></div>
+        </div>
+
+        <!-- Revenue charts stacked like overview -->
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:1.75rem;">
+          <div class="chart-card">
+            <div class="chart-title">Revenue Breakdown by Plan</div>
+            <canvas id="rev-chart" width="600" height="220"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Plan Contribution</div>
+            <div id="revenue-breakdown" style="width:100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BROADCAST -->
+      <div class="admin-page" id="tab-broadcast">
+        <div class="broadcast-card">
+          <div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:1.25rem;">Send an email to your users</div>
+
+          <div class="field-label" style="margin-bottom:0.4rem;">Send To</div>
+          <div class="cdd" id="cdd-target" style="margin-bottom:1rem;">
+            <div class="cdd-trigger" onclick="toggleCddAdmin('cdd-target')">
+              <span id="cdd-target-val">All Users</span>
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="cdd-menu" id="cdd-target-menu">
+              <div class="cdd-option selected" onclick="selectCddAdmin('cdd-target','all','All Users')">All Users</div>
+              <div class="cdd-option" onclick="selectCddAdmin('cdd-target','free','Free Users Only')">Free Users Only</div>
+              <div class="cdd-option" onclick="selectCddAdmin('cdd-target','pro','Pro Users Only')">Pro Users Only</div>
+              <div class="cdd-option" onclick="selectCddAdmin('cdd-target','creator','Creator Users Only')">Creator Users Only</div>
+              <div class="cdd-option" onclick="selectCddAdmin('cdd-target','paid','All Paid Users')">All Paid Users</div>
+              <div class="cdd-option" onclick="selectCddAdmin('cdd-target','specific','Specific User')">Specific User</div>
+            </div>
+          </div>
+
+          <!-- Specific user email input — shown only when Specific User is selected -->
+          <div id="specific-user-wrap" style="display:none;margin-bottom:1rem;">
+            <div class="field-label">Recipient Email</div>
+            <input class="field-input" id="specific-user-email" placeholder="Enter email address..." style="margin-bottom:0;">
+          </div>
+
+          <div class="field-label">Subject Line</div>
+          <input class="field-input" id="broadcast-subject" placeholder="e.g. New feature just dropped on Crevers">
+
+          <div class="field-label">Message</div>
+          <textarea class="field-textarea" id="broadcast-body" placeholder="Write your message here. Keep it short, direct and valuable."></textarea>
+
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <button class="admin-refresh" onclick="previewBroadcast()" style="padding:0.75rem 1.25rem;font-size:0.88rem;">
+              <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview
+            </button>
+            <button class="send-btn" id="broadcast-btn" onclick="sendBroadcast()">
+              <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send Broadcast
+            </button>
+            <span id="broadcast-count" style="font-size:0.8rem;color:var(--muted);"></span>
+          </div>
+          <div class="broadcast-status" id="broadcast-status"></div>
+        </div>
+
+        <!-- Broadcast history -->
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.85rem;margin-top:0.5rem;">Sent History</div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Subject</th><th>Target</th><th>Sent To</th><th>Date</th></tr></thead>
+              <tbody id="broadcast-history-tbody">
+                <tr><td colspan="4" class="table-empty"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP GENERATORS -->
+      <div class="admin-page" id="tab-generators">
+        <div class="generators-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;">
+          <!-- Top 5 generators -->
+          <div class="chart-card">
+            <div class="chart-title">Top 5 Power Users</div>
+            <div id="top-generators-list"></div>
+          </div>
+          <!-- Upgrade prompts stats -->
+          <div class="chart-card">
+            <div class="chart-title">Upgrade Prompts</div>
+            <div style="display:flex;gap:12px;margin-top:0.5rem;">
+              <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;">
+                <div style="font-size:1.8rem;font-weight:800;font-family:'Outfit',sans-serif;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="upgrade-total">—</div>
+                <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">All Time</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;">
+                <div style="font-size:1.8rem;font-weight:800;font-family:'Outfit',sans-serif;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="upgrade-today">—</div>
+                <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Today</div>
+              </div>
+            </div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:1rem;line-height:1.5;">Number of times users hit a plan limit and saw the upgrade popup. High numbers = feature driving conversions.</div>
+          </div>
+        </div>
+
+        <!-- Revenue goal -->
+        <div class="chart-card" style="margin-bottom:1.5rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <div class="chart-title" style="margin-bottom:0;">Monthly Revenue Goal</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:0.8rem;color:var(--muted);">Goal: $</span>
+              <input id="revenue-goal-input" type="number" min="1" value="50" style="width:70px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.5rem;color:var(--text);font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;" oninput="updateRevenueGoal()">
+            </div>
+          </div>
+          <div id="revenue-goal-bar-wrap" style="background:var(--surface2);border-radius:8px;height:12px;overflow:hidden;margin-bottom:0.5rem;">
+            <div id="revenue-goal-bar" style="height:100%;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));width:0%;transition:width 0.8s ease;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--muted);">
+            <span id="revenue-goal-label">$0.00 of $50.00</span>
+            <span id="revenue-goal-pct">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN LOG -->
+      <div class="admin-page" id="tab-adminlog">
+        <div class="table-card">
+          <div class="table-top">
+            <div class="table-label">Admin Activity Log</div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Action</th><th>Detail</th><th>Time</th></tr></thead>
+              <tbody id="admin-log-tbody">
+                <tr><td colspan="3" class="table-empty"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="admin-page" id="tab-activity">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+          <div style="font-size:0.82rem;color:var(--muted);" id="activity-count-label">Last 20 actions</div>
+          <div class="cdd" id="cdd-activity-filter">
+            <div class="cdd-trigger" onclick="toggleCddAdmin('cdd-activity-filter')" style="min-width:160px;">
+              <span id="cdd-activity-filter-val">All Actions</span>
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="cdd-menu" id="cdd-activity-filter-menu">
+              <div class="cdd-option selected" onclick="selectActivityFilter('all','All Actions')">All Actions</div>
+              <div class="cdd-option" onclick="selectActivityFilter('ideas','Ideas Only')">Ideas Only</div>
+              <div class="cdd-option" onclick="selectActivityFilter('create','Scripts Only')">Scripts Only</div>
+              <div class="cdd-option" onclick="selectActivityFilter('repurpose','Repurpose Only')">Repurpose Only</div>
+            </div>
+          </div>
+        </div>
+        <div class="activity-card" id="activity-feed">
+          <div class="activity-item"><div class="activity-text" style="color:var(--muted);">Loading...</div></div>
+        </div>
+        <button class="view-more-btn" id="activity-load-more" onclick="loadMoreActivity()" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:0 0 14px 14px;margin-top:-1px;">
+          Load more activity ↓
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile fullscreen menu -->
+  <div class="admin-mobile-menu" id="admin-mobile-menu">
+    <!-- Close button -->
+    <button onclick="toggleAdminMenu()" style="position:absolute;top:1.5rem;right:1.5rem;background:rgba(255,255,255,0.06);border:none;color:var(--text);font-size:1.2rem;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <!-- Logo at top of menu -->
+    <div style="position:absolute;top:1.5rem;left:1.5rem;"><svg style="height:22px;width:auto;display:block;" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 220.59 107.77">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #fff;
+      }
+
+      .st1 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="6.93" y1="12.16" x2="99.6" y2="95.47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c5cfc"/>
+      <stop offset=".15" stop-color="#875cf0"/>
+      <stop offset=".41" stop-color="#a55cd2"/>
+      <stop offset=".76" stop-color="#d55ca2"/>
+      <stop offset="1" stop-color="#fc5c7d"/>
+    </linearGradient>
+  </defs>
+  <path class="st1" d="M85.99,88.56c-4.31,4.54-9.59,8.3-15.52,10.77h-.02c-1.28.54-2.74-.06-3.27-1.34-.53-1.28.07-2.74,1.35-3.27.08-.03.16-.06.25-.09,5.48-1.64,10.74-4.37,15.26-8.14.6-.5,1.5-.42,2,.18.47.56.43,1.38-.06,1.89ZM54.9,99.8c.16-1.79-1.17-3.37-2.96-3.53-5.61-.51-11.06-2.17-15.93-4.84-.06-.03-.12-.07-.18-.09-1.87-.9-4.11-.11-5.01,1.76-.9,1.87-.11,4.11,1.76,5.01h.02c5.94,2.85,12.44,4.44,18.94,4.67,1.71.05,3.21-1.24,3.36-2.97ZM22.75,86.76c1.85-1.45,2.18-4.12.73-5.97h-.01c-3.38-4.34-5.84-9.33-7.19-14.57-.02-.08-.05-.17-.07-.25-.79-2.5-3.47-3.88-5.97-3.09-2.5.79-3.88,3.47-3.09,5.97v.03c2.04,6.4,5.41,12.33,9.77,17.33,1.48,1.68,4.03,1.95,5.82.55ZM9.47,54.57c2.87.46,5.58-1.49,6.04-4.36v-.04c.86-5.28,2.76-10.35,5.66-14.76.09-.13.18-.28.25-.42,1.55-2.85.49-6.42-2.36-7.97-2.85-1.55-6.42-.49-7.97,2.36l-.03.06c-3.28,6.03-5.37,12.68-6,19.44-.25,2.73,1.66,5.25,4.41,5.69ZM23.02,22.66c2.04,2.95,6.08,3.69,9.04,1.66l.04-.03c2.13-1.47,4.38-2.76,6.75-3.79,2.34-1.07,4.79-1.91,7.31-2.49h.01c3.52-.82,5.73-4.31,4.95-7.85-.79-3.55-4.3-5.8-7.86-5.02-3.4.75-6.73,1.85-9.9,3.29-3.15,1.48-6.16,3.27-8.92,5.37-2.74,2.09-3.39,5.99-1.41,8.86ZM63.75,5.35c-.21-.05-.43-.09-.66-.12-3.29-.39-6.27,1.95-6.66,5.24-.39,3.29,1.95,6.27,5.24,6.66,2.61.31,5.22.84,7.79,1.61,2.57.77,5.12,1.74,7.56,3.03l.08.04c1.81.96,4.11.54,5.46-1.11,1.54-1.88,1.27-4.66-.62-6.2-2.58-2.12-5.4-4.03-8.44-5.57-3.04-1.54-6.28-2.75-9.63-3.55l-.12-.03ZM94.01,29.8c-.07-.12-.14-.24-.23-.36-.8-1.01-2.26-1.18-3.27-.38-1.01.8-1.18,2.26-.38,3.27,1.79,2.26,3.42,4.72,4.67,7.38,1.27,2.65,2.23,5.48,2.83,8.39.09.45.52.76.98.71.49-.06.84-.5.79-.99-.36-3.07-.97-6.14-1.86-9.15-.91-3-2.02-5.99-3.5-8.83l-.02-.03Z"/>
+  <g>
+    <path class="st0" d="M68.6,80.55c-9.97,0-14.93-6.58-14.93-16.7s5.25-16.74,15.5-16.74c3.96,0,7.16.95,9.59,2.96,2.29,2.05,3.58,4.87,3.91,8.4h-4.01c-1.43,0-2.48-.67-3.1-1.96-1.1-2.34-3.24-3.53-6.39-3.53-6.15,0-8.87,4.34-8.87,10.88s2.62,10.83,8.68,10.83c4.15,0,6.54-2.29,7.25-5.87h6.44c-.62,7.49-5.87,11.74-14.07,11.74Z"/>
+    <path class="st0" d="M85.87,67.05c.19-8.16,4.53-12.21,12.98-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M113.97,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.54-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.31c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM109.15,64.71h9.49c-.38-3.34-1.95-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M150.04,54.84l-8.92,25.24h-6.73l-8.87-25.24h7.01l5.1,17.7,4.39-15.46c.48-1.48,1.53-2.24,3.1-2.24h4.91Z"/>
+    <path class="st0" d="M162.73,80.65c-7.63-.24-11.45-4.68-11.45-13.26s3.86-12.88,11.55-12.93c8.01,0,11.78,4.91,11.31,14.79h-16.32c.24,3.86,1.91,5.82,5.01,5.82,1.48,0,2.86-.62,4.1-1.81.57-.62,1.29-.91,2.15-.91h4.68c-1.38,5.34-4.82,8.3-11.02,8.3ZM157.91,64.71h9.49c-.38-3.34-1.96-5.06-4.68-5.06s-4.34,1.72-4.82,5.06Z"/>
+    <path class="st0" d="M177.09,67.05c.19-8.16,4.53-12.21,12.97-12.21h.91v6.58h-2.15c-3.53,0-5.3,1.86-5.3,5.53v13.12h-6.44v-13.02Z"/>
+    <path class="st0" d="M204.95,75.49c2.67,0,4.01-.76,4.01-2.39,0-1.29-2.19-2.34-6.53-3.1-5.58-1-8.44-3.48-8.49-7.44,0-5.44,4.29-8.02,10.07-8.11,3.24,0,5.82.72,7.73,2.15,1.86,1.48,2.86,3.53,3,6.15h-4.01c-1.48-.05-2.43-.57-2.81-1.57-.43-1.1-1.72-1.72-3.82-1.72-2.48,0-3.72.67-3.72,1.96s1.62,2.29,4.91,2.91c4.29.86,7.11,1.96,8.49,3.24,1.19,1.24,1.77,2.77,1.77,4.48,0,6.2-4.87,8.49-11.54,8.49-3.53,0-6.2-.76-7.92-2.24-1.91-1.43-2.86-3.63-2.86-6.54h6.49c.14,2.77,2.15,3.72,5.25,3.72Z"/>
+  </g>
+</svg></div>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('overview')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('users')">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Users
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('revenue')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Revenue
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('broadcast')">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Broadcast
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('activity')">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Activity
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('generators')">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Top Users
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('adminlog')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Admin Log
+    </button>
+    <div style="width:60%;height:1px;background:rgba(255,255,255,0.12);margin:0.5rem 0;"></div>
+    <button class="admin-mobile-nav-item" onclick="toggleAdminTheme()" id="mobile-theme-btn" style="font-size:1rem;">
+      <svg id="admin-theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span id="mobile-theme-label">Light Mode</span>
+    </button>
+    <button class="admin-mobile-logout" onclick="adminLogout()">Log Out</button>
+  </div>
+
+</div>
+
+
+<!-- User Detail Modal -->
+<div class="modal-overlay" id="userDetailModal" style="z-index:3000;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);display:none;position:fixed;inset:0;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;width:100%;max-width:500px;position:relative;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);">
+    <button onclick="closeUserDetail()" style="position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,0.06);border:none;color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">&times;</button>
+    <div style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;color:var(--text);" id="user-detail-name">User Detail</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem;" id="user-detail-stats"></div>
+
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Override Plan</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;">
+      <button onclick="overridePlan('free')" style="flex:1;padding:0.6rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Free</button>
+      <button onclick="overridePlan('pro')" style="flex:1;padding:0.6rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--accent);font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">Pro</button>
+      <button onclick="overridePlan('creator')" style="flex:1;padding:0.6rem;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--accent3);font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent3)'" onmouseout="this.style.borderColor='var(--border)'">Creator</button>
+    </div>
+
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Recent Activity</div>
+    <div id="user-detail-logs" style="background:var(--surface2);border-radius:10px;padding:0.75rem;max-height:180px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- Broadcast Preview Modal -->
+<div class="modal-overlay" id="broadcastPreviewModal" style="z-index:3000;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);display:none;position:fixed;inset:0;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;width:100%;max-width:560px;position:relative;max-height:80vh;overflow-y:auto;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);">
+    <button onclick="document.getElementById('broadcastPreviewModal').style.display='none'" style="position:absolute;top:1.25rem;right:1.25rem;background:rgba(255,255,255,0.06);border:none;color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">&times;</button>
+    <div style="font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.25rem;color:var(--text);">Email Preview</div>
+    <div id="broadcast-preview-content" style="background:#050508;border-radius:12px;padding:1rem;"></div>
+    <div style="display:flex;gap:8px;margin-top:1.25rem;">
+      <button onclick="document.getElementById('broadcastPreviewModal').style.display='none'" style="flex:1;padding:0.7rem;border-radius:8px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
+      <button onclick="confirmSendBroadcast()" style="flex:1;padding:0.7rem;border-radius:8px;background:linear-gradient(135deg,var(--accent),#5a3fd6);border:none;color:#fff;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;">Send Now</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast"></div>
+
+<script>
+var ADMIN_API = 'https://api.crevers.com';
+var ADMIN_KEY = '';
+var ALL_USERS = [];
+var CURRENT_PAGE   = 1;
+var PAGE_SIZE_INIT = 20;
+var PAGE_SIZE_MORE = 100;
+var SHOWING_MORE   = false;
+var CURRENT_TAB    = 'overview';
+var BROADCAST_TARGET = 'all';
+var STATS_DATA = null;
+
+/* ══ LOGIN ══ */
+function doAdminLogin(){
+  var pass = document.getElementById('admin-pass').value.trim();
+  if(!pass) return;
+  ADMIN_KEY = pass;
+  fetch(ADMIN_API + '/admin/stats', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ if(!r.ok) throw new Error('wrong'); return r.json(); })
+    .then(function(data){
+      sessionStorage.setItem('crv_admin_key', ADMIN_KEY);
+      document.getElementById('login-screen').style.display    = 'none';
+      document.getElementById('admin-screen').style.display    = 'flex';
+      STATS_DATA = data;
+      renderStats(data);
+      renderRevenue(data);
+      loadUsers();
+      loadActivity();
+      loadBroadcastHistory();
+      loadChurnChart();
+      checkNewUsers();
+      startAutoRefresh();
+      setTimeout(initRevenueGoal, 500);
+    })
+    .catch(function(){
+      document.getElementById('login-error').style.display = 'block';
+      ADMIN_KEY = '';
+    });
+}
+
+function adminLogout(){
+  sessionStorage.removeItem('crv_admin_key');
+  ADMIN_KEY = '';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-pass').value = '';
+}
+
+window.addEventListener('resize', function(){
+  if(STATS_DATA){ drawBarChart(STATS_DATA); renderRevenue(STATS_DATA); loadChurnChart(); }
+});
+window.addEventListener('load', function(){
+  var saved = sessionStorage.getItem('crv_admin_key');
+  if(saved){ document.getElementById('admin-pass').value = saved; doAdminLogin(); }
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.cdd')){ closeCddsAdmin(); }
+  });
+});
+
+/* ══ CDD DROPDOWN (matching site exactly) ══ */
+function toggleCddAdmin(id){
+  var trigger = document.querySelector('#'+id+' .cdd-trigger');
+  var menu    = document.querySelector('#'+id+' .cdd-menu');
+  var isOpen  = menu.classList.contains('open');
+  closeCddsAdmin();
+  if(!isOpen){ menu.classList.add('open'); trigger.classList.add('open'); }
+}
+function closeCddsAdmin(){
+  document.querySelectorAll('.cdd-menu.open').forEach(function(m){ m.classList.remove('open'); });
+  document.querySelectorAll('.cdd-trigger.open').forEach(function(t){ t.classList.remove('open'); });
+}
+function selectCddAdmin(id, value, label){
+  BROADCAST_TARGET = value;
+  var valEl = document.getElementById(id+'-val');
+  if(valEl) valEl.textContent = label;
+  var menu = document.getElementById(id+'-menu');
+  if(menu) menu.querySelectorAll('.cdd-option').forEach(function(o){ o.classList.toggle('selected', o.textContent.trim() === label); });
+  closeCddsAdmin();
+  /* Show/hide specific user email input */
+  var wrap = document.getElementById('specific-user-wrap');
+  if(wrap) wrap.style.display = (value === 'specific') ? 'block' : 'none';
+  var countEl = document.getElementById('broadcast-count');
+  if(value === 'specific'){ if(countEl) countEl.textContent = 'Will send to 1 user'; }
+  else { updateBroadcastCount(); }
+}
+
+/* ══ TAB SWITCHING ══ */
+var TAB_TITLES = { overview:'Overview', users:'Users', revenue:'Revenue', broadcast:'Broadcast Email', activity:'Recent Activity' };
+function switchTab(name){
+  CURRENT_TAB = name;
+  document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.admin-page').forEach(function(p){ p.classList.remove('active'); });
+  var tab = document.getElementById('tab-'+name);
+  if(tab) tab.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(b){
+    if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+name+"'")) b.classList.add('active');
+  });
+  var title = TAB_TITLES[name] || name;
+  document.getElementById('page-title').textContent = title;
+  var bodyTitle = document.getElementById('page-title-body');
+  if(bodyTitle) bodyTitle.textContent = title;
+  /* Redraw charts after tab becomes visible so canvas gets correct width */
+  if(name === 'revenue' && STATS_DATA){
+    setTimeout(function(){ drawRevenueChart(STATS_DATA.pro||0, STATS_DATA.creator||0); }, 50);
+  }
+  if(name === 'overview' && STATS_DATA){
+    setTimeout(function(){ drawBarChart(STATS_DATA); drawPieChart(STATS_DATA); loadChurnChart(); }, 50);
+  }
+  if(name === 'broadcast'){
+    loadBroadcastHistory();
+    logAdminAction('view', 'Viewed broadcast tab');
+  }
+  if(name === 'activity'){
+    ACTIVITY_OFFSET = 0;
+    loadActivity();
+  }
+  if(name === 'generators'){
+    loadTopGenerators();
+    initRevenueGoal();
+  }
+  if(name === 'adminlog'){
+    loadAdminLog();
+    var badge = document.getElementById('new-user-badge');
+    if(badge) badge.style.display = 'none';
+  }
+}
+function refreshCurrentTab(){
+  if(CURRENT_TAB==='overview'||CURRENT_TAB==='revenue'){
+    fetch(ADMIN_API+'/admin/stats',{headers:{'X-Admin-Key':ADMIN_KEY}})
+      .then(function(r){return r.json();}).then(function(d){ STATS_DATA=d; renderStats(d); renderRevenue(d); });
+  }
+  if(CURRENT_TAB==='users') loadUsers();
+  if(CURRENT_TAB==='activity') loadActivity();
+}
+
+/* ══ STATS + CHARTS ══ */
+function renderStats(data){
+  document.getElementById('st-total').textContent   = data.total||0;
+  document.getElementById('st-paid').textContent    = (data.pro||0)+(data.creator||0);
+  document.getElementById('st-free').textContent    = data.free||0;
+  document.getElementById('st-pro').textContent     = data.pro||0;
+  document.getElementById('st-creator').textContent = data.creator||0;
+  document.getElementById('st-today').textContent   = data.activeToday||0;
+  document.getElementById('st-week').textContent    = data.newThisWeek||0;
+  document.getElementById('st-gens').textContent       = (data.totalGenerations||0).toLocaleString();
+  document.getElementById('st-conversion').textContent = (data.conversionRate||'0.0')+'%';
+  /* churn is now shown in spline chart */
+  drawPieChart(data);
+  drawBarChart(data);
+}
+
+function drawPieChart(data){
+  var canvas = document.getElementById('pie-chart');
+  if(!canvas) return;
+  var ctx    = canvas.getContext('2d');
+  var total  = (data.total||1);
+  var segments = [
+    { label:'Free',    value:data.free||0,    color:'#8885a8' },
+    { label:'Pro',     value:data.pro||0,     color:'#7c5cfc' },
+    { label:'Creator', value:data.creator||0, color:'#5cf0d0' },
+  ];
+  var W = canvas.width, H = canvas.height;
+  var cx = W/2, cy = H/2, r = Math.min(W,H)/2 - 8;
+  ctx.clearRect(0,0,W,H);
+
+  var startAngle = -Math.PI/2;
+  segments.forEach(function(seg){
+    if(!seg.value) return;
+    var slice = (seg.value/total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,startAngle,startAngle+slice);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    /* Gap between slices */
+    ctx.strokeStyle = '#050508';
+    ctx.lineWidth   = 3;
+    ctx.stroke();
+    startAngle += slice;
+  });
+
+  /* Center hole (donut) */
+  ctx.beginPath();
+  ctx.arc(cx,cy,r*0.55,0,2*Math.PI);
+  ctx.fillStyle = '#050508';
+  ctx.fill();
+
+  /* Center text */
+  ctx.fillStyle = '#f0eeff';
+  ctx.font = 'bold 18px Outfit, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy-6);
+  ctx.font = '11px DM Sans, sans-serif';
+  ctx.fillStyle = '#8885a8';
+  ctx.fillText('users', cx, cy+12);
+
+  /* Legend */
+  var legend = document.getElementById('pie-legend');
+  legend.innerHTML = segments.map(function(seg){
+    var pct = total ? Math.round(seg.value/total*100) : 0;
+    return '<div class="pie-legend-item">' +
+      '<span class="pie-legend-dot" style="background:'+seg.color+'"></span>' +
+      '<span class="pie-legend-label">'+seg.label+'</span>' +
+      '<span class="pie-legend-val">'+seg.value+' ('+pct+'%)</span>' +
+      '</div>';
+  }).join('');
+}
+
+function drawBarChart(data){
+  var canvas = document.getElementById('bar-chart');
+  if(!canvas) return;
+  var parent = canvas.parentElement;
+  canvas.width  = parent.clientWidth - 48;
+  canvas.height = 220;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  var bars = [
+    { label:'Total Users',  value:data.total||0,                    color:'#7c5cfc' },
+    { label:'Active Today', value:data.activeToday||0,              color:'#5cf0d0' },
+    { label:'New This Wk',  value:data.newThisWeek||0,              color:'#fc5c7d' },
+    { label:'Paid Users',   value:(data.pro||0)+(data.creator||0),  color:'#febc2e' },
+  ];
+
+  var max       = Math.max.apply(null, bars.map(function(b){ return b.value; })) || 1;
+  var padLeft   = 36;
+  var padRight  = 12;
+  var padTop    = 28; /* space above tallest bar for value label */
+  var padBottom = 36; /* space for bar label */
+  var chartH    = H - padTop - padBottom;
+  var totalW    = W - padLeft - padRight;
+  var barGap    = 20;
+  var barW      = (totalW - (bars.length - 1) * barGap) / bars.length;
+
+  /* Grid lines */
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth   = 1;
+  [0.25,0.5,0.75,1].forEach(function(pct){
+    var y = padTop + chartH * (1 - pct);
+    ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(W - padRight, y); ctx.stroke();
+    ctx.fillStyle  = '#8885a8';
+    ctx.font       = '10px DM Sans,sans-serif';
+    ctx.textAlign  = 'right';
+    ctx.fillText(Math.round(max * pct), padLeft - 4, y + 4);
+  });
+
+  /* Bars */
+  bars.forEach(function(bar, i){
+    var x    = padLeft + i * (barW + barGap);
+    var bH   = Math.max((bar.value / max) * chartH, bar.value > 0 ? 3 : 0);
+    var y    = padTop + chartH - bH;
+
+    var grad = ctx.createLinearGradient(0, y, 0, y + bH);
+    grad.addColorStop(0, bar.color);
+    grad.addColorStop(1, bar.color + '44');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    if(ctx.roundRect){ ctx.roundRect(x, y, barW, bH, [4,4,0,0]); }
+    else { ctx.rect(x, y, barW, bH); }
+    ctx.fill();
+
+    /* Value above bar */
+    ctx.fillStyle  = '#f0eeff';
+    ctx.font       = 'bold 12px DM Sans,sans-serif';
+    ctx.textAlign  = 'center';
+    ctx.fillText(bar.value, x + barW / 2, y - 8);
+
+    /* Label below bar */
+    ctx.fillStyle  = '#8885a8';
+    ctx.font       = '10px DM Sans,sans-serif';
+    ctx.fillText(bar.label, x + barW / 2, H - 14);
+  });
+}
+
+/* ══ REVENUE ══ */
+function renderRevenue(data){
+  var pro      = data.pro||0;
+  var creator  = data.creator||0;
+  var mrr     = (pro*1)+(creator*4.5);
+  var arr     = mrr*12;
+  document.getElementById('rev-total').textContent        = '$'+(data.totalRevenue||0).toFixed(2);
+  document.getElementById('rev-mrr').textContent         = '$'+mrr.toFixed(2);
+  document.getElementById('rev-arr').textContent         = '$'+arr.toFixed(2);
+  document.getElementById('rev-pro-rev').textContent     = '$'+(pro*1).toFixed(2);
+  document.getElementById('rev-creator-rev').textContent = '$'+(creator*4.5).toFixed(2);
+  document.getElementById('rev-pro-count').textContent   = pro;
+  document.getElementById('rev-creator-count').textContent = creator;
+  drawRevenueChart(pro, creator);
+}
+
+function drawRevenueChart(pro, creator){
+  var canvas = document.getElementById('rev-chart');
+  if(!canvas) return;
+  var parent = canvas.parentElement;
+  /* Use offsetWidth with fallback for when tab is hidden */
+  var parentW = parent.offsetWidth || parent.clientWidth || 600;
+  canvas.width  = Math.max(parentW - 48, 300);
+  canvas.height = 220;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  var bars = [
+    { label:'Free Plan',    value:0,                     color:'#8885a8', sub:'$0.00' },
+    { label:'Pro Plan',     value:pro*1,                 color:'#7c5cfc', sub:'$'+(pro*1).toFixed(2) },
+    { label:'Creator Plan', value:creator*4.5,           color:'#5cf0d0', sub:'$'+(creator*4.5).toFixed(2) },
+    { label:'Total MRR',    value:(pro*1)+(creator*4.5), color:'#fc5c7d', sub:'$'+((pro*1)+(creator*4.5)).toFixed(2) },
+  ];
+
+  var max       = Math.max.apply(null, bars.map(function(b){ return b.value; })) || 1;
+  var padLeft   = 52; /* wider for dollar labels like $4.50 */
+  var padRight  = 12;
+  var padTop    = 28;
+  var padBottom = 36;
+  var chartH    = H - padTop - padBottom;
+  var totalW    = W - padLeft - padRight;
+  var barGap    = 20;
+  var barW      = (totalW - (bars.length - 1) * barGap) / bars.length;
+
+  /* Grid lines */
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth   = 1;
+  [0.25,0.5,0.75,1].forEach(function(pct){
+    var y = padTop + chartH * (1 - pct);
+    ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(W - padRight, y); ctx.stroke();
+    ctx.fillStyle  = '#8885a8';
+    ctx.font       = '10px DM Sans,sans-serif';
+    ctx.textAlign  = 'right';
+    ctx.fillText('$'+(max*pct).toFixed(2), padLeft - 6, y + 4);
+  });
+
+  /* Bars */
+  bars.forEach(function(bar, i){
+    var x  = padLeft + i * (barW + barGap);
+    var bH = Math.max((bar.value / max) * chartH, bar.value > 0 ? 3 : 0);
+    var y  = padTop + chartH - bH;
+
+    var grad = ctx.createLinearGradient(0, y, 0, y + bH);
+    grad.addColorStop(0, bar.color);
+    grad.addColorStop(1, bar.color + '44');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    if(ctx.roundRect){ ctx.roundRect(x, y, barW, bH, [4,4,0,0]); }
+    else { ctx.rect(x, y, barW, bH); }
+    ctx.fill();
+
+    /* Value above bar */
+    ctx.fillStyle  = '#f0eeff';
+    ctx.font       = 'bold 12px DM Sans,sans-serif';
+    ctx.textAlign  = 'center';
+    ctx.fillText(bar.sub, x + barW / 2, y - 8);
+
+    /* Label below bar */
+    ctx.fillStyle  = '#8885a8';
+    ctx.font       = '10px DM Sans,sans-serif';
+    ctx.fillText(bar.label, x + barW / 2, H - 14);
+  });
+}
+
+/* ══ USERS ══ */
+function loadUsers(){
+  fetch(ADMIN_API+'/admin/users',{headers:{'X-Admin-Key':ADMIN_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      ALL_USERS = data.users||[];
+      CURRENT_PAGE  = 1;
+      SHOWING_MORE  = false;
+      document.getElementById('user-count-label').textContent = ALL_USERS.length+' users total';
+      updateBroadcastCount();
+      renderUsersPage();
+    })
+    .catch(function(){
+      document.getElementById('users-tbody').innerHTML='<tr><td colspan="6" class="table-empty">Failed to load users.</td></tr>';
+    });
+}
+
+function getFilteredUsers(){
+  var q=(document.getElementById('user-search').value||'').toLowerCase().trim();
+  if(!q) return ALL_USERS;
+  return ALL_USERS.filter(function(u){ return (u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q); });
+}
+
+function renderUsersPage(){
+  var filtered   = getFilteredUsers();
+  var pageSize   = SHOWING_MORE ? PAGE_SIZE_MORE : PAGE_SIZE_INIT;
+  var totalPages = Math.ceil(filtered.length/pageSize);
+  if(CURRENT_PAGE>totalPages) CURRENT_PAGE=1;
+  var start = (CURRENT_PAGE-1)*pageSize;
+  var slice = filtered.slice(start, start+pageSize);
+
+  document.getElementById('users-tbody').innerHTML = slice.length ? slice.map(function(u){
+    var plan     = u.plan||'free';
+    var signedUp = u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    var lastAct  = u.last_active ? new Date(u.last_active).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—';
+    return '<tr><td>'+escHtml(u.name||'—')+'</td><td style="color:var(--muted);">'+escHtml(u.email||'—')+'</td>'+
+      '<td><span class="plan-tag '+plan+'">'+plan.toUpperCase()+'</span></td>'+
+      '<td style="color:var(--muted);">'+signedUp+'</td><td style="color:var(--muted);">'+lastAct+'</td>'+
+      '<td style="color:var(--muted);">'+(u.generations||0)+'</td></tr>';
+  }).join('') : '<tr><td colspan="6" class="table-empty">No users found.</td></tr>';
+
+  var vmBtn = document.getElementById('view-more-btn');
+  if(!SHOWING_MORE && filtered.length>PAGE_SIZE_INIT){
+    vmBtn.style.display = 'block';
+    vmBtn.textContent   = 'View more users ('+(filtered.length-PAGE_SIZE_INIT)+' more) ↓';
+  } else { vmBtn.style.display='none'; }
+
+  var pag = document.getElementById('user-pagination');
+  var totalPages2 = Math.ceil(filtered.length/pageSize);
+  if(SHOWING_MORE && totalPages2>1){
+    pag.style.display='flex';
+    document.getElementById('page-info').textContent='Page '+CURRENT_PAGE+' of '+totalPages2+' ('+filtered.length+' users)';
+    document.getElementById('prev-btn').disabled = CURRENT_PAGE<=1;
+    document.getElementById('next-btn').disabled = CURRENT_PAGE>=totalPages2;
+  } else { pag.style.display='none'; }
+}
+
+function viewMoreUsers(){ SHOWING_MORE=true; CURRENT_PAGE=1; renderUsersPage(); }
+function changePage(dir){
+  var total=Math.ceil(getFilteredUsers().length/PAGE_SIZE_MORE);
+  CURRENT_PAGE=Math.max(1,Math.min(total,CURRENT_PAGE+dir));
+  renderUsersPage();
+}
+function filterUsers(){ CURRENT_PAGE=1; SHOWING_MORE=false; renderUsersPage(); updateBroadcastCount(); }
+
+/* ══ BROADCAST ══ */
+function updateBroadcastCount(){
+  var target = BROADCAST_TARGET;
+  if(target === 'specific'){
+    var el = document.getElementById('broadcast-count');
+    if(el) el.textContent = 'Will send to 1 user';
+    return;
+  }
+  var count  = ALL_USERS.filter(function(u){
+    if(target==='all')     return true;
+    if(target==='free')    return !u.plan||u.plan==='free';
+    if(target==='pro')     return u.plan==='pro';
+    if(target==='creator') return u.plan==='creator';
+    if(target==='paid')    return u.plan==='pro'||u.plan==='creator';
+    return true;
+  }).length;
+  var el=document.getElementById('broadcast-count');
+  if(el) el.textContent='Will send to '+count+' users';
+}
+
+async function sendBroadcast(){
+  var subject=document.getElementById('broadcast-subject').value.trim();
+  var body   =document.getElementById('broadcast-body').value.trim();
+  if(!subject){ adminToast('Please enter a subject.'); return; }
+  if(!body)   { adminToast('Please write a message.'); return; }
+  var confirmMsg = BROADCAST_TARGET === 'specific'
+    ? 'Send to 1 specific user: ' + ((document.getElementById('specific-user-email')||{}).value||'')+'?'
+    : BROADCAST_TARGET === 'all' ? 'Send to ALL users?'
+    : 'Send to '+BROADCAST_TARGET+' users?';
+  if(!confirm(confirmMsg)) return;
+
+  var btn=document.getElementById('broadcast-btn');
+  var status=document.getElementById('broadcast-status');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div> Sending...';
+  status.style.display='none';
+
+  try {
+    var specificEmail = '';
+    if(BROADCAST_TARGET === 'specific'){
+      specificEmail = (document.getElementById('specific-user-email').value || '').trim();
+      if(!specificEmail){ adminToast('Please enter a recipient email.'); btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Broadcast'; return; }
+    }
+    var resp=await fetch(ADMIN_API+'/admin/broadcast',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Admin-Key':ADMIN_KEY},
+      body:JSON.stringify({subject,body,target:BROADCAST_TARGET,specificEmail:specificEmail}),
+    });
+    var data=await resp.json();
+    if(!resp.ok) throw new Error(data.error||'Failed.');
+    status.textContent='✓ Sent to '+(data.sent||0)+' users successfully.';
+    status.className='broadcast-status success';
+    status.style.display='block';
+    document.getElementById('broadcast-subject').value='';
+    document.getElementById('broadcast-body').value='';
+  } catch(e){
+    status.textContent='✕ Error: '+e.message;
+    status.className='broadcast-status error';
+    status.style.display='block';
+  }
+  btn.disabled=false;
+  btn.innerHTML='<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Broadcast';
+}
+
+/* ══ ACTIVITY — see new loadActivity below ══ */
+
+/* ══ HELPERS ══ */
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function adminToast(msg){ var t=document.getElementById('admin-toast'); t.textContent=msg; t.style.opacity='1'; setTimeout(function(){ t.style.opacity='0'; },3000); }
+
+/* ── Mobile menu ── */
+function toggleAdminMenu(){
+  var menu = document.getElementById('admin-mobile-menu');
+  var btn  = document.getElementById('admin-hamburger-btn');
+  var isOpen = menu.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+}
+
+function switchTabMobile(name){
+  switchTab(name);
+  /* Close mobile menu */
+  document.getElementById('admin-mobile-menu').classList.remove('open');
+  document.getElementById('admin-hamburger-btn').classList.remove('open');
+  /* Update mobile nav active states */
+  document.querySelectorAll('.admin-mobile-nav-item').forEach(function(b){
+    b.classList.toggle('active', b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+name+"'"));
+  });
+}
+
+
+/* ══ ACTIVITY FILTER + LOAD MORE ══ */
+var ACTIVITY_FILTER = 'all';
+var ACTIVITY_OFFSET = 0;
+var ACTIVITY_LIMIT  = 20;
+var ACTIVITY_TOTAL  = 0;
+
+function selectActivityFilter(value, label){
+  ACTIVITY_FILTER = value;
+  ACTIVITY_OFFSET = 0;
+  var valEl = document.getElementById('cdd-activity-filter-val');
+  if(valEl) valEl.textContent = label;
+  var menu = document.getElementById('cdd-activity-filter-menu');
+  if(menu) menu.querySelectorAll('.cdd-option').forEach(function(o){
+    o.classList.toggle('selected', o.textContent.trim() === label);
+  });
+  closeCddsAdmin();
+  loadActivity();
+}
+
+function loadActivity(){
+  var url = ADMIN_API+'/admin/activity?filter='+ACTIVITY_FILTER+'&limit='+ACTIVITY_LIMIT+'&offset='+ACTIVITY_OFFSET;
+  fetch(url, { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      ACTIVITY_TOTAL = data.total || 0;
+      var feed  = document.getElementById('activity-feed');
+      var items = data.activity || [];
+      var lbl   = document.getElementById('activity-count-label');
+      if(lbl) lbl.textContent = 'Showing '+(ACTIVITY_OFFSET+items.length)+' of '+ACTIVITY_TOTAL+' actions';
+
+      if(ACTIVITY_OFFSET === 0){
+        if(!items.length){
+          feed.innerHTML = '<div class="activity-item"><div class="activity-text" style="color:var(--muted);">No activity found.</div></div>';
+        } else {
+          feed.innerHTML = renderActivityItems(items);
+        }
+      } else {
+        feed.innerHTML += renderActivityItems(items);
+      }
+
+      var loadMore = document.getElementById('activity-load-more');
+      if(loadMore){
+        loadMore.style.display = (ACTIVITY_OFFSET + items.length < ACTIVITY_TOTAL) ? 'block' : 'none';
+      }
+    })
+    .catch(function(){
+      document.getElementById('activity-feed').innerHTML = '<div class="activity-item"><div class="activity-text" style="color:var(--muted);">Could not load activity.</div></div>';
+    });
+}
+
+function renderActivityItems(items){
+  return items.map(function(a){
+    var color = a.action==='create'?'var(--accent)':a.action==='ideas'?'var(--accent3)':'var(--accent2)';
+    var label = a.action==='create'?'generated a script':a.action==='ideas'?'generated ideas':'repurposed content';
+    var time  = a.created_at ? new Date(a.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) : '';
+    var date  = a.created_at ? new Date(a.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+    return '<div class="activity-item"><div class="activity-dot" style="background:'+color+'"></div>'+
+      '<div class="activity-text"><strong>'+escHtml(a.name||a.email||'Someone')+'</strong> '+label+'</div>'+
+      '<div class="activity-time">'+date+' '+time+'</div></div>';
+  }).join('');
+}
+
+function loadMoreActivity(){
+  ACTIVITY_OFFSET += ACTIVITY_LIMIT;
+  loadActivity();
+}
+
+/* ══ EXPORT CSV ══ */
+function exportCSV(){
+  var url = ADMIN_API + '/admin/export-users';
+  var a   = document.createElement('a');
+  a.href  = url + '?key=' + encodeURIComponent(ADMIN_KEY);
+  a.download = 'crevers-users.csv';
+  /* Use fetch to handle auth header */
+  fetch(url, { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.blob(); })
+    .then(function(blob){
+      var burl = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href   = burl;
+      a.download = 'crevers-users.csv';
+      a.click();
+      URL.revokeObjectURL(burl);
+      adminToast('CSV downloaded.');
+    })
+    .catch(function(){ adminToast('Export failed. Try again.'); });
+}
+
+/* ══ BROADCAST HISTORY ══ */
+function loadBroadcastHistory(){
+  fetch(ADMIN_API+'/admin/broadcast-history', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var tbody = document.getElementById('broadcast-history-tbody');
+      var items = data.history || [];
+      if(!items.length){
+        tbody.innerHTML = '<tr><td colspan="4" class="table-empty">No broadcasts sent yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = items.map(function(h){
+        var date = h.sent_at ? new Date(h.sent_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+        var target = h.target || 'all';
+        var targetLabel = {all:'All Users',free:'Free',pro:'Pro',creator:'Creator',paid:'Paid'}[target] || target;
+        return '<tr>'+
+          '<td>'+escHtml(h.subject||'—')+'</td>'+
+          '<td><span class="plan-tag '+target+'" style="'+(target==='all'?'background:rgba(124,92,252,0.1);color:var(--accent);':'')+'">'+targetLabel+'</span></td>'+
+          '<td style="color:var(--muted);">'+(h.sent||0)+' users</td>'+
+          '<td style="color:var(--muted);">'+date+'</td>'+
+          '</tr>';
+      }).join('');
+    })
+    .catch(function(){
+      document.getElementById('broadcast-history-tbody').innerHTML = '<tr><td colspan="4" class="table-empty">Could not load history.</td></tr>';
+    });
+}
+
+
+/* ══ CHURN SPLINE CHART ══ */
+var CHURN_DAYS = 3;
+
+function selectChurnRange(days, label){
+  CHURN_DAYS = days;
+  var valEl = document.getElementById('cdd-churn-range-val');
+  if(valEl) valEl.textContent = label;
+  var menu = document.getElementById('cdd-churn-range-menu');
+  if(menu) menu.querySelectorAll('.cdd-option').forEach(function(o){
+    o.classList.toggle('selected', o.textContent.trim() === label);
+  });
+  closeCddsAdmin();
+  loadChurnChart();
+}
+
+function loadChurnChart(){
+  fetch(ADMIN_API+'/admin/churn?days='+CHURN_DAYS, { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var lbl = document.getElementById('churn-total-label');
+      if(lbl) lbl.textContent = (data.total||0) + ' cancellation' + ((data.total||0) !== 1 ? 's' : '') + ' in this period';
+      drawChurnChart(data.churn || []);
+    })
+    .catch(function(){
+      drawChurnChart([]);
+    });
+}
+
+function drawChurnChart(points){
+  var canvas = document.getElementById('churn-chart');
+  if(!canvas) return;
+  var parent = canvas.parentElement;
+  canvas.width  = Math.max((parent.offsetWidth || parent.clientWidth || 400) - 24, 200);
+  canvas.height = 160;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  if(!points.length){ return; }
+
+  var padL = 28, padR = 12, padT = 20, padB = 32;
+  var chartW = W - padL - padR;
+  var chartH = H - padT - padB;
+
+  var values = points.map(function(p){ return p.count; });
+  var max    = Math.max.apply(null, values) || 1;
+  var n      = points.length;
+
+  /* X positions */
+  function xPos(i){ return padL + (i / Math.max(n-1,1)) * chartW; }
+  function yPos(v){ return padT + chartH - (v / max) * chartH; }
+
+  /* Grid lines */
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth   = 1;
+  [0, Math.ceil(max/2), max].forEach(function(v){
+    var y = yPos(v);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W-padR, y); ctx.stroke();
+    ctx.fillStyle  = '#8885a8';
+    ctx.font       = '10px DM Sans,sans-serif';
+    ctx.textAlign  = 'right';
+    ctx.fillText(v, padL-4, y+4);
+  });
+
+  /* Gradient fill under spline */
+  var grad = ctx.createLinearGradient(0, padT, 0, padT+chartH);
+  grad.addColorStop(0, 'rgba(252,92,125,0.3)');
+  grad.addColorStop(1, 'rgba(252,92,125,0.0)');
+
+  ctx.beginPath();
+  ctx.moveTo(xPos(0), yPos(values[0]));
+  /* Smooth bezier spline */
+  for(var i = 1; i < n; i++){
+    var x0 = xPos(i-1), y0 = yPos(values[i-1]);
+    var x1 = xPos(i),   y1 = yPos(values[i]);
+    var cpx = (x0+x1)/2;
+    ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
+  }
+  ctx.lineTo(xPos(n-1), padT+chartH);
+  ctx.lineTo(xPos(0),   padT+chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  /* Spline line */
+  ctx.beginPath();
+  ctx.moveTo(xPos(0), yPos(values[0]));
+  for(var j = 1; j < n; j++){
+    var ax = xPos(j-1), ay = yPos(values[j-1]);
+    var bx = xPos(j),   by = yPos(values[j]);
+    var cpx2 = (ax+bx)/2;
+    ctx.bezierCurveTo(cpx2, ay, cpx2, by, bx, by);
+  }
+  ctx.strokeStyle = '#fc5c7d';
+  ctx.lineWidth   = 2.5;
+  ctx.stroke();
+
+  /* Dots at each point */
+  for(var k = 0; k < n; k++){
+    ctx.beginPath();
+    ctx.arc(xPos(k), yPos(values[k]), 4, 0, 2*Math.PI);
+    ctx.fillStyle   = '#fc5c7d';
+    ctx.fill();
+    ctx.strokeStyle = '#050508';
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+  }
+
+  /* X axis date labels */
+  ctx.fillStyle  = '#8885a8';
+  ctx.font       = '10px DM Sans,sans-serif';
+  ctx.textAlign  = 'center';
+  /* Show first, middle, last labels only to avoid crowding */
+  var showIdx = [0, Math.floor((n-1)/2), n-1];
+  showIdx.forEach(function(i){
+    if(i >= 0 && i < n){
+      var d = new Date(points[i].date);
+      var lbl = d.getDate()+'/'+(d.getMonth()+1);
+      ctx.fillText(lbl, xPos(i), H-10);
+    }
+  });
+}
+
+
+/* ══ THEME TOGGLE ══ */
+var ADMIN_DARK = true;
+
+function updateThemeIcons(){
+  var isDark = ADMIN_DARK;
+  var moonSvg = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  var sunSvg  = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  ['admin-theme-icon','admin-theme-icon-desk'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.innerHTML = isDark ? moonSvg : sunSvg;
+  });
+  ['mobile-theme-label','admin-theme-label-desk'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  });
+}
+
+function toggleAdminTheme(){
+  ADMIN_DARK = !ADMIN_DARK;
+  document.documentElement.classList.toggle('light-theme', !ADMIN_DARK);
+  localStorage.setItem('crv_admin_theme', ADMIN_DARK ? 'dark' : 'light');
+  updateThemeIcons();
+  if(STATS_DATA){ setTimeout(function(){ drawBarChart(STATS_DATA); drawPieChart(STATS_DATA); drawRevenueChart(STATS_DATA.pro||0, STATS_DATA.creator||0); }, 50); }
+}
+
+/* Load saved theme */
+(function(){
+  var saved = localStorage.getItem('crv_admin_theme');
+  if(saved === 'light'){
+    ADMIN_DARK = false;
+    document.documentElement.classList.add('light-theme');
+  }
+  updateThemeIcons();
+})();
+
+
+/* ══ AUTO REFRESH ══ */
+var AUTO_REFRESH_INTERVAL = null;
+
+function startAutoRefresh(){
+  if(AUTO_REFRESH_INTERVAL) clearInterval(AUTO_REFRESH_INTERVAL);
+  AUTO_REFRESH_INTERVAL = setInterval(function(){
+    refreshCurrentTab();
+  }, 60000); /* every 60 seconds */
+}
+
+/* ══ GLOBAL SEARCH ══ */
+function globalSearch(q){
+  if(!q.trim()){ return; }
+  switchTab('users');
+  var searchEl = document.getElementById('user-search');
+  if(searchEl){ searchEl.value = q; filterUsers(); }
+}
+
+/* Show/hide global search based on tab */
+var _origSwitchTabGS = switchTab;
+switchTab = function(name){
+  _origSwitchTabGS(name);
+  var gs = document.getElementById('global-search');
+  if(gs) gs.style.display = (name === 'broadcast' || name === 'adminlog') ? 'none' : 'block';
+};
+
+/* ══ NEW USER BADGE ══ */
+var LAST_VISIT_KEY = 'crv_admin_last_visit';
+
+function checkNewUsers(){
+  var lastVisit = localStorage.getItem(LAST_VISIT_KEY) || new Date(Date.now() - 24*60*60*1000).toISOString();
+  fetch(ADMIN_API+'/admin/new-users?since='+encodeURIComponent(lastVisit), { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var badge = document.getElementById('new-user-badge');
+      if(badge) badge.style.display = (data.count > 0) ? 'block' : 'none';
+      if(data.count > 0){
+        adminToast(data.count + ' new user' + (data.count > 1 ? 's' : '') + ' since your last visit!');
+      }
+      /* Update last visit */
+      localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
+    }).catch(function(){});
+}
+
+/* ══ USER DETAIL MODAL ══ */
+var CURRENT_USER_ID = null;
+
+function openUserDetail(userId){
+  CURRENT_USER_ID = userId;
+  document.getElementById('userDetailModal').style.display = 'flex';
+  document.getElementById('user-detail-name').textContent = 'Loading...';
+  document.getElementById('user-detail-stats').innerHTML = '';
+  document.getElementById('user-detail-logs').innerHTML = '<div style="color:var(--muted);font-size:0.8rem;">Loading...</div>';
+
+  fetch(ADMIN_API+'/admin/users/'+userId, { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var p = data.profile || {};
+      document.getElementById('user-detail-name').textContent = p.name || p.email || 'Unknown User';
+
+      var signedUp = p.created_at ? new Date(p.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+      var lastAct  = p.last_active ? new Date(p.last_active).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—';
+      var plan     = p.plan || 'free';
+
+      document.getElementById('user-detail-stats').innerHTML = [
+        ['Email', p.email||'—'],
+        ['Plan', '<span class="plan-tag '+plan+'">'+plan.toUpperCase()+'</span>'],
+        ['Signed Up', signedUp],
+        ['Last Active', lastAct],
+        ['Ideas', data.breakdown.ideas||0],
+        ['Scripts', data.breakdown.create||0],
+        ['Repurpose', data.breakdown.repurpose||0],
+        ['Total Gens', data.total||0],
+      ].map(function(item){
+        return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.85rem;">'+
+          '<div style="font-size:0.68rem;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.06em;">'+item[0]+'</div>'+
+          '<div style="font-size:0.88rem;font-weight:600;color:var(--text);">'+item[1]+'</div></div>';
+      }).join('');
+
+      var logs = data.logs || [];
+      document.getElementById('user-detail-logs').innerHTML = logs.length ? logs.map(function(l){
+        var color = l.action==='create'?'var(--accent)':l.action==='ideas'?'var(--accent3)':'var(--accent2)';
+        var label = l.action==='create'?'Generated script':l.action==='ideas'?'Generated ideas':'Repurposed';
+        var time  = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+        return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'+
+          '<span style="width:7px;height:7px;border-radius:50%;background:'+color+';flex-shrink:0;display:inline-block;"></span>'+
+          '<span style="font-size:0.78rem;color:var(--text);flex:1;">'+label+'</span>'+
+          '<span style="font-size:0.7rem;color:var(--muted);">'+time+'</span></div>';
+      }).join('') : '<div style="color:var(--muted);font-size:0.78rem;">No activity yet.</div>';
+    })
+    .catch(function(){ adminToast('Could not load user detail.'); });
+}
+
+function closeUserDetail(){
+  document.getElementById('userDetailModal').style.display = 'none';
+  CURRENT_USER_ID = null;
+}
+
+function overridePlan(plan){
+  if(!CURRENT_USER_ID){ return; }
+  if(!confirm('Set this user to '+plan.toUpperCase()+' plan?')) return;
+  fetch(ADMIN_API+'/admin/users/'+CURRENT_USER_ID+'/plan', {
+    method: 'PATCH',
+    headers: { 'Content-Type':'application/json', 'X-Admin-Key': ADMIN_KEY },
+    body: JSON.stringify({ plan })
+  }).then(function(r){ return r.json(); })
+  .then(function(d){
+    if(d.success){
+      adminToast('Plan updated to '+plan+'.');
+      closeUserDetail();
+      loadUsers();
+    } else { adminToast('Failed to update plan.'); }
+  }).catch(function(){ adminToast('Error updating plan.'); });
+}
+
+/* ══ TOP GENERATORS ══ */
+function loadTopGenerators(){
+  fetch(ADMIN_API+'/admin/top-generators', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var list = document.getElementById('top-generators-list');
+      if(!list) return;
+      var items = data.generators || [];
+      if(!items.length){
+        list.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;padding:1rem 0;">No generation data yet.</div>';
+        return;
+      }
+      list.innerHTML = items.map(function(u, i){
+        var plan = u.plan || 'free';
+        var medals = ['', '', ''];
+        return '<div style="display:flex;align-items:center;gap:10px;padding:0.65rem 0;border-bottom:1px solid var(--border);">'+
+          '<div style="font-size:1rem;font-weight:800;font-family:Outfit,sans-serif;color:var(--muted);width:20px;text-align:center;">'+(i+1)+'</div>'+
+          '<div style="flex:1;">'+
+            '<div style="font-size:0.85rem;font-weight:600;color:var(--text);">'+escHtml(u.name||u.email||'Unknown')+'</div>'+
+            '<div style="font-size:0.72rem;color:var(--muted);">'+escHtml(u.email||'')+'</div>'+
+          '</div>'+
+          '<span class="plan-tag '+plan+'">'+plan.toUpperCase()+'</span>'+
+          '<div style="font-size:0.9rem;font-weight:700;font-family:Outfit,sans-serif;color:var(--accent);min-width:40px;text-align:right;">'+u.generations+'</div>'+
+        '</div>';
+      }).join('');
+    }).catch(function(){});
+
+  /* Upgrade stats */
+  fetch(ADMIN_API+'/admin/upgrade-stats', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var tot = document.getElementById('upgrade-total');
+      var tod = document.getElementById('upgrade-today');
+      if(tot) tot.textContent = data.total||0;
+      if(tod) tod.textContent = data.today||0;
+    }).catch(function(){});
+}
+
+/* ══ REVENUE GOAL ══ */
+function updateRevenueGoal(){
+  var goal = parseFloat(document.getElementById('revenue-goal-input').value) || 50;
+  localStorage.setItem('crv_admin_rev_goal', goal);
+  var mrr = STATS_DATA ? ((STATS_DATA.pro||0)*1 + (STATS_DATA.creator||0)*4.5) : 0;
+  var pct  = Math.min(Math.round((mrr/goal)*100), 100);
+  var bar  = document.getElementById('revenue-goal-bar');
+  var lbl  = document.getElementById('revenue-goal-label');
+  var pctEl= document.getElementById('revenue-goal-pct');
+  if(bar)  bar.style.width = pct+'%';
+  if(lbl)  lbl.textContent = '$'+mrr.toFixed(2)+' of $'+goal.toFixed(2);
+  if(pctEl)pctEl.textContent = pct+'%';
+}
+
+function initRevenueGoal(){
+  var saved = localStorage.getItem('crv_admin_rev_goal');
+  if(saved){
+    var inp = document.getElementById('revenue-goal-input');
+    if(inp) inp.value = saved;
+  }
+  updateRevenueGoal();
+}
+
+/* ══ ADMIN LOG ══ */
+function loadAdminLog(){
+  fetch(ADMIN_API+'/admin/logs', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var tbody = document.getElementById('admin-log-tbody');
+      var items = data.logs || [];
+      if(!items.length){
+        tbody.innerHTML = '<tr><td colspan="3" class="table-empty">No admin actions logged yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = items.map(function(l){
+        var time = l.created_at ? new Date(l.created_at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+        return '<tr><td style="font-weight:600;">'+escHtml(l.action||'—')+'</td>'+
+          '<td style="color:var(--muted);">'+escHtml(l.detail||'—')+'</td>'+
+          '<td style="color:var(--muted);white-space:nowrap;">'+time+'</td></tr>';
+      }).join('');
+    }).catch(function(){
+      document.getElementById('admin-log-tbody').innerHTML = '<tr><td colspan="3" class="table-empty">Could not load log.</td></tr>';
+    });
+}
+
+/* ══ BROADCAST PREVIEW ══ */
+function previewBroadcast(){
+  var subject = document.getElementById('broadcast-subject').value.trim();
+  var body    = document.getElementById('broadcast-body').value.trim();
+  if(!subject){ adminToast('Please enter a subject.'); return; }
+  if(!body)   { adminToast('Please write a message.'); return; }
+
+  if(BROADCAST_TARGET === 'specific'){
+    var specEmail = (document.getElementById('specific-user-email').value||'').trim();
+    if(!specEmail){ adminToast('Please enter a recipient email.'); return; }
+  }
+  var preview = document.getElementById('broadcast-preview-content');
+  preview.innerHTML =
+    '<div style="max-width:500px;margin:0 auto;font-family:Helvetica Neue,Arial,sans-serif;">'+
+    '<div style="margin-bottom:24px;"><span style="font-size:20px;font-weight:800;color:#7c5cfc;">Crevers</span></div>'+
+    '<div style="background:#0d0d14;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:28px 24px;margin-bottom:16px;">'+
+    '<div style="font-size:13px;font-weight:700;color:#8885a8;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em;">Subject</div>'+
+    '<div style="font-size:17px;font-weight:700;color:#f0eeff;margin-bottom:20px;">'+escHtml(subject)+'</div>'+
+    '<div style="color:#f0eeff;font-size:14px;line-height:1.75;white-space:pre-wrap;">'+escHtml(body)+'</div>'+
+    '<div style="margin-top:24px;"><a style="display:inline-block;background:#7c5cfc;color:#fff;text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;">Open Crevers →</a></div>'+
+    '</div>'+
+    '<div style="color:#8885a8;font-size:11px;text-align:center;">Crevers · <a style="color:#8885a8;">Unsubscribe</a></div>'+
+    '</div>';
+  document.getElementById('broadcastPreviewModal').style.display = 'flex';
+}
+
+function confirmSendBroadcast(){
+  document.getElementById('broadcastPreviewModal').style.display = 'none';
+  sendBroadcast();
+}
+
+/* ══ MAKE USERS TABLE ROWS CLICKABLE ══ */
+var _origRenderUsers = renderUsersPage;
+renderUsersPage = function(){
+  _origRenderUsers();
+  /* Add click handlers to rows */
+  document.querySelectorAll('#users-tbody tr').forEach(function(row, i){
+    var users = getFilteredUsers();
+    var pageSize = SHOWING_MORE ? PAGE_SIZE_MORE : PAGE_SIZE_INIT;
+    var start = (CURRENT_PAGE-1)*pageSize;
+    var user = users[start + i];
+    if(user && user.id){
+      row.style.cursor = 'pointer';
+      row.title = 'Click to view details';
+      row.onclick = function(){ openUserDetail(user.id); };
+    }
+  });
+};
+
+/* ══ UPDATE SWITCH TAB FOR NEW TABS ══ */
+var _STKeys = { generators:'Top Users', adminlog:'Admin Log' };
+Object.assign(TAB_TITLES, _STKeys);
+
+/* ══ WIRE UP EVERYTHING ON LOGIN ══ */
+var _origInitialLoad = null;
+
+
+function logAdminAction(action, detail){
+  fetch(ADMIN_API+'/admin/log', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Admin-Key':ADMIN_KEY},
+    body:JSON.stringify({action, detail})
+  }).catch(function(){});
+}
+
+</script>
+</body>
+</html>
