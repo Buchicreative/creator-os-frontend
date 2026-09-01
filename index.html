@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>Crevers | Turn Ideas Into Content in Minutes</title>
 
 <!-- Canonical URL -->
@@ -939,6 +939,13 @@ audio::-webkit-media-controls-time-remaining-display{color:var(--text);font-fami
   .cal-stat{padding:8px 12px;}
 }
 
+
+/* ── iOS input zoom fix ── */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input, textarea, select, .app-input {
+    font-size: 16px !important;
+  }
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
