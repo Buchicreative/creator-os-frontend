@@ -2735,7 +2735,7 @@ async function vrProcess(){
   /* Visible video element at 1px opacity:0.01 so browser doesn't throttle */
   var procVid = document.createElement('video');
   procVid.style.cssText = 'position:fixed;bottom:0;right:0;width:320px;height:240px;opacity:0.01;z-index:-1;pointer-events:none;';
-  procVid.muted = true;
+  procVid.muted = false; /* needs audio for merge */
   procVid.playsInline = true;
   procVid.preload = 'auto';
   document.body.appendChild(procVid);
@@ -2851,8 +2851,24 @@ async function vrProcess(){
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
     console.log('[VR] mime:', mime, 'size:', outW+'x'+outH, 'dur:', dur);
 
-    var canvasStream = canvas.captureStream(VR._trackFPS || 30); /* single capture — reused for audio merge */
-    var stream   = canvasStream;
+    var canvasStream = canvas.captureStream(VR._trackFPS || 30);
+
+    /* ── Merge original audio into the canvas stream ── */
+    var stream = canvasStream;
+    try {
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var audioSource = audioCtx.createMediaElementSource(procVid);
+      var audioDestination = audioCtx.createMediaStreamDestination();
+      audioSource.connect(audioDestination);
+      audioSource.connect(audioCtx.destination); /* also play through speakers */
+      var audioTrack = audioDestination.stream.getAudioTracks()[0];
+      if(audioTrack){
+        canvasStream.addTrack(audioTrack);
+      }
+    } catch(audioErr) {
+      console.warn('[VR] Audio merge failed, continuing without audio:', audioErr.message);
+    }
+
     var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
     var chunks   = [];
     recorder.ondataavailable = function(e){ if(e.data&&e.data.size>0) chunks.push(e.data); };
