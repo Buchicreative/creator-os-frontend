@@ -3821,7 +3821,7 @@ function ttsIncrementDaily(){
   }catch(e){}
 }
 
-function ttsGenerate(){
+async function ttsGenerate(){
   if(!AUTH.token){ openModal('signupModal'); return; }
   var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
 
