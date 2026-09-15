@@ -1170,23 +1170,23 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   border-radius:0;overflow:visible;transition:none;}
 .crv-faq .faq-item:last-child{border-bottom:1px solid var(--border);}
 .crv-faq .faq-item[open]{border-color:var(--border);}
-#faq > .container{padding-inline:1.25rem;}
-.crv-faq .faq-item summary{display:block;padding:1.4rem 2.2rem 1.4rem 0;position:relative;
+#faq > .container{padding-inline:2rem;}
+.crv-faq .faq-item summary{display:block;padding:1.4rem 2.6rem 1.4rem 1.25rem;position:relative;
   font-size:1rem;font-weight:500;line-height:1.45;transition:color .18s;
   min-width:0;overflow-wrap:anywhere;}
 .crv-faq .faq-item summary:hover{color:var(--accent);}
 .crv-faq .faq-item[open] summary{color:var(--accent);font-weight:600;}
-.crv-faq .faq-item summary::after{position:absolute;right:0;top:50%;
+.crv-faq .faq-item summary::after{position:absolute;right:1.25rem;top:50%;
   transform:translateY(-50%);font-size:1.25rem;line-height:1;transition:none;}
-.crv-faq .faq-item p{padding:0 2.2rem 1.5rem 0;margin-top:-.35rem;
-  font-size:.92rem;line-height:1.75;max-width:64ch;}
+.crv-faq .faq-item p{padding:0 2.6rem 1.5rem 1.25rem;margin-top:-.35rem;
+  font-size:.92rem;line-height:1.75;max-width:none;}
 @media(max-width:600px){
-  #faq > .container{padding-inline:1.1rem;}
+  #faq > .container{padding-inline:1.25rem;}
   /* headings must scale on small screens or long ones clip */
   .section-title{font-size:clamp(1.55rem,7.2vw,2rem);}
-  .crv-faq .faq-item summary{padding:1.15rem 1.75rem 1.15rem 0;font-size:.92rem;line-height:1.4;}
-  .crv-faq .faq-item p{padding:0 .5rem 1.25rem 0;font-size:.875rem;line-height:1.7;}
-  .crv-faq .faq-item summary::after{font-size:1.1rem;}
+  .crv-faq .faq-item summary{padding:1.15rem 2rem 1.15rem .9rem;font-size:.92rem;line-height:1.4;}
+  .crv-faq .faq-item p{padding:0 1rem 1.25rem .9rem;font-size:.875rem;line-height:1.7;}
+  .crv-faq .faq-item summary::after{right:.9rem;font-size:1.1rem;}
 }
 
 /* ════════ BILLING TOGGLE: stop the switch collapsing on narrow screens ════════ */
@@ -1542,25 +1542,46 @@ function updateAuthUI(){
 
     if(heroGreet) heroGreet.innerHTML = greeting + ', <span id="hero-username" style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + escHtml(name) + '</span>';
 
-    var subs = [
-      'What are you creating today?',
-      'Ready to build your audience?',
-      'Let’s make something great today.',
-      'Your next viral post starts here.',
-      'Ideas are waiting. Let’s go.',
-    ];
-    if(heroSub) heroSub.textContent = subs[new Date().getDay() % subs.length];
+    /* Subline: tone matches the hour, line rotates each visit so daily
+       users don't read the same sentence every morning. */
+    var _h = new Date().getHours();
+    var _bucket = _h < 12 ? 'morning' : (_h < 17 ? 'afternoon' : 'evening');
+    var SUBS = {
+      morning: [
+        'The blank page is worst first thing. Let\u2019s get past it before your coffee goes cold.',
+        'Everything you post this week starts with one idea. Let\u2019s find it now.',
+        'Early start. Pick a niche, generate a few ideas, and the hard part is already done.'
+      ],
+      afternoon: [
+        'Still time to get something out today. One idea, one script, and you\u2019re posting.',
+        'The middle of the week is where consistency usually breaks. Not today.',
+        'Twenty minutes now saves you the scramble tomorrow. Let\u2019s line up your next few posts.'
+      ],
+      evening: [
+        'Wind down by getting ahead. Plan tomorrow\u2019s post while today is still fresh.',
+        'Quiet hours are good hours for writing. Let\u2019s put something in the calendar.',
+        'One idea before you log off, and tomorrow starts with a plan instead of a blank page.'
+      ]
+    };
+    var _pool = SUBS[_bucket];
+    var _i = 0;
+    try {
+      _i = (parseInt(localStorage.getItem('crv_sub_i') || '0', 10) + 1) % _pool.length;
+      localStorage.setItem('crv_sub_i', String(_i));
+    } catch(e) { _i = Math.floor(Math.random() * _pool.length); }
+    if(heroSub) heroSub.textContent = _pool[_i];
 
     /* Plan badge */
     if(planBadge && statPlan){
+      /* 'team' is the stored value for the Creator plan — map both */
       if(plan === 'pro'){
-        planBadge.innerHTML = '<span class="badge-dot"></span> Pro Plan. Full Access <svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:3px;" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+        planBadge.innerHTML = '<span class="crv-new">PRO</span> Full access to every tool <svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:3px;" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
         statPlan.textContent = 'Pro';
-      } else if(plan === 'team'){
-        planBadge.innerHTML = '<span class="badge-dot"></span> Creator Plan. Unlimited Access <svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:3px;" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+      } else if(plan === 'team' || plan === 'creator'){
+        planBadge.innerHTML = '<span class="crv-new">CREATOR</span> Unlimited everything <svg style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-left:3px;" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
         statPlan.textContent = 'Creator';
       } else {
-        planBadge.innerHTML = '<span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none !important;">Upgrade to Pro &#x2192;</a>';
+        planBadge.innerHTML = '<span class="crv-new">FREE</span> <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none !important;">Upgrade to Pro &#x2192;</a>';
         statPlan.textContent = 'Free';
       }
     }
@@ -4495,7 +4516,7 @@ crvReady(function crvStepDeck(){
 
     <!-- LOGGED IN STATE -->
     <div id="hero-loggedin" style="display:none;">
-      <div class="hero-badge" id="hero-plan-badge"><span class="badge-dot"></span> Free Plan. <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none !important;">Upgrade to Pro &#x2192;</a></div>
+      <div class="hero-badge" id="hero-plan-badge"><span class="crv-new">FREE</span> <a href="#pricing" onclick="goUpgrade()" style="color:var(--accent3);font-weight:700;cursor:pointer;text-decoration:none !important;">Upgrade to Pro &#x2192;</a></div>
       <h1 id="hero-greeting">Hello, <span id="hero-username">Creator</span></h1>
       <p class="hero-sub" id="hero-sub-loggedin">What are you creating today? Your ideas are waiting.</p>
       <div class="hero-actions">
