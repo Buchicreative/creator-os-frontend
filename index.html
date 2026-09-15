@@ -345,7 +345,7 @@ html.is-logged-in  #mob-loggedout-btns { display: none !important; }
 html.is-logged-out #mob-loggedin-btns  { display: none !important; }
 html.is-logged-out #mob-user-name      { display: none !important; }
 
-:root{--bg:#050508;--surface:#0d0d14;--surface2:#141420;--border:rgba(255,255,255,0.07);--accent:#7c5cfc;--accent2:#fc5c7d;--accent3:#5cf0d0;--text:#f0eeff;--muted:#8885a8;--glow:rgba(124,92,252,0.35);}
+:root{--bg:#020205;--surface:#0d0d14;--surface2:#141420;--border:rgba(255,255,255,0.07);--accent:#7c5cfc;--accent2:#fc5c7d;--accent3:#5cf0d0;--text:#f0eeff;--muted:#8885a8;--glow:rgba(124,92,252,0.35);}
 html.light-theme{--bg:#f8f8ff;--surface:#ffffff;--surface2:#f0efff;--border:rgba(124,92,252,0.12);--accent:#7c5cfc;--accent2:#fc5c7d;--accent3:#0ea87a;--text:#1a1825;--muted:#6b6880;--glow:rgba(124,92,252,0.12);}
 html.light-theme body{background:var(--bg) !important;color:var(--text) !important;}
 html.light-theme .blobs{opacity:0.08;}
@@ -522,7 +522,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .btn-hero-ghost:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem max(2rem,calc((100% - 1280px) / 2));display:flex;align-items:center;justify-content:space-between;background:rgba(5,5,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
 .nav-logo{font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
 .nav-links{display:flex;gap:2rem;list-style:none;}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;cursor:pointer;}
@@ -1100,6 +1100,158 @@ audio::-webkit-media-controls-time-remaining-display{color:var(--text);font-fami
     font-size: 16px !important;
   }
 }
+
+/* ════════ HERO DEPTH (visual only — scoped to .hero / crv- namespace) ════════ */
+/* Deep violet base that resolves into --bg at the fold, so there's no seam */
+.hero{overflow:hidden;}
+.hero-content{position:relative;z-index:2;}
+
+.crv-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.crv-bg span{position:absolute;display:block;}
+.crv-seam{top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(124,92,252,.55) 30%,rgba(252,92,125,.45) 70%,transparent);}
+.crv-glow{top:-46vh;left:50%;transform:translateX(-50%);width:160vw;height:104vh;
+  background:
+    radial-gradient(ellipse 34% 44% at 50% 52%, rgba(146,110,255,.22) 0%, transparent 62%),
+    radial-gradient(ellipse 52% 50% at 50% 50%,
+      rgba(124,92,252,.19) 0%, rgba(124,92,252,.08) 36%,
+      rgba(252,92,125,.035) 60%, transparent 76%);}
+.crv-grid{inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.042) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.042) 1px,transparent 1px);
+  background-size:72px 72px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 42% at 50% 22%,#000 10%,transparent 68%);
+          mask-image:radial-gradient(ellipse 70% 42% at 50% 22%,#000 10%,transparent 68%);}
+
+/* light theme keeps its own treatment */
+html.light-theme .crv-grid{background-image:linear-gradient(rgba(0,0,0,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px);}
+html.light-theme .crv-glow{background:radial-gradient(ellipse 52% 50% at 50% 50%,
+  rgba(124,92,252,.14) 0%, rgba(124,92,252,.055) 38%, transparent 72%);}
+
+/* headline — richer four-stop gradient with light beneath */
+.hero h1{letter-spacing:-.04em;line-height:1.0;}
+.hero h1 span{background:linear-gradient(104deg,#A88BFF 2%,#7C5CFC 30%,#D45BC0 62%,#FC5C7D 94%);
+  background-size:180% 180%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 6px 30px rgba(124,92,252,.26));}
+
+/* badge — glassier, sits on the light rather than in front of it */
+.hero .hero-badge{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);
+  color:#C9C1F5;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  padding:.34rem .95rem .34rem .38rem;gap:.55rem;}
+.hero .hero-badge .crv-new{font-family:'Outfit',sans-serif;font-weight:800;font-size:.58rem;
+  letter-spacing:.06em;text-transform:uppercase;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  padding:2px 7px;border-radius:20px;}
+html.light-theme .hero .hero-badge{background:rgba(124,92,252,.07);
+  border-color:rgba(124,92,252,.18);color:#5B43C9;}
+
+/* buttons — real dimension, scoped so pricing CTAs are untouched */
+.hero .btn-hero{background:var(--accent);
+  box-shadow:0 10px 26px rgba(124,92,252,.34), 0 2px 6px rgba(0,0,0,.3);}
+.hero .btn-hero:hover{transform:translateY(-1px);background:#8A6DFF;
+  box-shadow:0 14px 34px rgba(124,92,252,.46), 0 2px 6px rgba(0,0,0,.3);}
+.hero .btn-hero-ghost{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.13);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.hero .btn-hero-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);}
+
+/* stats — a touch more presence, same content */
+.hero .hero-stats .stat-num{letter-spacing:-.02em;}
+.hero .hero-stats .stat-label{opacity:.82;}
+
+@media(max-width:760px){ .crv-grid{background-size:52px 52px;} }
+
+/* ════════ NAV: scrolled state via class, never inline ════════ */
+nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
+
+/* ════════ FAQ: rules, not boxes ════════ */
+.crv-faq .faq-item{background:transparent;border:0;border-top:1px solid var(--border);
+  border-radius:0;overflow:visible;transition:none;}
+.crv-faq .faq-item:last-child{border-bottom:1px solid var(--border);}
+.crv-faq .faq-item[open]{border-color:var(--border);}
+#faq > .container{padding-inline:1.25rem;}
+.crv-faq .faq-item summary{display:block;padding:1.4rem 2.2rem 1.4rem 0;position:relative;
+  font-size:1rem;font-weight:500;line-height:1.45;transition:color .18s;
+  min-width:0;overflow-wrap:anywhere;}
+.crv-faq .faq-item summary:hover{color:var(--accent);}
+.crv-faq .faq-item[open] summary{color:var(--accent);font-weight:600;}
+.crv-faq .faq-item summary::after{position:absolute;right:0;top:50%;
+  transform:translateY(-50%);font-size:1.25rem;line-height:1;transition:none;}
+.crv-faq .faq-item p{padding:0 2.2rem 1.5rem 0;margin-top:-.35rem;
+  font-size:.92rem;line-height:1.75;max-width:64ch;}
+@media(max-width:600px){
+  #faq > .container{padding-inline:1.1rem;}
+  /* headings must scale on small screens or long ones clip */
+  .section-title{font-size:clamp(1.55rem,7.2vw,2rem);}
+  .crv-faq .faq-item summary{padding:1.15rem 1.75rem 1.15rem 0;font-size:.92rem;line-height:1.4;}
+  .crv-faq .faq-item p{padding:0 .5rem 1.25rem 0;font-size:.875rem;line-height:1.7;}
+  .crv-faq .faq-item summary::after{font-size:1.1rem;}
+}
+
+/* ════════ BILLING TOGGLE: stop the switch collapsing on narrow screens ════════ */
+.billing-toggle{flex-wrap:wrap;row-gap:.6rem;}
+.billing-toggle > span{white-space:nowrap;}
+.toggle-switch{flex:0 0 48px;}           /* was shrinking to 0 in the flex row */
+.toggle-track,.toggle-knob{pointer-events:none;}
+
+@media(max-width:600px){
+  .billing-toggle{gap:.6rem;font-size:.92rem;}
+  /* badge drops under the labels instead of forcing the row wider */
+  .billing-toggle #toggle-yearly-label{display:inline-flex;align-items:center;gap:.35rem;}
+  .billing-save{font-size:.6rem;padding:.12rem .42rem;margin-left:0;}
+}
+@media(max-width:380px){
+  .billing-toggle{gap:.5rem;}
+  .billing-save{flex-basis:100%;text-align:center;margin-top:.15rem;}
+}
+
+/* rotating feature text in the hero badge */
+#crv-rotate{display:inline-block;transition:opacity .32s ease;}
+@media(prefers-reduced-motion:reduce){#crv-rotate{transition:none;}}
+
+/* ════════ PROCESS STEPS: stacked swipe deck (mobile only) ════════ */
+@media(max-width:760px){
+  .how-steps{position:relative;display:block;margin-top:3rem;
+    padding-top:26px;touch-action:pan-y;-webkit-tap-highlight-color:transparent;}
+
+  .how-steps .step-card{position:absolute;top:26px;left:0;right:0;margin:0;
+    transition:transform .5s cubic-bezier(.22,1,.36,1), opacity .5s ease;
+    will-change:transform,opacity;backface-visibility:hidden;}
+
+  /* front */
+  .how-steps .step-card.crv-p0{transform:translate3d(0,0,0) scale(1);opacity:1;z-index:3;
+    box-shadow:0 18px 40px rgba(0,0,0,.45);}
+  /* one behind */
+  .how-steps .step-card.crv-p1{transform:translate3d(0,-13px,0) scale(.955);opacity:.6;z-index:2;
+    box-shadow:0 10px 24px rgba(0,0,0,.3);}
+  /* two behind */
+  .how-steps .step-card.crv-p2{transform:translate3d(0,-25px,0) scale(.91);opacity:.32;z-index:1;
+    box-shadow:0 6px 16px rgba(0,0,0,.22);}
+
+  /* swiping out */
+  .how-steps .step-card.crv-out{transition:transform .34s cubic-bezier(.4,0,.75,.3), opacity .3s ease-in;
+    opacity:0;z-index:4;}
+  .how-steps .step-card.crv-out.crv-left{transform:translate3d(-108%,0,0) scale(.97);}
+  .how-steps .step-card.crv-out.crv-right{transform:translate3d(108%,0,0) scale(.97);}
+
+  /* being dragged — no transition so it tracks the finger */
+  .how-steps .step-card.crv-drag{transition:none;}
+
+  /* hover lift is wrong on a touch deck */
+  .how-steps .step-card:hover{transform:none;}
+  .how-steps .step-card.crv-p0:hover{transform:translate3d(0,0,0) scale(1);}
+
+  .crv-dots{display:flex;justify-content:center;gap:7px;margin-top:1.4rem;}
+  .crv-dots i{width:6px;height:6px;border-radius:50%;background:var(--border);
+    transition:background .3s,width .3s;display:block;}
+  .crv-dots i.on{width:20px;border-radius:4px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));}
+}
+@media(min-width:761px){ .crv-dots{display:none;} }
+@media(prefers-reduced-motion:reduce){
+  .how-steps .step-card{transition:none;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -1467,7 +1619,7 @@ window.addEventListener('load', function(){
 /* NAV */
 window.addEventListener('scroll', function(){
   var nav = document.getElementById('navbar');
-  if(nav) nav.style.padding = window.scrollY > 50 ? '0.6rem 2rem' : '1rem 2rem';
+  if(nav) nav.classList.toggle('scrolled', window.scrollY > 50);
 }, { passive: true });
 
 function navScrollTo(e, id){
@@ -2453,7 +2605,7 @@ function toggleMenu(){
 }
 
 /* PANELS */
-var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','calendar','settings'];
+var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','calendar','voiceover','settings'];
 function switchPanel(name){
   document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.sidebar-item').forEach(function(s){s.classList.remove('active');});
@@ -3138,7 +3290,7 @@ document.querySelectorAll('.reveal').forEach(function(el,i){
 
 /* NAV SHRINK */
 window.addEventListener('scroll',function(){
-  document.getElementById('navbar').style.padding=window.scrollY>50?'0.6rem 2rem':'1rem 2rem';
+  var _nv=document.getElementById('navbar'); if(_nv) _nv.classList.toggle('scrolled', window.scrollY>50);
 },{passive:true});
 
 /* MODAL CLOSE ON OVERLAY CLICK */
@@ -3949,6 +4101,183 @@ function initEmailNotifToggle(){
   if(toggle) toggle.checked = pref;
   updateNotifToggleUI(pref, track, knob);
 }
+
+
+/* run a function once the DOM exists (these scripts sit above the markup) */
+function crvReady(fn){
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', fn);
+  } else { fn(); }
+}
+/* ── hero badge: cycle the feature name, keep NEW static ── */
+crvReady(function crvRotateBadge(){
+  var el = document.getElementById('crv-rotate');
+  if(!el) return;
+  var items = ['Voiceovers in six AI voices',
+               'AI chat-bot, free for all',
+               'Content Calendar, plan ahead'];
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var i = 0, timer = null;
+  function step(){
+    el.style.opacity = '0';
+    setTimeout(function(){
+      i = (i + 1) % items.length;
+      el.textContent = items[i];
+      el.style.opacity = '1';
+    }, 320);
+  }
+  function start(){ if(!timer) timer = setInterval(step, 3600); }
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+  /* only run while the hero is actually on screen */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting ? start() : stop(); });
+    }, {threshold:0.1}).observe(el);
+  } else { start(); }
+  document.addEventListener('visibilitychange', function(){
+    document.hidden ? stop() : start();
+  });
+});
+
+/* ── process steps: stacked swipe deck on mobile ── */
+crvReady(function crvStepDeck(){
+  var wrap = document.querySelector('.how-steps');
+  if(!wrap) return;
+  var cards = Array.prototype.slice.call(wrap.querySelectorAll('.step-card'));
+  if(cards.length < 2) return;
+
+  var mq = window.matchMedia('(max-width:760px)');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var order = cards.slice();      // order[0] is the front card
+  var timer = null, dots = null, active = false, busy = false;
+
+  function buildDots(){
+    if(dots) return;
+    dots = document.createElement('div');
+    dots.className = 'crv-dots';
+    cards.forEach(function(){ dots.appendChild(document.createElement('i')); });
+    wrap.parentNode.insertBefore(dots, wrap.nextSibling);
+  }
+  function paintDots(){
+    if(!dots) return;
+    var frontIdx = cards.indexOf(order[0]);
+    Array.prototype.forEach.call(dots.children, function(d,i){
+      d.classList.toggle('on', i === frontIdx);
+    });
+  }
+  function place(){
+    order.forEach(function(card,i){
+      card.classList.remove('crv-p0','crv-p1','crv-p2','crv-out','crv-left','crv-right','crv-drag');
+      card.style.transform = '';
+      card.classList.add('crv-p' + Math.min(i,2));
+    });
+    paintDots();
+  }
+  function sizeWrap(){
+    var tallest = 0;
+    cards.forEach(function(c){ tallest = Math.max(tallest, c.offsetHeight); });
+    if(tallest) wrap.style.height = (tallest + 26) + 'px';
+  }
+  function advance(dir){
+    if(busy) return;
+    busy = true;
+    var front = order[0];
+    front.classList.remove('crv-p0');
+    front.classList.add('crv-out', dir < 0 ? 'crv-left' : 'crv-right');
+    order.push(order.shift());
+    order.forEach(function(card,i){
+      if(card === front) return;
+      card.classList.remove('crv-p0','crv-p1','crv-p2');
+      card.classList.add('crv-p' + Math.min(i,2));
+    });
+    paintDots();
+    setTimeout(function(){
+      front.classList.remove('crv-out','crv-left','crv-right');
+      front.style.transform = '';
+      front.classList.add('crv-p' + Math.min(order.indexOf(front),2));
+      busy = false;
+    }, reduce ? 0 : 400);
+  }
+
+  /* touch drag */
+  var x0 = null, y0 = null, dragging = false;
+  function onStart(e){
+    if(!active || busy) return;
+    var t = e.touches ? e.touches[0] : e;
+    x0 = t.clientX; y0 = t.clientY; dragging = false;
+  }
+  function onMove(e){
+    if(!active || busy || x0 === null) return;
+    var t = e.touches ? e.touches[0] : e;
+    var dx = t.clientX - x0, dy = t.clientY - y0;
+    if(!dragging && Math.abs(dx) < Math.abs(dy)) { x0 = null; return; } /* vertical scroll wins */
+    if(Math.abs(dx) > 6){
+      dragging = true;
+      stop();
+      var f = order[0];
+      f.classList.add('crv-drag');
+      f.style.transform = 'translate3d(' + dx + 'px,0,0)';
+    }
+  }
+  function onEnd(e){
+    if(!active || x0 === null) return;
+    var f = order[0];
+    f.classList.remove('crv-drag');
+    var t = (e.changedTouches ? e.changedTouches[0] : e);
+    var dx = t.clientX - x0;
+    x0 = null;
+    if(dragging && Math.abs(dx) > 55){ advance(dx < 0 ? -1 : 1); }
+    else { f.style.transform = ''; }
+    dragging = false;
+    start();
+  }
+
+  function start(){ if(!active || timer || reduce) return; timer = setInterval(function(){ advance(-1); }, 4600); }
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+
+  function enable(){
+    if(active) return;
+    active = true;
+    buildDots();
+    place();
+    requestAnimationFrame(sizeWrap);
+    wrap.addEventListener('touchstart', onStart, {passive:true});
+    wrap.addEventListener('touchmove',  onMove,  {passive:true});
+    wrap.addEventListener('touchend',   onEnd,   {passive:true});
+    /* card heights shift once webfonts land */
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(function(){ if(active) sizeWrap(); });
+    }
+    setTimeout(function(){ if(active) sizeWrap(); }, 600);
+    start();
+  }
+  function disable(){
+    if(!active) return;
+    active = false; stop();
+    cards.forEach(function(c){
+      c.classList.remove('crv-p0','crv-p1','crv-p2','crv-out','crv-left','crv-right','crv-drag');
+      c.style.transform = '';
+    });
+    wrap.style.height = '';
+    if(dots){ dots.remove(); dots = null; }
+    wrap.removeEventListener('touchstart', onStart);
+    wrap.removeEventListener('touchmove',  onMove);
+    wrap.removeEventListener('touchend',   onEnd);
+  }
+  function sync(){ mq.matches ? enable() : disable(); }
+
+  sync();
+  (mq.addEventListener ? mq.addEventListener('change', sync) : mq.addListener(sync));
+  window.addEventListener('resize', function(){ if(active) requestAnimationFrame(sizeWrap); });
+
+  /* only animate while visible */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting ? start() : stop(); });
+    }, {threshold:0.2}).observe(wrap);
+  }
+  document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
+});
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -4138,11 +4467,16 @@ function initEmailNotifToggle(){
 
 <!-- HERO -->
 <main id="main-content"><section class="hero">
+  <div class="crv-bg" aria-hidden="true">
+    <span class="crv-seam"></span>
+    <span class="crv-glow"></span>
+    <span class="crv-grid"></span>
+  </div>
   <div class="hero-content">
 
     <!-- LOGGED OUT STATE -->
     <div id="hero-loggedout" style="display:none;">
-      <div class="hero-badge"><span class="badge-dot"></span> AI-Powered Content System, Now Live</div>
+      <div class="hero-badge"><span class="crv-new">NEW</span> <span id="crv-rotate">Voiceovers in six AI voices</span></div>
       <h1>Turn Ideas Into<br><span>Content in Minutes</span></h1>
       <p class="hero-sub">The all-in-one operating system for creators. Generate ideas, write scripts, create carousels, and repurpose content. All powered by AI.</p>
       <div class="hero-actions">
@@ -4782,7 +5116,7 @@ function initEmailNotifToggle(){
       <span class="section-tag">FAQ</span>
       <h2 class="section-title">Questions? Answered.</h2>
     </div>
-    <div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+    <div class="crv-faq" style="max-width:720px;margin:0 auto;">
 
       <details class="faq-item">
         <summary>Is there a free plan?</summary>
