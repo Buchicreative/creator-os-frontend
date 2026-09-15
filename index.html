@@ -1252,6 +1252,19 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 @media(prefers-reduced-motion:reduce){
   .how-steps .step-card{transition:none;}
 }
+
+/* ════════ COUPON REDEEM ════════ */
+.crv-redeem{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;}
+.crv-redeem .app-input{flex:1 1 170px;min-width:0;letter-spacing:0.04em;
+  font-family:ui-monospace,Menlo,Consolas,monospace;text-transform:uppercase;}
+.crv-redeem .app-btn-sm{flex:0 0 auto;white-space:nowrap;}
+.crv-redeem-msg{font-size:0.74rem;margin-top:0.45rem;line-height:1.5;display:none;}
+.crv-redeem-msg.err{display:block;color:var(--accent2);}
+.crv-redeem-msg.ok {display:block;color:var(--accent3);}
+.crv-grant{margin-top:0.6rem;background:rgba(124,92,252,0.07);
+  border:1px solid rgba(124,92,252,0.2);border-radius:10px;
+  padding:0.7rem 0.9rem;font-size:0.78rem;color:var(--text);line-height:1.55;}
+.crv-grant b{color:var(--accent);}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -2638,7 +2651,7 @@ function switchPanel(name){
   if(idx>=0&&items[idx]) items[idx].classList.add('active');
   if(name==='videoresize'){ setTimeout(vrInitDrop,50); vrCheckPlan(); }
   if(name==='settings' && typeof initEmailNotifToggle === 'function'){ initEmailNotifToggle(); }
-  if(name==='settings') loadSettingsPanel();
+  if(name==='settings'){ loadSettingsPanel(); if(typeof loadCouponGrant === 'function') loadCouponGrant(); }
   if(name==='voiceover' && typeof ttsLoadHistory === 'function') ttsLoadHistory();
   if(name==='calendar' && typeof calRender === 'function') calRender();
   if(typeof crvUpdateSuggestions === 'function') crvUpdateSuggestions(name);
@@ -4299,6 +4312,67 @@ crvReady(function crvStepDeck(){
   }
   document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
 });
+
+/* ── coupon redemption ── */
+function crvCouponMsg(text, kind){
+  var el = document.getElementById('coupon-msg');
+  if(!el) return;
+  el.textContent = text || '';
+  el.className = 'crv-redeem-msg' + (kind ? ' ' + kind : '');
+}
+
+async function redeemCoupon(){
+  var input = document.getElementById('coupon-code');
+  var btn   = document.getElementById('coupon-btn');
+  if(!input || !btn) return;
+
+  var code = (input.value || '').trim();
+  if(!code){ crvCouponMsg('Enter a code first.', 'err'); return; }
+  if(!AUTH.token){ openModal('loginModal'); return; }
+
+  btn.disabled = true;
+  var label = btn.textContent;
+  btn.textContent = 'Checking...';
+  crvCouponMsg('');
+
+  try {
+    var resp = await apiCall('POST', '/coupons/redeem', { code: code });
+    crvCouponMsg(resp.plan_label + ' unlocked. Enjoy.', 'ok');
+    input.value = '';
+
+    /* reflect the new plan everywhere without a reload */
+    AUTH.plan = resp.plan;
+    localStorage.setItem('cos_plan', resp.plan);
+    if(AUTH.user){ AUTH.user.plan = resp.plan; localStorage.setItem('cos_user', JSON.stringify(AUTH.user)); }
+    if(typeof VR !== 'undefined') VR.plan = resp.plan;
+    updateAuthUI();
+    if(typeof vrCheckPlan     === 'function') vrCheckPlan();
+    if(typeof initCreateTabs  === 'function') initCreateTabs();
+    loadCouponGrant();
+    showToast(resp.plan_label + ' unlocked!');
+
+  } catch(e){
+    crvCouponMsg(e && e.message ? e.message : 'That code could not be used.', 'err');
+  }
+
+  btn.disabled = false;
+  btn.textContent = label;
+}
+
+async function loadCouponGrant(){
+  var box = document.getElementById('coupon-grant');
+  if(!box || !AUTH.token) return;
+  try {
+    var g = await apiCall('GET', '/coupons/my-grant');
+    if(!g || !g.active){ box.style.display = 'none'; return; }
+    var when = new Date(g.expires_at).toLocaleDateString(undefined,
+      { day:'numeric', month:'long', year:'numeric' });
+    box.innerHTML = 'You are on <b>' + escHtml(g.plan_label) + '</b> until ' + when +
+      ' (' + g.days_left + (g.days_left === 1 ? ' day' : ' days') + ' left). ' +
+      'We will email you before it ends.';
+    box.style.display = 'block';
+  } catch(e){ box.style.display = 'none'; }
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -4866,6 +4940,20 @@ crvReady(function crvStepDeck(){
 <div class="app-panel" id="panel-settings">
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Profile &amp; Settings</div>
+
+            <!-- Coupon -->
+            <div class="settings-row">
+              <label class="settings-label">Have a code?</label>
+              <div class="crv-redeem">
+                <input id="coupon-code" class="app-input" placeholder="Enter your code"
+                       maxlength="32" autocomplete="off" spellcheck="false"
+                       oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')"
+                       onkeydown="if(event.key==='Enter'){event.preventDefault();redeemCoupon();}">
+                <button class="app-btn-sm" id="coupon-btn" onclick="redeemCoupon()">Redeem</button>
+              </div>
+              <div class="crv-redeem-msg" id="coupon-msg"></div>
+              <div id="coupon-grant" class="crv-grant" style="display:none;"></div>
+            </div>
 
             <!-- Account Email (read-only) -->
             <div class="settings-row">

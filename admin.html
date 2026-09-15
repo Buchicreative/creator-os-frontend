@@ -220,6 +220,34 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   #global-search{width:110px !important;font-size:0.75rem !important;padding:0.35rem 0.6rem !important;}
   .generators-grid{grid-template-columns:1fr !important;}
 }
+
+/* ══ COUPONS ══ */
+.cpn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0.9rem;}
+.cpn-hint{font-size:0.68rem;color:var(--muted);margin-top:0.3rem;opacity:.8;}
+.cpn-modes{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.4rem;}
+.cpn-mode{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;
+  padding:0.55rem 1rem;font-size:0.82rem;color:var(--muted);cursor:pointer;
+  font-family:inherit;transition:all .18s;}
+.cpn-mode:hover{border-color:rgba(124,92,252,0.4);}
+.cpn-mode.active{border-color:var(--accent);color:var(--accent);background:rgba(124,92,252,0.08);}
+.cpn-tag{display:inline-block;font-size:0.62rem;font-weight:800;letter-spacing:0.05em;
+  text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.cpn-tag.active   {background:rgba(38,194,129,0.15);color:#26c281;}
+.cpn-tag.exhausted{background:rgba(124,92,252,0.15);color:var(--accent);}
+.cpn-tag.expired  {background:rgba(139,136,168,0.15);color:var(--muted);}
+.cpn-tag.disabled {background:rgba(252,92,125,0.15);color:var(--accent2);}
+.cpn-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;
+  letter-spacing:0.02em;color:var(--text);}
+.cpn-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;
+  margin-top:5px;min-width:70px;}
+.cpn-bar i{display:block;height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.cpn-act{background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);
+  padding:4px 10px;font-size:0.7rem;cursor:pointer;font-family:inherit;margin-right:5px;
+  transition:all .18s;}
+.cpn-act:hover{border-color:var(--accent);color:var(--accent);}
+.cpn-act.danger:hover{border-color:var(--accent2);color:var(--accent2);}
+@media(max-width:600px){ .cpn-grid{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
@@ -305,6 +333,10 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <button class="nav-item" onclick="switchTab('users')">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Users</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('coupons')">
+        <svg viewBox="0 0 24 24"><path d="M20 12a2 2 0 0 1 2-2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 1-2-2z"/><line x1="12" y1="7" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+        <span>Coupons</span>
       </button>
       <button class="nav-item" onclick="switchTab('revenue')">
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -498,6 +530,92 @@ tr:hover td{background:rgba(255,255,255,0.02);}
             <div id="revenue-breakdown" style="width:100%;"></div>
           </div>
         </div>
+      </div>
+
+
+      <!-- COUPONS -->
+      <div class="admin-page" id="tab-coupons">
+
+        <div class="broadcast-card" style="margin-bottom:1.25rem;">
+          <div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:1.25rem;">Create a coupon</div>
+
+          <div class="cpn-grid">
+            <div>
+              <div class="field-label">Code</div>
+              <input id="cpn-code" class="admin-input" placeholder="CREVERS100" maxlength="32"
+                     oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')">
+              <div class="cpn-hint">Letters, numbers, - and _ only</div>
+            </div>
+
+            <div>
+              <div class="field-label">Grants</div>
+              <select id="cpn-plan" class="admin-input">
+                <option value="pro">Pro</option>
+                <option value="team">Creator</option>
+              </select>
+              <div class="cpn-hint">Only works as an upgrade</div>
+            </div>
+
+            <div>
+              <div class="field-label">Max redemptions</div>
+              <input id="cpn-max" class="admin-input" type="number" min="1" max="100000" value="100">
+              <div class="cpn-hint">How many people can claim it</div>
+            </div>
+          </div>
+
+          <div class="field-label" style="margin-top:1rem;">How long does it last?</div>
+          <div class="cpn-modes">
+            <button type="button" class="cpn-mode active" id="cpn-mode-days"  onclick="cpnMode('days')">A number of days</button>
+            <button type="button" class="cpn-mode"        id="cpn-mode-date"  onclick="cpnMode('date')">Until a fixed date</button>
+          </div>
+
+          <div id="cpn-days-wrap" style="margin-top:0.75rem;">
+            <input id="cpn-days" class="admin-input" type="number" min="1" max="3650" value="30" style="max-width:220px;">
+            <div class="cpn-hint">Counted from the moment each person redeems</div>
+          </div>
+
+          <div id="cpn-date-wrap" style="margin-top:0.75rem;display:none;">
+            <input id="cpn-date" class="admin-input" type="date" style="max-width:220px;">
+            <div class="cpn-hint">Everyone's access ends on this date, whenever they redeemed</div>
+          </div>
+
+          <div style="margin-top:1rem;">
+            <div class="field-label">Note <span style="font-weight:400;opacity:.6;">(optional, only you see this)</span></div>
+            <input id="cpn-note" class="admin-input" placeholder="Launch week promo" maxlength="200">
+          </div>
+
+          <button class="admin-btn" style="margin-top:1.25rem;" onclick="createCoupon()">Create coupon</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-top">
+            <div class="table-label">All coupons <span id="cpn-count" style="opacity:.6;"></span></div>
+            <button class="admin-btn-ghost" onclick="loadCoupons()">Refresh</button>
+          </div>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead><tr>
+                <th>Code</th><th>Plan</th><th>Duration</th><th>Used</th><th>Status</th><th></th>
+              </tr></thead>
+              <tbody id="cpn-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-empty" id="cpn-empty" style="display:none;">No coupons yet.</div>
+        </div>
+
+        <div class="table-card" id="cpn-redemptions-card" style="display:none;margin-top:1.25rem;">
+          <div class="table-top">
+            <div class="table-label">Redemptions &middot; <span id="cpn-red-code"></span></div>
+            <button class="admin-btn-ghost" onclick="document.getElementById('cpn-redemptions-card').style.display='none'">Close</button>
+          </div>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead><tr><th>Name</th><th>Email</th><th>From</th><th>Expires</th><th>Status</th></tr></thead>
+              <tbody id="cpn-red-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
 
       <!-- BROADCAST -->
@@ -849,7 +967,7 @@ function selectCddAdmin(id, value, label){
 }
 
 /* ══ TAB SWITCHING ══ */
-var TAB_TITLES = { overview:'Overview', users:'Users', revenue:'Revenue', broadcast:'Broadcast Email', activity:'Recent Activity' };
+var TAB_TITLES = { overview:'Overview', users:'Users', revenue:'Revenue', broadcast:'Broadcast Email', activity:'Recent Activity', coupons:'Coupons' };
 function switchTab(name){
   CURRENT_TAB = name;
   document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
@@ -859,6 +977,7 @@ function switchTab(name){
   document.querySelectorAll('.nav-item').forEach(function(b){
     if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+name+"'")) b.classList.add('active');
   });
+  if(name === 'coupons') loadCoupons();
   var title = TAB_TITLES[name] || name;
   document.getElementById('page-title').textContent = title;
   var bodyTitle = document.getElementById('page-title-body');
@@ -895,6 +1014,7 @@ function refreshCurrentTab(){
   }
   if(CURRENT_TAB==='users') loadUsers();
   if(CURRENT_TAB==='activity') loadActivity();
+  if(CURRENT_TAB === 'coupons') loadCoupons();
 }
 
 /* ══ STATS + CHARTS ══ */
@@ -1819,6 +1939,143 @@ function logAdminAction(action, detail){
   }).catch(function(){});
 }
 
+
+/* ══════════ COUPONS ══════════ */
+var CPN_MODE = 'days';
+
+function cpnMode(m){
+  CPN_MODE = m;
+  document.getElementById('cpn-mode-days').classList.toggle('active', m === 'days');
+  document.getElementById('cpn-mode-date').classList.toggle('active', m === 'date');
+  document.getElementById('cpn-days-wrap').style.display = (m === 'days') ? 'block' : 'none';
+  document.getElementById('cpn-date-wrap').style.display = (m === 'date') ? 'block' : 'none';
+}
+
+function cpnPlanLabel(p){ return p === 'team' ? 'Creator' : (p === 'pro' ? 'Pro' : p); }
+
+function cpnDuration(c){
+  if(c.duration_mode === 'days') return c.duration_days + (c.duration_days === 1 ? ' day' : ' days');
+  if(!c.grant_until) return '—';
+  return 'until ' + new Date(c.grant_until).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+}
+
+function loadCoupons(){
+  fetch(ADMIN_API + '/admin/coupons', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var list  = d.coupons || [];
+      var tbody = document.getElementById('cpn-tbody');
+      var empty = document.getElementById('cpn-empty');
+      document.getElementById('cpn-count').textContent = list.length ? '(' + list.length + ')' : '';
+
+      if(!list.length){ tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = list.map(function(c){
+        var pct = Math.min(100, Math.round((c.redemption_count / c.max_redemptions) * 100));
+        var canDelete = c.redemption_count === 0;
+        return '<tr>' +
+          '<td><span class="cpn-code">' + escHtml(c.code) + '</span>' +
+            (c.note ? '<div style="font-size:.68rem;color:var(--muted);margin-top:2px;">' + escHtml(c.note) + '</div>' : '') +
+          '</td>' +
+          '<td>' + cpnPlanLabel(c.plan) + '</td>' +
+          '<td>' + escHtml(cpnDuration(c)) + '</td>' +
+          '<td>' + c.redemption_count + ' / ' + c.max_redemptions +
+            '<div class="cpn-bar"><i style="width:' + pct + '%"></i></div></td>' +
+          '<td><span class="cpn-tag ' + c.status + '">' + c.status + '</span></td>' +
+          '<td style="white-space:nowrap;">' +
+            '<button class="cpn-act" onclick="viewRedemptions(\'' + c.id + '\',\'' + escHtml(c.code) + '\')">Who</button>' +
+            '<button class="cpn-act" onclick="toggleCoupon(\'' + c.id + '\',' + (!c.active) + ')">' +
+              (c.active ? 'Disable' : 'Enable') + '</button>' +
+            (canDelete ? '<button class="cpn-act danger" onclick="deleteCoupon(\'' + c.id + '\')">Delete</button>' : '') +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    })
+    .catch(function(){ adminToast('Could not load coupons.'); });
+}
+
+function createCoupon(){
+  var body = {
+    code            : (document.getElementById('cpn-code').value || '').trim(),
+    plan            : document.getElementById('cpn-plan').value,
+    duration_mode   : CPN_MODE,
+    max_redemptions : parseInt(document.getElementById('cpn-max').value, 10),
+    note            : (document.getElementById('cpn-note').value || '').trim(),
+  };
+  if(CPN_MODE === 'days'){
+    body.duration_days = parseInt(document.getElementById('cpn-days').value, 10);
+  } else {
+    var d = document.getElementById('cpn-date').value;
+    if(!d){ adminToast('Pick an end date.'); return; }
+    /* end of the chosen day, so the date itself is included */
+    body.grant_until = new Date(d + 'T23:59:59').toISOString();
+  }
+  if(!body.code){ adminToast('Enter a code.'); return; }
+
+  fetch(ADMIN_API + '/admin/coupons', {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY },
+    body    : JSON.stringify(body),
+  })
+  .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+  .then(function(res){
+    if(!res.ok){ adminToast(res.j.error || 'Could not create coupon.'); return; }
+    adminToast('Coupon ' + res.j.coupon.code + ' created.');
+    document.getElementById('cpn-code').value = '';
+    document.getElementById('cpn-note').value = '';
+    loadCoupons();
+  })
+  .catch(function(){ adminToast('Could not create coupon.'); });
+}
+
+function toggleCoupon(id, active){
+  fetch(ADMIN_API + '/admin/coupons/' + id, {
+    method  : 'PATCH',
+    headers : { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY },
+    body    : JSON.stringify({ active: active }),
+  })
+  .then(function(){ loadCoupons(); })
+  .catch(function(){ adminToast('Could not update coupon.'); });
+}
+
+function deleteCoupon(id){
+  if(!confirm('Delete this coupon? This cannot be undone.')) return;
+  fetch(ADMIN_API + '/admin/coupons/' + id, {
+    method  : 'DELETE',
+    headers : { 'X-Admin-Key': ADMIN_KEY },
+  })
+  .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+  .then(function(res){
+    if(!res.ok){ adminToast(res.j.error || 'Could not delete.'); return; }
+    adminToast('Coupon deleted.');
+    loadCoupons();
+  })
+  .catch(function(){ adminToast('Could not delete.'); });
+}
+
+function viewRedemptions(id, code){
+  fetch(ADMIN_API + '/admin/coupons/' + id + '/redemptions', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var rows = d.redemptions || [];
+      document.getElementById('cpn-red-code').textContent = code;
+      document.getElementById('cpn-red-tbody').innerHTML = rows.length
+        ? rows.map(function(r){
+            return '<tr>' +
+              '<td>' + escHtml(r.name) + '</td>' +
+              '<td>' + escHtml(r.email) + '</td>' +
+              '<td>' + cpnPlanLabel(r.previous_plan || 'free') + '</td>' +
+              '<td>' + new Date(r.expires_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) + '</td>' +
+              '<td><span class="cpn-tag ' + (r.expired ? 'expired' : 'active') + '">' +
+                (r.expired ? 'expired' : 'active') + '</span></td>' +
+            '</tr>';
+          }).join('')
+        : '<tr><td colspan="5" style="color:var(--muted);">Nobody has redeemed this yet.</td></tr>';
+      document.getElementById('cpn-redemptions-card').style.display = 'block';
+    })
+    .catch(function(){ adminToast('Could not load redemptions.'); });
+}
 </script>
 </body>
 </html>
