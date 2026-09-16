@@ -3138,14 +3138,32 @@ async function vrProcess(){
       console.error('[VR] MediaRecorder error:', e && e.error ? e.error.name : e);
     };
 
-    recorder.start(100);
-
-    /* Both tracks now begin together: the recorder is already running, so the
-       first audio sample and the first canvas frame share the same timeline. */
-    ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
-    try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
-
+    /* Play first, then start recording on the first real rendered frame.
+       Starting the recorder while the video was still paused meant it captured
+       a static canvas for the few tens of milliseconds it took the first frame
+       to arrive, while audio began flowing immediately — leaving audio ahead of
+       the picture by a small constant amount. Beginning both at the first drawn
+       frame puts them on the same instant. */
     await procVid.play().catch(function(){ throw new Error('Playback blocked. Try Chrome or Edge.'); });
+
+    await new Promise(function(startRes){
+      var begun = false;
+      function begin(){
+        if(begun) return;
+        begun = true;
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+        try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
+        recorder.start(100);
+        startRes();
+      }
+      if('requestVideoFrameCallback' in HTMLVideoElement.prototype){
+        procVid.requestVideoFrameCallback(begin);
+      } else {
+        requestAnimationFrame(begin);
+      }
+      /* never stall if no frame callback arrives */
+      setTimeout(begin, 600);
+    });
 
     /* STEP 8: Render loop — use requestVideoFrameCallback when available for perfect frame sync */
     await new Promise(function(resolve){
