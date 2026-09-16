@@ -2104,7 +2104,16 @@ function loadSettingsPanel(){
   /* Cancel button for paid users */
   var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
   var cancelWrap = document.getElementById('cancel-sub-wrap');
-  if(cancelWrap) cancelWrap.style.display = (plan !== 'free') ? 'block' : 'none';
+  /* A coupon-granted plan is not a paid subscription — showing Cancel here
+     lets someone strip their own promotional access with nothing to cancel. */
+  if(cancelWrap){
+    cancelWrap.style.display = (plan !== 'free') ? 'block' : 'none';
+    if(plan !== 'free' && AUTH.token){
+      apiCall('GET', '/coupons/my-grant').then(function(g){
+        if(g && g.active) cancelWrap.style.display = 'none';
+      }).catch(function(){});
+    }
+  }
 
   /* Email notification toggle */
   if(AUTH.token){
