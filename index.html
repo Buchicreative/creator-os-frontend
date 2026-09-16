@@ -2909,6 +2909,168 @@ function vrSelectRes(el, res){
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   FFMPEG PATH — resize by re-encoding video against the
+   source timestamps and copying the audio stream untouched.
+
+   The MediaRecorder path plays the clip in real time and
+   captures video and audio as two live streams. Audio runs on
+   the audio clock and never waits; video depends on the render
+   loop keeping up. One slow frame and the picture is behind for
+   good, because nothing resynchronises them. ffmpeg works on
+   timestamps rather than wall clock, so sync cannot drift.
+   ══════════════════════════════════════════════════════════ */
+var FF = { instance:null, loading:null, failed:false };
+
+var FF_CDNS = [
+  { lib:'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js',
+    util:'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js',
+    core:'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+    wasm:'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm' },
+  { lib:'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js',
+    util:'https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js',
+    core:'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+    wasm:'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm' }
+];
+
+function ffLoadScript(src){
+  return new Promise(function(res, rej){
+    var s = document.createElement('script');
+    s.src = src; s.async = true;
+    s.onload = res;
+    s.onerror = function(){ rej(new Error('Could not load ' + src)); };
+    document.head.appendChild(s);
+  });
+}
+
+async function ffGet(onProgress){
+  if(FF.instance) return FF.instance;
+  if(FF.loading)  return FF.loading;
+
+  FF.loading = (async function(){
+    var lastErr = null;
+    for(var i = 0; i < FF_CDNS.length; i++){
+      var cdn = FF_CDNS[i];
+      try {
+        if(typeof FFmpegWASM === 'undefined') await ffLoadScript(cdn.lib);
+        if(typeof FFmpegUtil === 'undefined') await ffLoadScript(cdn.util);
+
+        var ff = new FFmpegWASM.FFmpeg();
+        ff.on('log', function(e){ if(e && e.message) console.log('[ffmpeg]', e.message); });
+        if(onProgress) ff.on('progress', function(p){ onProgress(p && p.progress ? p.progress : 0); });
+
+        await ff.load({ coreURL: cdn.core, wasmURL: cdn.wasm });
+        console.log('[VR] ffmpeg ready via', cdn.lib.indexOf('jsdelivr') > -1 ? 'jsDelivr' : 'unpkg');
+        FF.instance = ff;
+        return ff;
+      } catch(e){
+        lastErr = e;
+        console.warn('[VR] ffmpeg load failed from source ' + (i+1) + ':', e.message);
+      }
+    }
+    FF.failed = true;
+    FF.loading = null;
+    throw lastErr || new Error('ffmpeg unavailable');
+  })();
+
+  return FF.loading;
+}
+
+/* Returns true if it handled the conversion, false to fall through
+   to the existing MediaRecorder path. */
+async function vrProcessFFmpeg(){
+  var progBar = document.getElementById('vr-progress-bar');
+  var progLbl = document.getElementById('vr-progress-label');
+
+  var ff;
+  try {
+    progLbl.textContent = 'Preparing converter...';
+    progBar.style.width = '6%';
+    ff = await ffGet(function(p){
+      var pct = 20 + Math.round(Math.min(1, Math.max(0, p)) * 74);
+      progBar.style.width = pct + '%';
+      progLbl.textContent = 'Resizing... ' + pct + '%';
+    });
+  } catch(e){
+    console.warn('[VR] ffmpeg unavailable, using fallback:', e.message);
+    return false;
+  }
+
+  try {
+    progLbl.textContent = 'Reading video...';
+    progBar.style.width = '14%';
+
+    /* source dimensions */
+    var meta = await new Promise(function(res, rej){
+      var v = document.createElement('video');
+      v.preload = 'metadata';
+      v.onloadedmetadata = function(){
+        res({ w: v.videoWidth, h: v.videoHeight, d: v.duration });
+        URL.revokeObjectURL(v.src);
+      };
+      v.onerror = function(){ rej(new Error('Could not read that video.')); };
+      v.src = URL.createObjectURL(VR.file);
+    });
+    if(!meta.w || !meta.h) throw new Error('Could not read video dimensions.');
+
+    var ratio  = VR.ratioMap[VR.format];
+    var resObj = VR.resMap[VR.res];
+    var crop   = vrCalcCrop(meta.w, meta.h, ratio);
+
+    /* target box, long edge from the chosen quality, even numbers for h264 */
+    var outH = (ratio < 1) ? resObj.w : resObj.h;
+    var outW = Math.round(outH * ratio);
+    if(outW % 2) outW--;
+    if(outH % 2) outH--;
+    /* never upscale past the cropped source */
+    if(outW > crop.w){ outW = crop.w - (crop.w % 2); outH = Math.round(outW / ratio); if(outH % 2) outH--; }
+
+    var inName  = 'in.' + (VR.file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g,'');
+    var outName = 'out.mp4';
+
+    await ff.writeFile(inName, await FFmpegUtil.fetchFile(VR.file));
+
+    progLbl.textContent = 'Resizing... 0%';
+    progBar.style.width = '20%';
+
+    /* -c:a copy is the whole point: the audio stream is passed through
+       byte for byte, so it keeps its original timestamps and cannot
+       drift against the re-encoded video. */
+    await ff.exec([
+      '-i', inName,
+      '-vf', 'crop=' + crop.w + ':' + crop.h + ':' + crop.x + ':' + crop.y +
+             ',scale=' + outW + ':' + outH,
+      '-c:v', 'libx264',
+      '-preset', 'veryfast',
+      '-crf', '23',
+      '-pix_fmt', 'yuv420p',
+      '-c:a', 'copy',
+      '-movflags', '+faststart',
+      outName
+    ]);
+
+    progLbl.textContent = 'Finishing...';
+    progBar.style.width = '96%';
+
+    var data = await ff.readFile(outName);
+    try { await ff.deleteFile(inName); await ff.deleteFile(outName); } catch(e){}
+
+    var blob = new Blob([data.buffer || data], { type: 'video/mp4' });
+    if(!blob || blob.size < 500) throw new Error('Output was empty. Please try again.');
+
+    VR.outputBlob = blob;
+
+    progBar.style.width = '100%';
+    progLbl.textContent = 'Done';
+    return true;
+
+  } catch(e){
+    console.warn('[VR] ffmpeg conversion failed, using fallback:', e.message);
+    return false;
+  }
+}
+
 async function vrProcess(){
   if(!VR.file){ showToast('Please select a video file first.'); return; }
 
@@ -2922,6 +3084,30 @@ async function vrProcess(){
   progWrap.classList.add('show');
   progBar.style.width = '3%';
   progLbl.textContent = 'Setting up...';
+
+  /* Fixed crop goes through ffmpeg: the audio stream is copied untouched so
+     sync is structural rather than something we try to maintain in real time.
+     AI face tracking needs a crop that moves per frame, which this path does
+     not express, so that still uses the canvas recorder below. */
+  if(!VR.trackingEnabled){
+    var handled = false;
+    try { handled = await vrProcessFFmpeg(); }
+    catch(e){ console.warn('[VR] ffmpeg path threw:', e.message); }
+
+    if(handled){
+      /* matches the existing path: the button calls vrDownload(), which
+         builds the filename and object URL from VR.outputBlob itself */
+      progBar.style.width = '100%';
+      progLbl.textContent = 'Done! Click Download to save.';
+      document.getElementById('vr-download-btn').style.display = 'inline-flex';
+      btn.disabled = false;
+      showToast('Video converted! Click Download.');
+      return;
+    }
+    console.log('[VR] Falling back to canvas recorder');
+    progBar.style.width = '3%';
+    progLbl.textContent = 'Setting up...';
+  }
 
   /* Fresh object URL each conversion */
   if(VR.objectURL){ URL.revokeObjectURL(VR.objectURL); }

@@ -66,7 +66,10 @@ http.createServer(function(req, res) {
     var headers = {
       'Content-Type'                        : 'text/html; charset=utf-8',
       'Cross-Origin-Opener-Policy'          : 'same-origin',
-      'Cross-Origin-Embedder-Policy'        : 'require-corp',
+      /* credentialless keeps SharedArrayBuffer available (ffmpeg.wasm threads)
+         while allowing cross-origin resources that do not send CORP headers.
+         require-corp blocked CDN scripts outright. */
+      'Cross-Origin-Embedder-Policy'        : 'credentialless',
       'X-Content-Type-Options'              : 'nosniff',
       'X-Frame-Options'                     : 'SAMEORIGIN',
       'Referrer-Policy'                     : 'strict-origin-when-cross-origin',
