@@ -3046,7 +3046,22 @@ async function vrProcess(){
     var mime  = mimes.find(function(m){ try{ return MediaRecorder.isTypeSupported(m); }catch(e){ return false; } }) || 'video/webm';
     console.log('[VR] mime:', mime, 'size:', outW+'x'+outH, 'dur:', dur);
 
-    var canvasStream = canvas.captureStream(VR._trackFPS || 30);
+    /* captureStream(fps) makes the browser sample the canvas on its own timer,
+       independently of when we draw. That sampler and the render loop are not
+       synchronised, so it can re-sample a stale frame or miss a fresh one, and
+       the picture drifts against the audio.
+       captureStream(0) emits a frame only when we explicitly ask, so every
+       recorded frame corresponds to an actual draw at a known video position. */
+    var canvasStream = canvas.captureStream(0);
+    var vTrack       = canvasStream.getVideoTracks()[0];
+    var manualFrames = !!(vTrack && typeof vTrack.requestFrame === 'function');
+    if(!manualFrames){
+      console.warn('[VR] requestFrame unsupported — falling back to timed capture');
+      canvasStream = canvas.captureStream(VR._trackFPS || 30);
+      vTrack       = canvasStream.getVideoTracks()[0];
+    } else {
+      console.log('[VR] Manual frame emission enabled');
+    }
 
     /* Audio is attached further down, from procVid.captureStream().
        An AudioContext createMediaElementSource() used to run here as well,
@@ -3154,6 +3169,8 @@ async function vrProcess(){
         ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
         try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
         recorder.start(100);
+        /* first frame must be emitted after start(), or the track opens empty */
+        if(manualFrames && vTrack){ try{ vTrack.requestFrame(); }catch(e){} }
         startRes();
       }
       if('requestVideoFrameCallback' in HTMLVideoElement.prototype){
@@ -3204,6 +3221,9 @@ async function vrProcess(){
 
         ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
         try{ ctx.drawImage(procVid,crop.x,crop.y,crop.w,crop.h,0,0,outW,outH); }catch(e){}
+
+        /* hand this exact frame to the recorder, timestamped now */
+        if(manualFrames && vTrack){ try{ vTrack.requestFrame(); }catch(e){} }
 
         var pct = Math.min(18+Math.round((procVid.currentTime/dur)*78),97);
         progBar.style.width=pct+'%';
