@@ -1820,8 +1820,8 @@ async function repurposeContent(){
   try {
     var result;
     if(AUTH.token){
-      var resp = await apiCall('POST', '/ai/repurpose', { content: content, target: target });
-      result = resp.content;
+      var resp = await apiCall('POST', '/ai/repurpose', { content: content, format: target });
+      result = resp.result || resp.content;
     } else { await delay(700); result=(repurposeFallback[target]||repurposeFallback['Twitter / X Thread'])(content); }
     output.innerHTML='<div class="out-label">'+escHtml(target)+'</div><div style="white-space:pre-wrap;font-size:0.8rem;line-height:1.75;">'+escHtml(result)+'</div>';
     actions.style.display='flex';
