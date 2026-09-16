@@ -222,32 +222,45 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 }
 
 /* ══ COUPONS ══ */
-.cpn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0.9rem;}
-.cpn-hint{font-size:0.68rem;color:var(--muted);margin-top:0.3rem;opacity:.8;}
-.cpn-modes{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.4rem;}
-.cpn-mode{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;
-  padding:0.55rem 1rem;font-size:0.82rem;color:var(--muted);cursor:pointer;
-  font-family:inherit;transition:all .18s;}
-.cpn-mode:hover{border-color:rgba(124,92,252,0.4);}
+.cpn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;}
+.cpn-grid .cdd{width:100%;}
+.cpn-grid .cdd-trigger{width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:0.7rem 1rem;font-size:0.88rem;}
+.cpn-hint{font-size:0.7rem;color:var(--muted);margin-top:0.35rem;opacity:.75;line-height:1.4;}
+
+.cpn-modes{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.cpn-mode{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:0.62rem 1.05rem;font-size:0.84rem;color:var(--muted);cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s,background .18s;}
+.cpn-mode:hover{border-color:rgba(124,92,252,0.35);color:var(--text);}
 .cpn-mode.active{border-color:var(--accent);color:var(--accent);background:rgba(124,92,252,0.08);}
+
+.cpn-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-weight:700;letter-spacing:0.02em;color:var(--text);}
+.cpn-note{font-size:0.7rem;color:var(--muted);margin-top:3px;}
+
 .cpn-tag{display:inline-block;font-size:0.62rem;font-weight:800;letter-spacing:0.05em;
   text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap;}
 .cpn-tag.active   {background:rgba(38,194,129,0.15);color:#26c281;}
 .cpn-tag.exhausted{background:rgba(124,92,252,0.15);color:var(--accent);}
 .cpn-tag.expired  {background:rgba(139,136,168,0.15);color:var(--muted);}
 .cpn-tag.disabled {background:rgba(252,92,125,0.15);color:var(--accent2);}
-.cpn-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;
-  letter-spacing:0.02em;color:var(--text);}
-.cpn-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;
-  margin-top:5px;min-width:70px;}
+
+.cpn-bar{height:4px;background:var(--border);border-radius:3px;overflow:hidden;
+  margin-top:6px;min-width:64px;max-width:110px;}
 .cpn-bar i{display:block;height:100%;border-radius:3px;
   background:linear-gradient(90deg,var(--accent),var(--accent2));}
-.cpn-act{background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);
-  padding:4px 10px;font-size:0.7rem;cursor:pointer;font-family:inherit;margin-right:5px;
-  transition:all .18s;}
+
+.cpn-act{background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);padding:5px 11px;font-size:0.72rem;cursor:pointer;
+  font-family:inherit;margin-right:5px;transition:border-color .18s,color .18s;}
 .cpn-act:hover{border-color:var(--accent);color:var(--accent);}
 .cpn-act.danger:hover{border-color:var(--accent2);color:var(--accent2);}
-@media(max-width:600px){ .cpn-grid{grid-template-columns:1fr;} }
+
+@media(max-width:600px){
+  .cpn-grid{grid-template-columns:1fr;}
+  .cpn-mode{flex:1 1 100%;}
+}
 </style>
 </head>
 <body>
@@ -537,80 +550,91 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <div class="admin-page" id="tab-coupons">
 
         <div class="broadcast-card" style="margin-bottom:1.25rem;">
-          <div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:1.25rem;">Create a coupon</div>
+          <div class="broadcast-title" style="margin-bottom:1.25rem;">Create a coupon</div>
 
           <div class="cpn-grid">
             <div>
               <div class="field-label">Code</div>
-              <input id="cpn-code" class="admin-input" placeholder="CREVERS100" maxlength="32"
+              <input id="cpn-code" class="field-input" placeholder="CREVERS100" maxlength="32"
+                     autocomplete="off" spellcheck="false"
                      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')">
-              <div class="cpn-hint">Letters, numbers, - and _ only</div>
+              <div class="cpn-hint">Letters, numbers, - and _</div>
             </div>
 
             <div>
               <div class="field-label">Grants</div>
-              <select id="cpn-plan" class="admin-input">
-                <option value="pro">Pro</option>
-                <option value="team">Creator</option>
-              </select>
-              <div class="cpn-hint">Only works as an upgrade</div>
+              <div class="cdd" id="cdd-cpn-plan">
+                <div class="cdd-trigger" onclick="toggleCddAdmin('cdd-cpn-plan')">
+                  <span id="cdd-cpn-plan-val">Pro</span>
+                  <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="cdd-menu" id="cdd-cpn-plan-menu">
+                  <div class="cdd-option selected" onclick="cpnSetPlan('pro','Pro')">Pro</div>
+                  <div class="cdd-option" onclick="cpnSetPlan('team','Creator')">Creator</div>
+                </div>
+              </div>
+              <div class="cpn-hint">Only redeemable as an upgrade</div>
             </div>
 
             <div>
               <div class="field-label">Max redemptions</div>
-              <input id="cpn-max" class="admin-input" type="number" min="1" max="100000" value="100">
+              <input id="cpn-max" class="field-input" type="number" min="1" max="100000" value="100">
               <div class="cpn-hint">How many people can claim it</div>
             </div>
           </div>
 
-          <div class="field-label" style="margin-top:1rem;">How long does it last?</div>
+          <div class="field-label" style="margin-top:1.25rem;">How long it lasts</div>
           <div class="cpn-modes">
-            <button type="button" class="cpn-mode active" id="cpn-mode-days"  onclick="cpnMode('days')">A number of days</button>
-            <button type="button" class="cpn-mode"        id="cpn-mode-date"  onclick="cpnMode('date')">Until a fixed date</button>
+            <button type="button" class="cpn-mode active" id="cpn-mode-days" onclick="cpnMode('days')">A number of days</button>
+            <button type="button" class="cpn-mode"        id="cpn-mode-date" onclick="cpnMode('date')">Until a fixed date</button>
           </div>
 
-          <div id="cpn-days-wrap" style="margin-top:0.75rem;">
-            <input id="cpn-days" class="admin-input" type="number" min="1" max="3650" value="30" style="max-width:220px;">
+          <div id="cpn-days-wrap" style="margin-top:0.85rem;">
+            <input id="cpn-days" class="field-input" type="number" min="1" max="3650" value="30" style="max-width:240px;">
             <div class="cpn-hint">Counted from the moment each person redeems</div>
           </div>
 
-          <div id="cpn-date-wrap" style="margin-top:0.75rem;display:none;">
-            <input id="cpn-date" class="admin-input" type="date" style="max-width:220px;">
+          <div id="cpn-date-wrap" style="margin-top:0.85rem;display:none;">
+            <input id="cpn-date" class="field-input" type="date" style="max-width:240px;">
             <div class="cpn-hint">Everyone's access ends on this date, whenever they redeemed</div>
           </div>
 
-          <div style="margin-top:1rem;">
-            <div class="field-label">Note <span style="font-weight:400;opacity:.6;">(optional, only you see this)</span></div>
-            <input id="cpn-note" class="admin-input" placeholder="Launch week promo" maxlength="200">
+          <div style="margin-top:1.25rem;">
+            <div class="field-label">Note <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:.65;">optional, only you see this</span></div>
+            <input id="cpn-note" class="field-input" placeholder="Launch week promo" maxlength="200">
           </div>
 
-          <button class="admin-btn" style="margin-top:1.25rem;" onclick="createCoupon()">Create coupon</button>
+          <button class="send-btn" style="margin-top:1.5rem;" onclick="createCoupon()">Create coupon</button>
         </div>
 
         <div class="table-card">
           <div class="table-top">
-            <div class="table-label">All coupons <span id="cpn-count" style="opacity:.6;"></span></div>
-            <button class="admin-btn-ghost" onclick="loadCoupons()">Refresh</button>
+            <div class="table-label">All coupons <span id="cpn-count" style="opacity:.55;font-weight:400;"></span></div>
+            <button class="admin-refresh" onclick="loadCoupons()">
+              <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
           </div>
           <div class="table-scroll">
-            <table class="admin-table">
+            <table>
               <thead><tr>
                 <th>Code</th><th>Plan</th><th>Duration</th><th>Used</th><th>Status</th><th></th>
               </tr></thead>
-              <tbody id="cpn-tbody"></tbody>
+              <tbody id="cpn-tbody">
+                <tr><td colspan="6" class="table-empty"><div class="spinner"></div></td></tr>
+              </tbody>
             </table>
           </div>
-          <div class="table-empty" id="cpn-empty" style="display:none;">No coupons yet.</div>
         </div>
 
         <div class="table-card" id="cpn-redemptions-card" style="display:none;margin-top:1.25rem;">
           <div class="table-top">
-            <div class="table-label">Redemptions &middot; <span id="cpn-red-code"></span></div>
-            <button class="admin-btn-ghost" onclick="document.getElementById('cpn-redemptions-card').style.display='none'">Close</button>
+            <div class="table-label">Redeemed by <span id="cpn-red-code" style="color:var(--accent);"></span></div>
+            <button class="admin-refresh" onclick="document.getElementById('cpn-redemptions-card').style.display='none'">Close</button>
           </div>
           <div class="table-scroll">
-            <table class="admin-table">
-              <thead><tr><th>Name</th><th>Email</th><th>From</th><th>Expires</th><th>Status</th></tr></thead>
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Was on</th><th>Ends</th><th>Status</th></tr></thead>
               <tbody id="cpn-red-tbody"></tbody>
             </table>
           </div>
@@ -813,6 +837,10 @@ tr:hover td{background:rgba(255,255,255,0.02);}
     <button class="admin-mobile-nav-item" onclick="switchTabMobile('users')">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Users
+    </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('coupons')">
+      <svg viewBox="0 0 24 24"><path d="M20 12a2 2 0 0 1 2-2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 1-2-2z"/><line x1="12" y1="7" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
+      Coupons
     </button>
     <button class="admin-mobile-nav-item" onclick="switchTabMobile('revenue')">
       <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -1942,6 +1970,17 @@ function logAdminAction(action, detail){
 
 /* ══════════ COUPONS ══════════ */
 var CPN_MODE = 'days';
+var CPN_PLAN = 'pro';
+
+function cpnSetPlan(value, label){
+  CPN_PLAN = value;
+  document.getElementById('cdd-cpn-plan-val').textContent = label;
+  var menu = document.getElementById('cdd-cpn-plan-menu');
+  menu.querySelectorAll('.cdd-option').forEach(function(o){
+    o.classList.toggle('selected', o.textContent.trim() === label);
+  });
+  closeCddsAdmin();
+}
 
 function cpnMode(m){
   CPN_MODE = m;
@@ -1965,18 +2004,19 @@ function loadCoupons(){
     .then(function(d){
       var list  = d.coupons || [];
       var tbody = document.getElementById('cpn-tbody');
-      var empty = document.getElementById('cpn-empty');
       document.getElementById('cpn-count').textContent = list.length ? '(' + list.length + ')' : '';
 
-      if(!list.length){ tbody.innerHTML = ''; empty.style.display = 'block'; return; }
-      empty.style.display = 'none';
+      if(!list.length){
+        tbody.innerHTML = '<tr><td colspan="6" class="table-empty">No coupons yet.</td></tr>';
+        return;
+      }
 
       tbody.innerHTML = list.map(function(c){
         var pct = Math.min(100, Math.round((c.redemption_count / c.max_redemptions) * 100));
         var canDelete = c.redemption_count === 0;
         return '<tr>' +
           '<td><span class="cpn-code">' + escHtml(c.code) + '</span>' +
-            (c.note ? '<div style="font-size:.68rem;color:var(--muted);margin-top:2px;">' + escHtml(c.note) + '</div>' : '') +
+            (c.note ? '<div class="cpn-note">' + escHtml(c.note) + '</div>' : '') +
           '</td>' +
           '<td>' + cpnPlanLabel(c.plan) + '</td>' +
           '<td>' + escHtml(cpnDuration(c)) + '</td>' +
@@ -1998,7 +2038,7 @@ function loadCoupons(){
 function createCoupon(){
   var body = {
     code            : (document.getElementById('cpn-code').value || '').trim(),
-    plan            : document.getElementById('cpn-plan').value,
+    plan            : CPN_PLAN,
     duration_mode   : CPN_MODE,
     max_redemptions : parseInt(document.getElementById('cpn-max').value, 10),
     note            : (document.getElementById('cpn-note').value || '').trim(),
