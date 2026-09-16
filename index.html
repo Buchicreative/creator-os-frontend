@@ -3129,6 +3129,11 @@ async function vrProcess(){
       console.warn('[VR] Audio merge failed:', ae.message, '— continuing video only');
     }
 
+    /* without this a recorder failure is completely silent */
+    recorder.onerror = function(e){
+      console.error('[VR] MediaRecorder error:', e && e.error ? e.error.name : e);
+    };
+
     recorder.start(100);
 
     /* STEP 8: Render loop — use requestVideoFrameCallback when available for perfect frame sync */
@@ -3211,10 +3216,29 @@ async function vrProcess(){
     });
 
     procVid.pause();
+    progLbl.textContent = 'Encoding...';
+    progBar.style.width = '97%';
+
     /* Wait for last chunks */
     await new Promise(function(r){ setTimeout(r,800); });
-    if(recorder.state==='recording') recorder.stop();
-    await doneP;
+
+    /* Stop unconditionally. Gating this on state==='recording' meant that if
+       the recorder had already gone inactive (its stream track ended, or it
+       errored internally) stop() was skipped, onstop never fired, and the
+       await below hung forever at the last progress step. */
+    try { if(recorder.state !== 'inactive') recorder.stop(); } catch(e){
+      console.warn('[VR] recorder.stop() threw:', e.message);
+    }
+
+    /* Never wait on onstop indefinitely. If it does not arrive, carry on with
+       whatever chunks were captured rather than freezing the UI. */
+    await Promise.race([
+      doneP,
+      new Promise(function(r){ setTimeout(function(){
+        console.warn('[VR] recorder.onstop did not fire within 8s — using captured chunks');
+        r();
+      }, 8000); })
+    ]);
 
     VR.outputBlob = new Blob(chunks, {type:mime});
     if(!VR.outputBlob||VR.outputBlob.size<500) throw new Error('Output is empty. Please try again.');
