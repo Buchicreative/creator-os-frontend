@@ -3048,21 +3048,11 @@ async function vrProcess(){
 
     var canvasStream = canvas.captureStream(VR._trackFPS || 30);
 
-    /* ── Merge original audio into the canvas stream ── */
+    /* Audio is attached further down, from procVid.captureStream().
+       An AudioContext createMediaElementSource() used to run here as well,
+       which permanently reroutes the element's audio into the Web Audio graph
+       and left the later captureStream() audio track unreliable. */
     var stream = canvasStream;
-    try {
-      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      var audioSource = audioCtx.createMediaElementSource(procVid);
-      var audioDestination = audioCtx.createMediaStreamDestination();
-      audioSource.connect(audioDestination);
-      audioSource.connect(audioCtx.destination); /* also play through speakers */
-      var audioTrack = audioDestination.stream.getAudioTracks()[0];
-      if(audioTrack){
-        canvasStream.addTrack(audioTrack);
-      }
-    } catch(audioErr) {
-      console.warn('[VR] Audio merge failed, continuing without audio:', audioErr.message);
-    }
 
     var recorder = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond:VR.bitrateMap[VR.res]});
     var chunks   = [];
@@ -3097,14 +3087,28 @@ async function vrProcess(){
     ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
     try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
 
-    /* STEP 7: Play → tap audio → build merged stream → start recorder */
+    /* STEP 7: prime → build merged stream → start recorder → play
+       Order matters. Playing before recorder.start() meant audio was already
+       flowing while the canvas still held a single pre-play frame, so the
+       recording opened with audio ahead of the picture. */
     progLbl.textContent = 'Converting... 0%';
 
-    /* Must play first so audio stream is active */
-    await procVid.play().catch(function(){ throw new Error('Playback blocked. Try Chrome or Edge.'); });
-
-    /* Wait 3 frames to ensure audio pipeline is fully active */
-    await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); }); });
+    /* captureStream() only exposes an audio track once the element has been
+       through play(). Prime it, then rewind so nothing is consumed before
+       recording begins. */
+    try {
+      await procVid.play();
+      procVid.pause();
+      await new Promise(function(r){
+        var done = false;
+        function fin(){ if(!done){ done = true; r(); } }
+        procVid.onseeked = fin;
+        procVid.currentTime = 0;
+        setTimeout(fin, 1500);
+      });
+    } catch(e){
+      throw new Error('Playback blocked. Try Chrome or Edge.');
+    }
 
     /* Build merged stream with audio BEFORE starting recorder */
     try {
@@ -3135,6 +3139,13 @@ async function vrProcess(){
     };
 
     recorder.start(100);
+
+    /* Both tracks now begin together: the recorder is already running, so the
+       first audio sample and the first canvas frame share the same timeline. */
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,outW,outH);
+    try{ ctx.drawImage(procVid, crop.x, crop.y, crop.w, crop.h, 0, 0, outW, outH); }catch(e){}
+
+    await procVid.play().catch(function(){ throw new Error('Playback blocked. Try Chrome or Edge.'); });
 
     /* STEP 8: Render loop — use requestVideoFrameCallback when available for perfect frame sync */
     await new Promise(function(resolve){
