@@ -1397,7 +1397,9 @@ var AUTH = {
     var h = new Date().getHours();
     var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
     var heroGreet = document.getElementById('hero-greeting');
-    if(heroGreet) heroGreet.innerHTML = g + ', <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + name + '</span>';
+    /* The display name is user supplied at signup. Unescaped here it would
+       execute on every page load, and the session token is in localStorage. */
+    if(heroGreet) heroGreet.innerHTML = escHtml(g) + ', <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">' + escHtml(name) + '</span>';
     if(heroUser)  heroUser.textContent = name;
     if(navName){  navName.style.display = 'inline-block'; navName.textContent = name; }
     if(navLogin)  navLogin.style.display = 'none';
@@ -3798,7 +3800,8 @@ async function crvChatSend(prefill){
 
 function crvAddMsg(role, text){
   var msgs = document.getElementById('crv-chat-msgs'); if(!msgs) return;
-  var initials = role === 'user' ? (AUTH && AUTH.user && AUTH.user.name ? AUTH.user.name[0].toUpperCase() : 'U') : CRV_BOT_AVATAR;
+  /* escape the user branch only — CRV_BOT_AVATAR is our own SVG markup */
+  var initials = role === 'user' ? escHtml(AUTH && AUTH.user && AUTH.user.name ? AUTH.user.name[0].toUpperCase() : 'U') : CRV_BOT_AVATAR;
   var div = document.createElement('div'); div.className = 'crv-msg ' + role;
   var escaped = escHtml(text).split('\n').join('<br>');
   var bubble = '<div class="crv-msg-bubble">' + escaped;
