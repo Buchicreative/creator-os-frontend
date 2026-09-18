@@ -1359,6 +1359,7 @@ var AUTH = {
   fetch(API_BASE + '/auth/refresh', {
     method  : 'POST',
     headers : { 'Content-Type': 'application/json' },
+    credentials : 'include',
     body    : JSON.stringify({ refresh_token: AUTH.refresh })
   })
   .then(function(r){ return r.json(); })
@@ -1421,6 +1422,7 @@ async function doTokenRefresh(){
   try {
     var r = await fetch(API_BASE + '/auth/refresh', {
       method  : 'POST',
+      credentials: 'include',
       headers : { 'Content-Type': 'application/json' },
       body    : JSON.stringify({ refresh_token: AUTH.refresh }),
     });
@@ -1448,6 +1450,10 @@ async function apiCall(method, path, body){
   var opts = {
     method  : method,
     headers : { 'Content-Type': 'application/json' },
+    /* Without this the browser discards the httpOnly session cookies the
+       API sets, and never sends them back. The Authorization header below
+       still works and remains the fallback while this migrates. */
+    credentials : 'include',
   };
   if(AUTH.token) opts.headers['Authorization'] = 'Bearer ' + AUTH.token;
   if(body)       opts.body = JSON.stringify(body);
@@ -4206,6 +4212,7 @@ async function ttsPreviewVoice(voice){
   showToast('Loading ' + voice + ' preview...');
   try {
     var resp = await fetch(API_BASE + '/ai/tts', {
+      credentials: 'include',
       method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+AUTH.token},
       body: JSON.stringify({ text: 'Hey! This is how I sound. I can bring your scripts to life.', voice: voice, speed: 1.0 }),
     });
@@ -4337,6 +4344,7 @@ async function ttsGenerate(){
   if(progress) progress.style.display='block';
   try {
     var resp = await fetch(API_BASE+'/ai/tts', {
+      credentials: 'include',
       method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+AUTH.token},
       body: JSON.stringify({ text:script, voice:TTS_VOICE, speed:TTS_SPEED }),
     });
