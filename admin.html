@@ -926,7 +926,14 @@ function doAdminLogin(){
   if(!pass) return;
   ADMIN_KEY = pass;
   fetch(ADMIN_API + '/admin/stats', { headers: { 'X-Admin-Key': ADMIN_KEY } })
-    .then(function(r){ if(!r.ok) throw new Error('wrong'); return r.json(); })
+    .then(function(r){
+      /* Any non-200 used to read as "incorrect password", so a rate limit
+         or a server error looked like a bad key and wiped the session. */
+      if(r.status === 429) throw new Error('locked');
+      if(r.status === 401) throw new Error('wrong');
+      if(!r.ok)            throw new Error('server');
+      return r.json();
+    })
     .then(function(data){
       sessionStorage.setItem('crv_admin_key', ADMIN_KEY);
       document.getElementById('login-screen').style.display    = 'none';
@@ -942,9 +949,21 @@ function doAdminLogin(){
       startAutoRefresh();
       setTimeout(initRevenueGoal, 500);
     })
-    .catch(function(){
-      document.getElementById('login-error').style.display = 'block';
-      ADMIN_KEY = '';
+    .catch(function(e){
+      var box = document.getElementById('login-error');
+      var why = e && e.message;
+      box.textContent = why === 'locked'
+        ? 'Too many failed attempts. Try again in 15 minutes.'
+        : (why === 'server'
+            ? 'Could not reach the server. Try again shortly.'
+            : 'Incorrect password.');
+      box.style.display = 'block';
+      /* only forget a stored key when it was actually rejected — a rate
+         limit or an outage is not a reason to log the admin out */
+      if(why === 'wrong'){
+        ADMIN_KEY = '';
+        sessionStorage.removeItem('crv_admin_key');
+      }
     });
 }
 
