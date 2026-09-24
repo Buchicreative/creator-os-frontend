@@ -27,8 +27,8 @@ Crevers is a SaaS platform for content creators, coaches, and business owners wh
 ## Pricing
 
 - [Free Plan](https://crevers.com/#pricing) — $0/month. 5 idea generations and 3 content pieces per day. No credit card required.
-- [Pro Plan](https://crevers.com/#pricing) — $1 (about 1,600 naira) per month. 20 AI generations per day. Full access to all content formats, video resizing, and AI face tracking.
-- [Creator Plan](https://crevers.com/#pricing) — $4.50 (about 7,200 naira) per month. Unlimited everything. Priority support and early access to new features.
+- [Pro Plan](https://crevers.com/#pricing) — $1 per month. 20 AI generations per day. Full access to all content formats, video resizing, and AI face tracking.
+- [Creator Plan](https://crevers.com/#pricing) — $4.50 per month. Unlimited everything. Priority support and early access to new features.
 
 ## Legal
 
