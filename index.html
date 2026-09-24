@@ -1238,6 +1238,45 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   border:1px solid rgba(124,92,252,0.2);border-radius:10px;
   padding:0.7rem 0.9rem;font-size:0.78rem;color:var(--text);line-height:1.55;}
 .crv-grant b{color:var(--accent);}
+
+/* ════════ BRAND VOICE ════════ */
+.bv-intro{font-size:0.76rem;color:var(--muted);line-height:1.55;margin-bottom:0.65rem;}
+.bv-textarea{width:100%;min-height:120px;resize:vertical;font-size:0.82rem;
+  line-height:1.6;font-family:inherit;}
+.bv-meta{display:flex;align-items:center;justify-content:space-between;
+  gap:0.6rem;margin-top:0.5rem;flex-wrap:wrap;}
+#bv-chars{font-size:0.72rem;color:var(--muted);}
+#bv-chars.ready{color:var(--accent3);}
+
+.bv-card{background:rgba(124,92,252,0.06);border:1px solid rgba(124,92,252,0.18);
+  border-radius:12px;padding:0.85rem 1rem;}
+.bv-card-top{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.55rem;}
+.bv-badge{font-family:'Outfit',sans-serif;font-weight:800;font-size:0.58rem;
+  letter-spacing:0.06em;text-transform:uppercase;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  padding:2px 7px;border-radius:20px;}
+.bv-when{font-size:0.7rem;color:var(--muted);}
+.bv-profile{font-size:0.78rem;line-height:1.65;color:var(--text);opacity:.9;
+  white-space:pre-wrap;}
+
+.bv-actions{display:flex;align-items:center;justify-content:space-between;
+  gap:0.75rem;margin-top:0.7rem;flex-wrap:wrap;}
+.bv-toggle{display:flex;align-items:center;gap:0.5rem;font-size:0.76rem;
+  color:var(--muted);cursor:pointer;}
+.bv-toggle input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
+.bv-link{background:none;border:none;color:var(--muted);font-size:0.74rem;
+  cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px;
+  transition:color .18s;}
+.bv-link:hover{color:var(--accent);}
+.bv-link.danger:hover{color:var(--accent2);}
+
+.bv-msg{font-size:0.74rem;margin-top:0.5rem;line-height:1.5;display:none;}
+.bv-msg.err{display:block;color:var(--accent2);}
+.bv-msg.ok {display:block;color:var(--accent3);}
+@media(max-width:600px){
+  .bv-meta{flex-direction:column;align-items:stretch;}
+  .bv-meta .app-btn-sm{width:100%;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -2641,7 +2680,7 @@ function switchPanel(name){
   if(idx>=0&&items[idx]) items[idx].classList.add('active');
   if(name==='videoresize'){ setTimeout(vrInitDrop,50); vrCheckPlan(); }
   if(name==='settings' && typeof initEmailNotifToggle === 'function'){ initEmailNotifToggle(); }
-  if(name==='settings'){ loadSettingsPanel(); if(typeof loadCouponGrant === 'function') loadCouponGrant(); }
+  if(name==='settings'){ loadSettingsPanel(); if(typeof loadCouponGrant === 'function') loadCouponGrant(); if(typeof loadBrandVoice === 'function') loadBrandVoice(); }
   if(name==='voiceover' && typeof ttsLoadHistory === 'function') ttsLoadHistory();
   if(name==='calendar' && typeof calRender === 'function') calRender();
   if(typeof crvUpdateSuggestions === 'function') crvUpdateSuggestions(name);
@@ -4625,6 +4664,118 @@ async function loadCouponGrant(){
     box.style.display = 'block';
   } catch(e){ box.style.display = 'none'; }
 }
+
+/* ══════════ BRAND VOICE ══════════ */
+var BV_MIN = 200, BV_MAX = 12000;
+
+function bvMsg(text, kind){
+  var el = document.getElementById('bv-msg');
+  if(!el) return;
+  el.textContent = text || '';
+  el.className = 'bv-msg' + (kind ? ' ' + kind : '');
+}
+
+function bvCount(){
+  var ta = document.getElementById('bv-samples');
+  var lbl = document.getElementById('bv-chars');
+  if(!ta || !lbl) return;
+  var n = ta.value.trim().length;
+  if(n === 0)            lbl.textContent = '0 characters';
+  else if(n < BV_MIN)    lbl.textContent = n + ' characters, ' + (BV_MIN - n) + ' more needed';
+  else if(n > BV_MAX)    lbl.textContent = n + ' characters, that is too much';
+  else                   lbl.textContent = n + ' characters, ready';
+  lbl.className = (n >= BV_MIN && n <= BV_MAX) ? 'ready' : '';
+}
+
+function bvShowTrained(d){
+  document.getElementById('bv-untrained').style.display = 'none';
+  document.getElementById('bv-trained').style.display   = 'block';
+  document.getElementById('bv-profile').textContent = d.profile || '';
+  document.getElementById('bv-enabled').checked = d.enabled !== false;
+  var when = document.getElementById('bv-when');
+  if(d.trained_at){
+    var dt = new Date(d.trained_at);
+    when.textContent = 'from ' + (d.sample_count || 0) + ' posts, ' +
+      dt.toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' });
+  } else { when.textContent = ''; }
+}
+
+function bvShowUntrained(){
+  document.getElementById('bv-untrained').style.display = 'block';
+  document.getElementById('bv-trained').style.display   = 'none';
+}
+
+async function loadBrandVoice(){
+  if(!AUTH.token) return;
+  try {
+    var d = await apiCall('GET', '/voice');
+    if(d && d.trained) bvShowTrained(d);
+    else bvShowUntrained();
+  } catch(e){ bvShowUntrained(); }
+}
+
+async function bvTrain(){
+  var ta  = document.getElementById('bv-samples');
+  var btn = document.getElementById('bv-train-btn');
+  if(!ta || !btn) return;
+
+  var samples = ta.value.trim();
+  if(samples.length < BV_MIN){
+    bvMsg('Paste a bit more of your own writing first, around ' + BV_MIN + ' characters.', 'err');
+    return;
+  }
+  if(!AUTH.token){ openModal('loginModal'); return; }
+
+  btn.disabled = true;
+  var label = btn.textContent;
+  btn.textContent = 'Reading your writing...';
+  bvMsg('');
+
+  try {
+    var d = await apiCall('POST', '/voice/train', { samples: samples });
+    bvShowTrained({ profile: d.profile, enabled: true,
+                    sample_count: d.sample_count, trained_at: d.trained_at });
+    bvMsg('Done. Everything Crevers writes for you will match this now.', 'ok');
+    showToast('Brand voice learned');
+    ta.value = '';
+    bvCount();
+  } catch(e){
+    bvMsg(e && e.message ? e.message : 'Could not read a voice from that. Try different samples.', 'err');
+  }
+
+  btn.disabled = false;
+  btn.textContent = label;
+}
+
+async function bvToggle(on){
+  try {
+    await apiCall('PATCH', '/voice', { enabled: !!on });
+    bvMsg(on ? 'Your voice is on.' : 'Your voice is off. Output will use the default style.', 'ok');
+  } catch(e){
+    bvMsg('Could not change that right now.', 'err');
+    var box = document.getElementById('bv-enabled');
+    if(box) box.checked = !on;
+  }
+}
+
+function bvRetrain(){
+  bvShowUntrained();
+  bvMsg('Paste new samples and learn again. Your current voice stays until you do.', '');
+  var ta = document.getElementById('bv-samples');
+  if(ta) ta.focus();
+}
+
+async function bvForget(){
+  if(!confirm('Forget your brand voice? Crevers will go back to its default style.')) return;
+  try {
+    await apiCall('DELETE', '/voice');
+    bvShowUntrained();
+    document.getElementById('bv-msg').className = 'bv-msg';
+    showToast('Brand voice forgotten');
+  } catch(e){
+    bvMsg('Could not remove it right now.', 'err');
+  }
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -5205,6 +5356,44 @@ async function loadCouponGrant(){
               </div>
               <div class="crv-redeem-msg" id="coupon-msg"></div>
               <div id="coupon-grant" class="crv-grant" style="display:none;"></div>
+            </div>
+
+            <!-- Brand Voice -->
+            <div class="settings-row">
+              <label class="settings-label">Brand Voice</label>
+              <div class="bv-intro">Paste a few posts you have written. Crevers learns how you write and matches it in everything it generates for you.</div>
+
+              <div id="bv-untrained">
+                <textarea id="bv-samples" class="app-input bv-textarea"
+                  placeholder="Paste 3 to 5 of your own posts here.&#10;&#10;Leave a blank line between each one."
+                  spellcheck="false" oninput="bvCount()"></textarea>
+                <div class="bv-meta">
+                  <span id="bv-chars">0 characters</span>
+                  <button class="app-btn-sm" id="bv-train-btn" onclick="bvTrain()">Learn my voice</button>
+                </div>
+              </div>
+
+              <div id="bv-trained" style="display:none;">
+                <div class="bv-card">
+                  <div class="bv-card-top">
+                    <span class="bv-badge">Trained</span>
+                    <span id="bv-when" class="bv-when"></span>
+                  </div>
+                  <div id="bv-profile" class="bv-profile"></div>
+                </div>
+                <div class="bv-actions">
+                  <label class="bv-toggle">
+                    <input type="checkbox" id="bv-enabled" onchange="bvToggle(this.checked)">
+                    <span>Use my voice when generating</span>
+                  </label>
+                  <div>
+                    <button class="bv-link" onclick="bvRetrain()">Retrain</button>
+                    <button class="bv-link danger" onclick="bvForget()">Forget</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bv-msg" id="bv-msg"></div>
             </div>
 
             <!-- Account Email (read-only) -->
