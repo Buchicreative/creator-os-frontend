@@ -46,6 +46,8 @@ Crevers is a SaaS platform for content creators, coaches, and business owners wh
 ## Contact
 
 - [Website](https://crevers.com)
+- [About](https://crevers.com/about)
+- [Changelog](https://crevers.com/changelog)
 - [Privacy Policy](https://crevers.com/privacy)
 - [Terms of Service](https://crevers.com/terms)
 - [Email](mailto:hello@crevers.com)

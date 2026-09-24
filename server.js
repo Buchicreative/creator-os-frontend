@@ -48,11 +48,15 @@ http.createServer(function(req, res) {
     return;
   }
 
-  /* Legal pages at real URLs.
-     These were previously only a popup on the homepage, which meant
-     search engines could not index them and API reviewers at Meta and
-     TikTok had no page to open. */
-  var LEGAL = { '/privacy': 'privacy.html', '/terms': 'terms.html' };
+  /* Real pages at real URLs.
+     These were previously popups on the homepage, so search engines
+     could not index them and API reviewers had no page to open. */
+  var LEGAL = {
+    '/privacy'   : 'privacy.html',
+    '/terms'     : 'terms.html',
+    '/about'     : 'about.html',
+    '/changelog' : 'changelog.html',
+  };
   var legalKey = urlPath.replace(/\/$/, '') || '/';
   if(LEGAL[legalKey]){
     fs.readFile(path.join(__dirname, LEGAL[legalKey]), function(err, data){
