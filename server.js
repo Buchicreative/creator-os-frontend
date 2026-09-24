@@ -29,7 +29,20 @@ http.createServer(function(req, res) {
   var ext     = path.extname(urlPath);
 
   if(ext && ext !== '.html' && MIME[ext]){
-    var filePath = path.join(__dirname, urlPath);
+    var filePath = path.resolve(__dirname, '.' + urlPath);
+
+    /* path.join happily resolves ../ so /blog/../server.js served the
+       source. Two guards: the resolved path must stay inside this
+       directory, and server side files are never public whatever the
+       path looks like. */
+    var inside = filePath === __dirname || filePath.startsWith(__dirname + path.sep);
+    var base   = path.basename(filePath).toLowerCase();
+    var BLOCKED = ['server.js', 'package.json', 'package-lock.json', 'railway.json'];
+
+    if(!inside || BLOCKED.indexOf(base) !== -1 || base.charAt(0) === '.'){
+      res.writeHead(404); res.end('Not found'); return;
+    }
+
     fs.readFile(filePath, function(err, data){
       if(err){ res.writeHead(404); res.end('Not found'); return; }
       /* Service worker and manifest must not be cached by browser */
@@ -56,7 +69,35 @@ http.createServer(function(req, res) {
     '/terms'     : 'terms.html',
     '/about'     : 'about.html',
     '/changelog' : 'changelog.html',
+    '/blog'      : 'blog.html',
   };
+
+  /* Blog posts. The slug is whitelisted by checking the file exists,
+     and stripped of anything but a-z, 0-9 and dashes, so a crafted URL
+     cannot walk out of the blog directory. */
+  var blogMatch = urlPath.replace(/\/$/, '').match(/^\/blog\/([a-z0-9-]+)$/);
+  if(blogMatch){
+    var postFile = path.join(__dirname, 'blog', blogMatch[1] + '.html');
+    fs.readFile(postFile, function(err, data){
+      if(err){
+        /* unknown slug falls through to the blog index rather than a dead end */
+        fs.readFile(path.join(__dirname, 'blog.html'), function(e2, idx){
+          if(e2){ res.writeHead(404); res.end('Not found'); return; }
+          res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(idx);
+        });
+        return;
+      }
+      res.writeHead(200, {
+        'Content-Type'           : 'text/html; charset=utf-8',
+        'X-Content-Type-Options' : 'nosniff',
+        'Referrer-Policy'        : 'strict-origin-when-cross-origin',
+        'Cache-Control'          : 'public, max-age=3600',
+      });
+      res.end(data);
+    });
+    return;
+  }
   var legalKey = urlPath.replace(/\/$/, '') || '/';
   if(LEGAL[legalKey]){
     fs.readFile(path.join(__dirname, LEGAL[legalKey]), function(err, data){
