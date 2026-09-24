@@ -48,6 +48,26 @@ http.createServer(function(req, res) {
     return;
   }
 
+  /* Legal pages at real URLs.
+     These were previously only a popup on the homepage, which meant
+     search engines could not index them and API reviewers at Meta and
+     TikTok had no page to open. */
+  var LEGAL = { '/privacy': 'privacy.html', '/terms': 'terms.html' };
+  var legalKey = urlPath.replace(/\/$/, '') || '/';
+  if(LEGAL[legalKey]){
+    fs.readFile(path.join(__dirname, LEGAL[legalKey]), function(err, data){
+      if(err){ res.writeHead(404); res.end('Not found'); return; }
+      res.writeHead(200, {
+        'Content-Type'           : 'text/html; charset=utf-8',
+        'X-Content-Type-Options' : 'nosniff',
+        'Referrer-Policy'        : 'strict-origin-when-cross-origin',
+        'Cache-Control'          : 'public, max-age=3600',
+      });
+      res.end(data);
+    });
+    return;
+  }
+
   /* Admin panel route */
   if(urlPath === '/crevers-admin-control' || urlPath === '/crevers-admin-control/'){
     const adminFile = path.join(__dirname, 'admin.html');
