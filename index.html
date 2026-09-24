@@ -1277,6 +1277,10 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .bv-meta{flex-direction:column;align-items:stretch;}
   .bv-meta .app-btn-sm{width:100%;}
 }
+
+/* payment is processed in naira, so say the figure before they see it */
+.crv-ngn{text-align:center;font-size:0.68rem;color:var(--muted);
+  opacity:.75;margin-top:0.5rem;}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -1342,7 +1346,7 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
       <li style="display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted);"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent3);fill:none;stroke-width:2.5;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>Unlimited saved projects</li>
     </ul>
     <button onclick="goUpgrade(null);closeUpgradePopup();" style="width:100%;padding:0.85rem;background:linear-gradient(135deg,var(--accent),#5a3fd6);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:0.5rem;">Upgrade to Pro &#x2192;</button>
-    <div style="text-align:center;font-size:0.72rem;color:var(--muted);">Starting at $1 per month. Cancel anytime.</div>
+    <div style="text-align:center;font-size:0.72rem;color:var(--muted);">Starting at $1 per month, charged as &#8358;1,600. Cancel anytime.</div>
   </div>
 </div>
 
@@ -2164,6 +2168,8 @@ function toggleBilling(yearly){
   var proPeriod   = document.getElementById('pro-period');
   var teamPrice   = document.getElementById('team-price');
   var teamPeriod  = document.getElementById('team-period');
+  var proNgn      = document.getElementById('pro-ngn');
+  var teamNgn     = document.getElementById('team-ngn');
 
   if(yearly){
     if(monthLabel) monthLabel.classList.remove('active');
@@ -2174,6 +2180,8 @@ function toggleBilling(yearly){
     if(proPeriod) proPeriod.textContent = 'per year · save 2 months ($12 value)';
     if(teamPrice)  teamPrice.textContent  = '$45';
     if(teamPeriod) teamPeriod.textContent = 'per year · save 2 months';
+    if(proNgn)  proNgn.innerHTML  = 'Charged as &#8358;16,000';
+    if(teamNgn) teamNgn.innerHTML = 'Charged as &#8358;72,000';
   } else {
     if(monthLabel) monthLabel.classList.add('active');
     if(yearLabel)  yearLabel.classList.remove('active');
@@ -2183,6 +2191,8 @@ function toggleBilling(yearly){
     if(proPeriod) proPeriod.textContent = 'per month · billed monthly';
     if(teamPrice)  teamPrice.textContent  = '$4.50';
     if(teamPeriod) teamPeriod.textContent = 'per month';
+    if(proNgn)  proNgn.innerHTML  = 'Charged as &#8358;1,600';
+    if(teamNgn) teamNgn.innerHTML = 'Charged as &#8358;7,200';
   }
 }
 
@@ -5634,6 +5644,7 @@ async function bvForget(){
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Voiceover Generator (5/day, 2K chars)</li>
         </ul>
         <button class="btn-hero" id="pro-upgrade-btn" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'pro_yearly':'pro_monthly')">Upgrade to Pro &#x2192;</button>
+        <div class="crv-ngn" id="pro-ngn">Charged as &#8358;1,600</div>
       </div>
 
       <!-- CREATOR -->
@@ -5654,6 +5665,7 @@ async function bvForget(){
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Early access to new features</li>
         </ul>
         <button class="btn-hero-ghost" style="width:100%;justify-content:center;border-radius:12px;padding:0.8rem;" onclick="startCheckout(billingYearly?'team_yearly':'team_monthly')">Get Creator Plan &#x2192;</button>
+        <div class="crv-ngn" id="team-ngn">Charged as &#8358;7,200</div>
       </div>
     </div>
   </div>
