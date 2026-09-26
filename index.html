@@ -1556,7 +1556,13 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 .pj-hit{background:rgba(124,92,252,0.28);color:var(--text);border-radius:3px;padding:0 2px;}
 
 @media(max-width:600px){
-  .pj-bar{flex-direction:column;}
+  /* In a column container the main axis is vertical, so the 220px
+     flex-basis on .pj-search was being applied as a HEIGHT. That is what
+     made the search box a tall block. Reset the basis here.
+     align-items must be stretch too, or center shrinks each child to its
+     own content width instead of filling the row. */
+  .pj-bar{flex-direction:column;align-items:stretch;}
+  .pj-search{flex:0 0 auto;width:100%;}
   .pj-filters{width:100%;}
   .pj-filters .cdd{flex:1;min-width:0;}
 }
