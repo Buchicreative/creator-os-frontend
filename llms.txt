@@ -1,40 +1,58 @@
 # Crevers
 
-> AI-powered content creation platform that helps creators generate ideas, write scripts, create carousels, repurpose content, and resize videos with AI face tracking.
+> AI content platform for creators, coaches and small business owners. Generates content ideas, scripts, carousels, captions and threads, repurposes one piece into several platform-native formats, produces AI voiceovers, resizes video for vertical, and learns your writing voice so output sounds like you.
 
 ## What Crevers Does
 
-Crevers is a SaaS platform for content creators, coaches, and business owners who want to create content faster without burning out. It uses AI to generate niche-specific content ideas, write full video scripts, create carousel slides, write Twitter/X threads, generate captions, repurpose existing content into multiple formats, and resize videos for different platforms.
+Crevers removes the blank page. You arrive with a niche or an idea, and it produces the ideas, scripts, captions, carousels and voiceovers for whatever platform you are posting to. It is a drafting tool, not an autoposter: you decide what to publish and it never posts on your behalf.
+
+Built in Enugu, Nigeria, for creators everywhere.
 
 ## Key Pages
 
-- [Home](https://crevers.com)
-- [Features](https://crevers.com/#features)
-- [Pricing](https://crevers.com/#pricing)
-- [FAQ](https://crevers.com/#faq)
-- [How it Works](https://crevers.com/#how)
+- [Home](https://crevers.com/)
+- [Blog](https://crevers.com/blog)
+- [About](https://crevers.com/about)
+- [Changelog](https://crevers.com/changelog)
+- [Privacy Policy](https://crevers.com/privacy)
+- [Terms of Service](https://crevers.com/terms)
 
-## Key Features
+## Features
 
-- [Idea Generator](https://crevers.com/#app-section) — Generate 10 niche-specific content ideas for any platform (Instagram, TikTok, Twitter/X, LinkedIn, YouTube)
-- [Script Writer](https://crevers.com/#app-section) — Full short-form video scripts with Hook, Intro, Main Content, Conclusion, and CTA sections
-- [Carousel Creator](https://crevers.com/#app-section) — 10-slide Instagram carousel content ready to use in Canva or Figma
-- [Thread Writer](https://crevers.com/#app-section) — 8-tweet Twitter/X threads with hook and call to action
-- [Caption Writer](https://crevers.com/#app-section) — Detailed Instagram captions with hashtags
-- [Repurposing Engine](https://crevers.com/#app-section) — Turn one piece of content into 6 formats (Twitter thread, LinkedIn post, Instagram caption, Reel script, YouTube description, Email newsletter)
-- [AI Video Resizer](https://crevers.com/#app-section) — Convert landscape videos to vertical formats with AI face tracking
+- **Idea Generator** — 10 content ideas for your niche, written for a specific platform. Instagram, TikTok, Twitter/X, LinkedIn, YouTube, Facebook, WhatsApp, or type your own. Copy, save, or send an idea straight to the calendar.
+- **Script Writer** — short-form video scripts structured as hook, body and call to action.
+- **Carousel Creator** — 7-slide Instagram carousels, labelled slide by slide.
+- **Thread Writer** — Twitter/X threads of 6 tweets, each within the character limit.
+- **Caption Writer** — Instagram captions with a hook, short value lines, a call to action and hashtags.
+- **Repurposing Engine** — turn one piece into up to 4 formats in a single run: Twitter/X thread, LinkedIn post, Instagram caption, Reel script, YouTube description, email newsletter, Facebook post or WhatsApp status.
+- **Brand Voice** — paste a few posts you have written and Crevers learns how you write, then matches it across everything it generates.
+- **Voiceover Generator** — turn any script into audio in six AI voices, with adjustable speed.
+- **Content Calendar** — plan the week, tick things off, and generate each piece from the plan.
+- **AI Chat-bot** — content strategy help in the corner of every page, on every plan.
+- **Video Resizer** — convert landscape video to vertical for Reels and TikTok, with AI face tracking.
+- **Saved Projects** — everything you keep, searchable by title or content, filterable by format.
 
 ## Pricing
 
-- [Free Plan](https://crevers.com/#pricing) — $0/month. 5 idea generations and 3 content pieces per day. No credit card required.
-- [Pro Plan](https://crevers.com/#pricing) — $1 per month. 20 AI generations per day. Full access to all content formats, video resizing, and AI face tracking.
-- [Creator Plan](https://crevers.com/#pricing) — $4.50 per month. Unlimited everything. Priority support and early access to new features.
+Prices are shown in US dollars and charged in Nigerian naira at checkout.
 
-## Legal
+- **Free** — $0/month. 5 idea generations and 3 content pieces per day. Includes the AI Chat-bot, Content Calendar and Video Resizer. No credit card required.
+- **Pro** — $1/month, or $10/year. All content formats, repurposing, AI face tracking, and 5 voiceovers a day at up to 2,000 characters.
+- **Creator** — $4.50/month, or $45/year. Unlimited generations, unlimited voiceovers at up to 4,000 characters, priority support and early access.
 
-- [Privacy Policy](https://crevers.com/#privacy)
-- [Terms of Service](https://crevers.com/#terms)
-- [Cookie Policy](https://crevers.com/#cookies)
+Cancel any time from the dashboard.
+
+## Common Questions
+
+**Is it free to start?** Yes. The Free plan needs no card and works immediately.
+
+**Does it post for me?** No. Crevers writes the draft; you publish it.
+
+**Who owns what it writes?** You do, completely, including commercial use.
+
+**Is my content used to train models?** No.
+
+**How is it different from a general AI chatbot?** A chatbot gives you another blank box and you re-explain your niche, platform and tone every time. Crevers already knows those, writes natively for each platform, learns your voice, and keeps the calendar so ideas turn into posts.
 
 ## Social
 
@@ -45,10 +63,5 @@ Crevers is a SaaS platform for content creators, coaches, and business owners wh
 
 ## Contact
 
-- [Website](https://crevers.com)
-- [Blog](https://crevers.com/blog)
-- [About](https://crevers.com/about)
-- [Changelog](https://crevers.com/changelog)
-- [Privacy Policy](https://crevers.com/privacy)
-- [Terms of Service](https://crevers.com/terms)
+- [Website](https://crevers.com/)
 - [Email](mailto:hello@crevers.com)
