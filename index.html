@@ -1604,6 +1604,11 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .idea-acts{padding-left:0;}
   .idea-act{flex:1;min-width:0;text-align:center;padding:5px 6px;}
 }
+
+/* ════════ OUTPUT STATS ════════ */
+.out-stats{display:flex;gap:1rem;flex-wrap:wrap;font-size:0.72rem;color:var(--muted);
+  margin-top:0.5rem;padding:0 0.2rem;}
+.out-stats b{color:var(--text);font-weight:600;}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -2169,6 +2174,7 @@ async function generateContent(){
   if(!checkContentPlan(currentFormat)) return;
   var btn=document.getElementById('create-btn'), loading=document.getElementById('create-loading'), output=document.getElementById('createOutput'), actions=document.getElementById('create-actions');
   btn.disabled=true; loading.classList.add('show'); actions.style.display='none'; output.innerHTML='';
+  var _st=document.getElementById('create-stats'); if(_st) _st.style.display='none';
   var fmtInstr={script:'Write a high-retention short-form video script. Structure: HOOK (first 3s), BODY (3 points with arrows), CTA (last 3s). No fluff.',carousel:'Create a 7-slide Instagram carousel. Label each slide. SLIDE 1=hook, SLIDES 2-6=value, SLIDE 7=CTA.',caption:'Write an Instagram caption. Hook, value in short lines with arrows, CTA, 5 hashtags.',thread:'Write a Twitter/X thread of 6 tweets. 1/ as hook. Max 280 chars each. End with CTA.'};
   try {
     var result;
@@ -2178,8 +2184,10 @@ async function generateContent(){
     } else { await delay(700); result=fallbackTemplates[currentFormat](idea); }
     output.innerHTML='<div class="out-label">'+currentFormat.charAt(0).toUpperCase()+currentFormat.slice(1)+' Output</div><div style="white-space:pre-wrap;font-size:0.8rem;line-height:1.75;">'+escHtml(result)+'</div>';
     actions.style.display='flex';
+    createUpdateStats();
   } catch(e){
     output.innerHTML='<div class="out-label">Error</div><div style="color:#ff5f56;font-size:0.8rem;">'+escHtml(e.message)+'</div>';
+    var st=document.getElementById('create-stats'); if(st) st.style.display='none';
   } finally { btn.disabled=false; loading.classList.remove('show'); }
 }
 
@@ -5575,6 +5583,46 @@ function ideaToCalendar(idea){
     }
   }, 120);
 }
+
+/* ══════════ CREATE: length, and the route to Voiceover ══════════ */
+
+/* Pulls the generated text out of the output box, skipping the label. */
+function createGetText(){
+  var box = document.getElementById('createOutput');
+  if(!box) return '';
+  var clone = box.cloneNode(true);
+  var label = clone.querySelector('.out-label');
+  if(label) label.remove();
+  return (clone.innerText || clone.textContent || '').trim();
+}
+
+/* Words, characters and a read time, because a caption with a platform
+   cap and a Reel you need under thirty seconds are both length problems. */
+function createUpdateStats(){
+  var el = document.getElementById('create-stats');
+  if(!el) return;
+  var text = createGetText();
+  if(!text){ el.style.display = 'none'; return; }
+
+  var words = text.split(/\s+/).filter(Boolean).length;
+  var chars = text.length;
+  /* 150 wpm is a normal speaking pace, which is the useful number here
+     rather than a silent reading speed */
+  var secs  = Math.round(words / 150 * 60);
+  var spoken = secs < 60 ? secs + 's' : Math.floor(secs/60) + 'm ' + (secs % 60) + 's';
+
+  el.style.display = 'flex';
+  el.innerHTML =
+    '<span><b>' + words + '</b> words</span>' +
+    '<span><b>' + chars + '</b> characters</span>' +
+    '<span>about <b>' + spoken + '</b> spoken</span>';
+}
+
+function createToVoiceover(){
+  var text = createGetText();
+  if(!text || text.length < 10){ showToast('Generate something first.'); return; }
+  if(typeof ttsSendScript === 'function') ttsSendScript(text);
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -5910,9 +5958,16 @@ function ideaToCalendar(idea){
             </div>
             <div class="ai-loading" id="create-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Writing your content...</div>
             <div id="createOutput" class="output-box" style="min-height:140px;"><div class="out-label" id="createOutputLabel">Script Output</div><div style="color:var(--muted);font-size:0.8rem;">Choose a format, enter an idea, pick a tone, and click Generate.</div></div>
+            <!-- length matters when you are writing for a platform with a
+                 cap, or a Reel you need to keep under thirty seconds -->
+            <div class="out-stats" id="create-stats" style="display:none;"></div>
             <div class="output-actions" id="create-actions" style="display:none;">
               <button class="copy-btn" onclick="copyOutput('createOutput')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
               <button class="save-btn" onclick="saveToProjects('createOutput','createIdeaInput')"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>
+              <!-- ttsSendScript already existed; there was simply no way
+                   to reach it from here -->
+              <button class="copy-btn" onclick="createToVoiceover()"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg> Voiceover</button>
+              <button class="copy-btn" onclick="generateContent()"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg> Regenerate</button>
             </div>
           </div>
 
