@@ -1400,7 +1400,10 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 .voice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:0.55rem;}
 .voice-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;
   padding:0.7rem 0.75rem;cursor:pointer;transition:border-color .18s,background .18s;
-  display:flex;align-items:center;gap:0.6rem;text-align:left;}
+  /* the earlier .voice-card rule sets column + center + overflow hidden.
+     Same specificity, so anything not declared here survives from it. */
+  display:flex;flex-direction:row;align-items:center;justify-content:flex-start;
+  gap:0.6rem;text-align:left;overflow:visible;position:relative;}
 .voice-card:hover{border-color:rgba(124,92,252,0.35);}
 .voice-card.selected{border-color:var(--accent);background:rgba(124,92,252,0.08);}
 .tts-vplay{width:30px;height:30px;flex:0 0 30px;border-radius:50%;
@@ -1433,6 +1436,70 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .tts-scriptfoot{flex-direction:column;align-items:stretch;gap:0.5rem;}
   .tts-scriptbtns{justify-content:flex-end;}
 }
+
+/* ════════ VOICEOVER PLAYER ════════
+   The native <audio controls> element draws its own light chrome, which
+   clashed badly on a dark panel and gave no control over the icons. */
+.tts-player{background:linear-gradient(135deg,rgba(124,92,252,0.1),rgba(252,92,125,0.05));
+  border:1px solid rgba(124,92,252,0.22);border-radius:14px;padding:1rem 1.1rem;
+  margin-top:1.2rem;}
+.ttsp-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.8rem;}
+.ttsp-btn{width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:var(--accent);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(124,92,252,0.35);transition:background .18s,transform .15s;}
+.ttsp-btn:hover{background:#8a6dff;}
+.ttsp-btn:active{transform:scale(0.94);}
+.ttsp-btn svg{width:14px;height:14px;fill:#fff;stroke:none;}
+.ttsp-play{margin-left:2px;}
+.ttsp-info{flex:1;min-width:0;}
+.ttsp-name{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.88rem;
+  color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ttsp-meta{font-size:0.72rem;color:var(--muted);margin-top:1px;}
+
+.ttsp-wave{display:flex;align-items:center;gap:2px;height:26px;margin-bottom:0.75rem;
+  cursor:pointer;}
+.ttsp-wave i{flex:1;background:rgba(124,92,252,0.28);border-radius:1px;min-width:2px;
+  transition:background .12s;}
+.ttsp-wave i.played{background:var(--accent);}
+
+.ttsp-acts{display:flex;gap:0.5rem;}
+.ttsp-acts a,.ttsp-acts button{flex:1;border-radius:10px;padding:0.55rem;
+  font-size:0.78rem;font-family:inherit;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:0.35rem;text-decoration:none;transition:all .18s;
+  white-space:nowrap;}
+.ttsp-acts svg{width:12px;height:12px;stroke-width:2;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.ttsp-dl{background:var(--accent3);color:#07231d;border:none;font-weight:700;}
+.ttsp-dl svg{stroke:#07231d;}
+.ttsp-dl:hover{background:#6ff5d9;}
+.ttsp-re{background:none;border:1px solid var(--border);color:var(--muted);}
+.ttsp-re svg{stroke:currentColor;}
+.ttsp-re:hover{border-color:var(--accent);color:var(--accent);}
+
+.tts-genleft{text-align:center;font-size:0.72rem;color:var(--muted);margin-top:0.55rem;}
+.tts-genleft b{color:var(--text);}
+.tts-genleft.none{color:var(--accent2);}
+
+/* history rows used a native audio element too */
+.tts-history-item{background:var(--surface2);border:1px solid var(--border);
+  border-radius:11px;padding:0.6rem 0.75rem;display:flex;align-items:center;gap:0.65rem;}
+.ttsh-btn{width:32px;height:32px;flex:0 0 32px;border-radius:50%;
+  background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.3);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .18s;}
+.ttsh-btn:hover{background:var(--accent);}
+.ttsh-btn svg{width:10px;height:10px;fill:var(--accent);stroke:none;margin-left:1px;}
+.ttsh-btn:hover svg{fill:#fff;}
+.ttsh-btn.playing{background:var(--accent);}
+.ttsh-btn.playing svg{fill:#fff;}
+.ttsh-info{flex:1;min-width:0;}
+.ttsh-name{font-size:0.76rem;font-weight:600;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ttsh-meta{font-size:0.65rem;color:var(--muted);margin-top:1px;}
+.ttsh-save{background:none;border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);padding:4px 10px;font-size:0.68rem;text-decoration:none;
+  white-space:nowrap;transition:all .18s;}
+.ttsh-save:hover{border-color:var(--accent3);color:var(--accent3);}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -4478,11 +4545,16 @@ function ttsLoadHistory(){
     wrap.style.display = 'block';
     list.innerHTML = history.map(function(h, i){
       var src = h.dataUrl || h.url || '';
+      var vname = (h.voice || 'alloy');
+      vname = vname.charAt(0).toUpperCase() + vname.slice(1);
       return '<div class="tts-history-item">' +
-        '<div style="min-width:80px;"><div style="font-size:0.72rem;font-weight:600;color:var(--text);text-transform:capitalize;">' + (h.voice||'alloy') + ' ' + (h.speed||1) + 'x</div>' +
-        '<div style="font-size:0.62rem;color:var(--muted);">' + ttsTimeAgo(h.ts) + '</div></div>' +
-        '<audio src="' + src + '" controls style="flex:1;height:28px;min-width:0;"></audio>' +
-        '<a href="' + src + '" download="' + (h.filename||'voiceover') + '.mp3" class="copy-btn" style="padding:4px 10px;font-size:0.68rem;white-space:nowrap;">Save</a>' +
+        '<div class="ttsh-btn" onclick="ttsPlayHistory(' + i + ',this)" aria-label="Play">' +
+          '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
+        '<div class="ttsh-info">' +
+          '<div class="ttsh-name">' + escHtml(h.filename || 'voiceover') + '.mp3</div>' +
+          '<div class="ttsh-meta">' + vname + ' \u00b7 ' + (h.speed||1) + 'x \u00b7 ' + ttsTimeAgo(h.ts) + '</div>' +
+        '</div>' +
+        '<a href="' + src + '" download="' + (h.filename||'voiceover') + '.mp3" class="ttsh-save">Save</a>' +
         '<button class="tts-history-del" onclick="ttsDeleteHistory(' + i + ')">&#10005;</button>' +
         '</div>';
     }).join('');
@@ -4581,13 +4653,25 @@ async function ttsGenerate(){
     if(!resp.ok){ var err=await resp.json().catch(function(){return{};}); throw new Error(err.error||'Failed to generate voiceover.'); }
     var blob=await resp.blob(), url=URL.createObjectURL(blob);
     var filename=script.trim().split(/\s+/).slice(0,4).join('-').toLowerCase().replace(/[^a-z0-9-]/g,'')||'voiceover';
-    if(audio){ audio.src=url; audio.play().catch(function(){ showToast('Voiceover ready with '+TTS_VOICE+' voice! Tap play to listen.'); }); }
     if(dlBtn){ dlBtn.href=url; dlBtn.download=filename+'.mp3'; }
+    var nameEl = document.getElementById('tts-filename');
+    if(nameEl) nameEl.textContent = filename + '.mp3';
+
     if(progress) progress.style.display='none';
     if(player) player.style.display='block';
-    if(wave){ wave.classList.remove('idle'); setTimeout(function(){ if(wave) wave.classList.add('idle'); },5000); }
+
+    /* build the bars and wire playback before the src lands, so the very
+       first timeupdate already has something to fill */
+    ttsBuildWave();
+    ttsWireAudio();
+    if(audio){
+      audio.src = url;
+      audio.play().catch(function(){ showToast('Voiceover ready. Tap play to listen.'); });
+    }
+
     ttsSaveHistory(blob, TTS_VOICE, TTS_SPEED, script);
     ttsIncrementDaily();
+    ttsUpdateGenLeft();
     showToast('Voiceover ready with '+TTS_VOICE+' voice!');
   } catch(e){
     if(progress) progress.style.display='none';
@@ -5024,6 +5108,136 @@ async function ttsPasteScript(){
    the preset highlighted, which was no longer true. */
 function ttsClearPreset(){
   document.querySelectorAll('.tts-preset').forEach(function(b){ b.classList.remove('selected'); });
+}
+
+/* ══════════ VOICEOVER PLAYER ══════════ */
+var TTS_BARS = 52;
+
+/* A shape that reads as speech rather than random noise, and it is
+   deterministic so the same clip always looks the same. */
+function ttsBuildWave(){
+  var wave = document.getElementById('tts-waveform');
+  if(!wave) return;
+  var html = '';
+  for(var i=0;i<TTS_BARS;i++){
+    var h = 22 + Math.sin(i/2.4)*34 + Math.sin(i/1.1)*22;
+    h = Math.max(14, Math.min(100, h));
+    html += '<i style="height:' + h.toFixed(0) + '%"></i>';
+  }
+  wave.innerHTML = html;
+}
+
+function ttsFmtTime(s){
+  if(!isFinite(s) || s < 0) s = 0;
+  var m = Math.floor(s/60), r = Math.floor(s%60);
+  return m + ':' + (r < 10 ? '0' : '') + r;
+}
+
+function ttsSetPlayIcon(playing){
+  var btn = document.getElementById('tts-playpause');
+  if(!btn) return;
+  btn.querySelector('.ttsp-play').style.display  = playing ? 'none' : '';
+  btn.querySelector('.ttsp-pause').style.display = playing ? '' : 'none';
+  btn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+}
+
+function ttsTogglePlay(){
+  var a = document.getElementById('tts-audio');
+  if(!a || !a.src) return;
+  if(a.paused) a.play(); else a.pause();
+}
+
+function ttsSeek(e){
+  var a = document.getElementById('tts-audio');
+  var wave = document.getElementById('tts-waveform');
+  if(!a || !wave || !isFinite(a.duration)) return;
+  var r = wave.getBoundingClientRect();
+  a.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * a.duration;
+}
+
+/* Drives the bars from real playback. The old waveform was a CSS
+   animation that ran regardless of whether anything was playing. */
+function ttsWireAudio(){
+  var a = document.getElementById('tts-audio');
+  if(!a || a._wired) return;
+  a._wired = true;
+
+  a.addEventListener('play',  function(){ ttsSetPlayIcon(true);  });
+  a.addEventListener('pause', function(){ ttsSetPlayIcon(false); });
+  a.addEventListener('ended', function(){
+    ttsSetPlayIcon(false);
+    document.querySelectorAll('#tts-waveform i').forEach(function(b){ b.classList.remove('played'); });
+    var meta = document.getElementById('tts-playmeta');
+    if(meta && isFinite(a.duration)) meta.textContent = ttsMetaLine(0, a.duration);
+  });
+
+  a.addEventListener('loadedmetadata', function(){
+    var meta = document.getElementById('tts-playmeta');
+    if(meta) meta.textContent = ttsMetaLine(0, a.duration);
+  });
+
+  a.addEventListener('timeupdate', function(){
+    if(!isFinite(a.duration) || !a.duration) return;
+    var pct  = a.currentTime / a.duration;
+    var bars = document.querySelectorAll('#tts-waveform i');
+    var upto = Math.floor(pct * bars.length);
+    bars.forEach(function(b, i){ b.classList.toggle('played', i < upto); });
+    var meta = document.getElementById('tts-playmeta');
+    if(meta) meta.textContent = ttsMetaLine(a.currentTime, a.duration);
+  });
+}
+
+function ttsMetaLine(cur, dur){
+  var v = (TTS_VOICE || 'alloy');
+  v = v.charAt(0).toUpperCase() + v.slice(1);
+  var sp = TTS_SPEED === 1 ? 'Normal speed' : TTS_SPEED + 'x speed';
+  return v + ' \u00b7 ' + sp + ' \u00b7 ' + ttsFmtTime(cur) + ' / ' + ttsFmtTime(dur);
+}
+
+/* How many generations are left today, shown before pressing rather
+   than discovered after hitting the limit. */
+function ttsUpdateGenLeft(){
+  var el = document.getElementById('tts-genleft');
+  if(!el) return;
+  var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+  if(plan === 'team' || plan === 'creator'){
+    el.textContent = 'Unlimited generations on Creator';
+    el.className = 'tts-genleft';
+    return;
+  }
+  if(plan !== 'pro'){ el.textContent = ''; return; }
+  var used = ttsGetDailyCount();
+  var left = Math.max(0, 5 - used);
+  el.innerHTML = left > 0
+    ? '<b>' + left + '</b> of 5 generations left today'
+    : 'No generations left today. Resets at midnight.';
+  el.className = 'tts-genleft' + (left === 0 ? ' none' : '');
+}
+
+/* one shared element so two clips never play over each other */
+var TTS_HIST_AUDIO = null;
+function ttsPlayHistory(idx, btn){
+  try {
+    var history = JSON.parse(localStorage.getItem(TTS_HISTORY_KEY) || '[]');
+    var item = history[idx];
+    if(!item) return;
+    var src = item.dataUrl || item.url || '';
+    if(!src) return;
+
+    if(TTS_HIST_AUDIO && !TTS_HIST_AUDIO.paused && TTS_HIST_AUDIO._idx === idx){
+      TTS_HIST_AUDIO.pause();
+      return;
+    }
+    if(TTS_HIST_AUDIO) TTS_HIST_AUDIO.pause();
+
+    TTS_HIST_AUDIO = new Audio(src);
+    TTS_HIST_AUDIO._idx = idx;
+    document.querySelectorAll('.ttsh-btn').forEach(function(b){ b.classList.remove('playing'); });
+    btn.classList.add('playing');
+    TTS_HIST_AUDIO.play();
+    TTS_HIST_AUDIO.onended = function(){ btn.classList.remove('playing'); };
+    TTS_HIST_AUDIO.onpause = function(){ btn.classList.remove('playing'); };
+  } catch(e){}
 }
 </script>
 
@@ -5533,14 +5747,6 @@ function ttsClearPreset(){
     </div>
   </div>
 
-  <div class="tts-sec"><h3>Quick presets</h3><span class="tts-hint">sets voice and speed together</span></div>
-  <div class="tts-presets">
-    <button class="tts-preset selected" onclick="ttsPreset('alloy',1,this)">YouTube Intro</button>
-    <button class="tts-preset" onclick="ttsPreset('nova',1.1,this)">Instagram Reel</button>
-    <button class="tts-preset" onclick="ttsPreset('onyx',0.9,this)">Podcast</button>
-    <button class="tts-preset" onclick="ttsPreset('shimmer',1,this)">Ad Copy</button>
-  </div>
-
   <div class="tts-sec"><h3>Voice</h3><span class="tts-hint">tap the circle to hear it</span></div>
   <div class="voice-grid"><div class="voice-card selected" onclick="ttsSelectVoice('alloy',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('alloy')" aria-label="Preview Alloy"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Alloy</div><div class="tts-vtags"><span class="tts-vt">Neutral</span><span class="tts-vt">Even</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('echo',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('echo')" aria-label="Preview Echo"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Echo</div><div class="tts-vtags"><span class="tts-vt m">Male</span><span class="tts-vt">Crisp</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('fable',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('fable')" aria-label="Preview Fable"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Fable</div><div class="tts-vtags"><span class="tts-vt">Warm</span><span class="tts-vt">Storytelling</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('onyx',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('onyx')" aria-label="Preview Onyx"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Onyx</div><div class="tts-vtags"><span class="tts-vt m">Male</span><span class="tts-vt">Deep</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('nova',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('nova')" aria-label="Preview Nova"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Nova</div><div class="tts-vtags"><span class="tts-vt f">Female</span><span class="tts-vt">Upbeat</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('shimmer',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('shimmer')" aria-label="Preview Shimmer"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Shimmer</div><div class="tts-vtags"><span class="tts-vt f">Female</span><span class="tts-vt">Gentle</span></div></div></div></div>
 
@@ -5561,19 +5767,35 @@ function ttsClearPreset(){
     <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
     Generate Voiceover
   </button>
+  <div class="tts-genleft" id="tts-genleft"></div>
   <div id="tts-daily-info" style="font-size:0.7rem;color:var(--muted);text-align:center;margin-bottom:0.5rem;"></div>
   <div class="tts-progress-bar" id="tts-progress-bar"><div class="tts-progress-fill"></div></div>
 
   <div class="tts-player" id="tts-player" style="display:none;">
-    <div class="tts-waveform idle" id="tts-waveform"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    <audio id="tts-audio" style="width:100%;margin-bottom:0.75rem;" controls></audio>
-    <div style="display:flex;gap:8px;">
-      <a id="tts-download-btn" class="gen-btn" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0.45rem 1rem;font-size:0.78rem;font-weight:600;flex:1;white-space:nowrap;" download="voiceover.mp3">
-        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <div class="ttsp-top">
+      <button class="ttsp-btn" id="tts-playpause" onclick="ttsTogglePlay()" aria-label="Play">
+        <svg class="ttsp-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg class="ttsp-pause" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+      </button>
+      <div class="ttsp-info">
+        <div class="ttsp-name" id="tts-filename">voiceover.mp3</div>
+        <div class="ttsp-meta" id="tts-playmeta">&nbsp;</div>
+      </div>
+    </div>
+
+    <!-- bars fill as the audio plays, driven by timeupdate rather than a
+         CSS animation that ran whether or not anything was playing -->
+    <div class="ttsp-wave" id="tts-waveform" onclick="ttsSeek(event)"></div>
+
+    <audio id="tts-audio" preload="metadata" style="display:none;"></audio>
+
+    <div class="ttsp-acts">
+      <a id="tts-download-btn" class="ttsp-dl" download="voiceover.mp3">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download MP3
       </a>
-      <button onclick="ttsGenerate()" class="copy-btn" style="padding:0.45rem 1rem;display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:1;font-size:0.78rem;white-space:nowrap;">
-        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg>
+      <button onclick="ttsGenerate()" class="ttsp-re">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.89"/></svg>
         Regenerate
       </button>
     </div>
