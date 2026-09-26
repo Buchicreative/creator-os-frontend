@@ -1500,6 +1500,55 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   color:var(--muted);padding:4px 10px;font-size:0.68rem;text-decoration:none;
   white-space:nowrap;transition:all .18s;}
 .ttsh-save:hover{border-color:var(--accent3);color:var(--accent3);}
+
+/* ════════ SAVED PROJECTS ════════
+   Was a flat list with title, format and a delete cross. No search, no
+   filter, no sort, no sense of what was inside any item. */
+.pj-bar{display:flex;gap:0.6rem;margin-bottom:0.75rem;flex-wrap:wrap;}
+.pj-search{position:relative;flex:1 1 220px;min-width:0;}
+.pj-search svg{position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;
+  stroke-linecap:round;pointer-events:none;}
+.pj-search .app-input{padding-left:2.1rem;padding-right:2rem;width:100%;margin:0;}
+.pj-clear{position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;
+  padding:4px 6px;line-height:1;}
+.pj-clear:hover{color:var(--accent2);}
+.pj-filters{display:flex;gap:0.5rem;flex:0 0 auto;}
+.pj-filters .cdd{min-width:132px;}
+
+.pj-count{font-size:0.72rem;color:var(--muted);margin-bottom:0.6rem;}
+
+.pj-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:0.8rem 0.9rem;margin-bottom:0.55rem;cursor:pointer;
+  transition:border-color .18s,transform .18s;}
+.pj-card:hover{border-color:rgba(124,92,252,0.35);transform:translateX(2px);}
+.pj-head{display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:0.4rem;}
+.pj-title{flex:1;min-width:0;font-weight:600;font-size:0.86rem;line-height:1.4;
+  color:var(--text);overflow-wrap:anywhere;}
+.pj-fmt{font-size:0.6rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;background:rgba(124,92,252,0.14);color:#b9a5ff;
+  white-space:nowrap;flex:0 0 auto;margin-top:1px;}
+/* a snippet so you know what is inside without opening it */
+.pj-snip{font-size:0.76rem;line-height:1.55;color:var(--muted);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;margin-bottom:0.5rem;}
+.pj-foot{display:flex;align-items:center;justify-content:space-between;gap:0.6rem;}
+.pj-date{font-size:0.68rem;color:var(--muted);opacity:0.8;}
+.pj-acts{display:flex;gap:0.3rem;}
+.pj-act{background:none;border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);padding:4px 9px;font-size:0.67rem;cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s;}
+.pj-act:hover{border-color:var(--accent);color:var(--accent);}
+.pj-act.danger:hover{border-color:var(--accent2);color:var(--accent2);}
+/* highlight the part that matched the search */
+.pj-hit{background:rgba(124,92,252,0.28);color:var(--text);border-radius:3px;padding:0 2px;}
+
+@media(max-width:600px){
+  .pj-bar{flex-direction:column;}
+  .pj-filters{width:100%;}
+  .pj-filters .cdd{flex:1;min-width:0;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -2083,12 +2132,12 @@ function saveToProjects(outputId, titleId){
   if(AUTH.token){
     apiCall('POST', '/projects', { title: title.slice(0,60), content: content, format: currentFormat })
       .then(function(data){
-        projects.unshift({ id: data.project.id, title: data.project.title, content: data.project.content, format: data.project.format, date: new Date(data.project.created_at).toLocaleDateString() });
+        projects.unshift({ id: data.project.id, title: data.project.title, content: data.project.content, format: data.project.format, date: new Date(data.project.created_at).toLocaleDateString(), ts: new Date(data.project.created_at).getTime() || Date.now() });
         renderProjects(); showToast('Saved to Projects!');
       })
       .catch(function(e){ showToast(e.message); });
   } else {
-    var p={id:Date.now(),title:title.slice(0,60),content:content,format:currentFormat,date:new Date().toLocaleDateString()};
+    var p={id:Date.now(),title:title.slice(0,60),content:content,format:currentFormat,date:new Date().toLocaleDateString(), ts:Date.now()};
     projects.unshift(p);
     try{localStorage.setItem('cos_projects',JSON.stringify(projects));}catch(e){}
     renderProjects(); showToast('Saved to Projects!');
@@ -2145,23 +2194,131 @@ function deleteProject(id){
   renderProjects();
   updateAuthUI();
 }
-function renderProjects(){
-  var list=document.getElementById('projects-list');
-  var empty=document.getElementById('projects-empty');
-  if(!list) return;
-  var items=list.querySelectorAll('.idea-item');
-  items.forEach(function(i){i.remove();});
-  if(!projects.length){ if(empty) empty.style.display='block'; return; }
-  if(empty) empty.style.display='none';
+function pjHighlight(text, term){
+  var safe = escHtml(text);
+  if(!term) return safe;
+  try {
+    var re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return safe.replace(re, '<span class="pj-hit">$1</span>');
+  } catch(e){ return safe; }
+}
+
+/* Build the format filter from the data rather than a hardcoded list,
+   so it always matches what the user actually has. */
+function pjBuildFormatFilter(){
+  var menu = document.getElementById('cdd-pj-format-menu');
+  if(!menu) return;
+  var formats = [];
   projects.forEach(function(p){
-    var d=document.createElement('div'); d.className='idea-item';
-    d.style.cssText='flex-direction:column;align-items:flex-start;gap:0.25rem;cursor:pointer;';
-    d.onclick = function(e){
-      if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-      openProjectPreview(p.id);
+    var f = (p.format || 'other');
+    if(formats.indexOf(f) === -1) formats.push(f);
+  });
+  formats.sort();
+  var cur = (cddValues['cdd-pj-format'] || 'All formats');
+  var html = '<div class="cdd-option' + (cur === 'All formats' ? ' selected' : '') +
+             '" onclick="selectCdd(\'cdd-pj-format\',\'All formats\');renderProjects()">All formats</div>';
+  formats.forEach(function(f){
+    var label = f.charAt(0).toUpperCase() + f.slice(1);
+    html += '<div class="cdd-option' + (cur === label ? ' selected' : '') +
+            '" onclick="selectCdd(\'cdd-pj-format\',\'' + label + '\');renderProjects()">' + label + '</div>';
+  });
+  menu.innerHTML = html;
+}
+
+function renderProjects(){
+  var list  = document.getElementById('projects-list');
+  var empty = document.getElementById('projects-empty');
+  var none  = document.getElementById('projects-noresult');
+  var bar   = document.getElementById('pj-bar');
+  var count = document.getElementById('pj-count');
+  if(!list) return;
+
+  /* clear previous rows, leaving the two empty states in place */
+  list.querySelectorAll('.pj-card, .idea-item').forEach(function(el){ el.remove(); });
+
+  if(!projects.length){
+    if(empty) empty.style.display = 'block';
+    if(none)  none.style.display  = 'none';
+    if(bar)   bar.style.display   = 'none';
+    if(count) count.style.display = 'none';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  if(bar)   bar.style.display   = 'flex';
+
+  pjBuildFormatFilter();
+
+  var searchEl = document.getElementById('pj-search');
+  var term = searchEl ? searchEl.value.trim() : '';
+  var clearBtn = document.getElementById('pj-clear');
+  if(clearBtn) clearBtn.style.display = term ? 'block' : 'none';
+
+  var fmt  = cddValues['cdd-pj-format'] || 'All formats';
+  var sort = cddValues['cdd-pj-sort']   || 'Newest first';
+
+  var rows = projects.filter(function(p){
+    if(fmt !== 'All formats'){
+      if((p.format || 'other').toLowerCase() !== fmt.toLowerCase()) return false;
+    }
+    if(!term) return true;
+    var t = term.toLowerCase();
+    /* search the content too, not just the title — that is usually what
+       someone is actually trying to find again */
+    return (p.title || '').toLowerCase().indexOf(t) !== -1 ||
+           (p.content || '').toLowerCase().indexOf(t) !== -1;
+  });
+
+  if(sort === 'Oldest first')      rows.sort(function(a,b){ return (a.ts||0) - (b.ts||0); });
+  else if(sort === 'Title A to Z') rows.sort(function(a,b){ return (a.title||'').localeCompare(b.title||''); });
+  else                             rows.sort(function(a,b){ return (b.ts||0) - (a.ts||0); });
+
+  if(count){
+    count.style.display = 'block';
+    count.textContent = rows.length === projects.length
+      ? projects.length + (projects.length === 1 ? ' saved item' : ' saved items')
+      : rows.length + ' of ' + projects.length + ' shown';
+  }
+
+  if(!rows.length){
+    if(none) none.style.display = 'block';
+    return;
+  }
+  if(none) none.style.display = 'none';
+
+  rows.forEach(function(p){
+    var snippet = (p.content || '').replace(/\s+/g, ' ').trim().slice(0, 220);
+    var card = document.createElement('div');
+    card.className = 'pj-card';
+    card.innerHTML =
+      '<div class="pj-head">' +
+        '<div class="pj-title">' + pjHighlight(p.title || 'Untitled', term) + '</div>' +
+        '<span class="pj-fmt">' + escHtml(p.format || 'other') + '</span>' +
+      '</div>' +
+      (snippet ? '<div class="pj-snip">' + pjHighlight(snippet, term) + '</div>' : '') +
+      '<div class="pj-foot">' +
+        '<span class="pj-date">' + escHtml(p.date || '') + '</span>' +
+        '<div class="pj-acts">' +
+          '<button class="pj-act" data-act="copy">Copy</button>' +
+          '<button class="pj-act" data-act="open">Open</button>' +
+          '<button class="pj-act danger" data-act="del">Delete</button>' +
+        '</div>' +
+      '</div>';
+
+    card.querySelector('[data-act="copy"]').onclick = function(e){
+      e.stopPropagation();
+      navigator.clipboard.writeText(p.content || '').then(function(){
+        showToast('Copied.');
+      }).catch(function(){ showToast('Could not copy.'); });
     };
-    d.innerHTML='<div style="display:flex;align-items:center;gap:0.45rem;width:100%;"><span class="idea-dot"></span><span style="flex:1;font-weight:600;font-size:0.8rem;">'+escHtml(p.title)+'</span><span class="idea-tag">'+escHtml(p.format)+'</span><button onclick="deleteProject(\''+p.id+'\')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.1rem 0.3rem;font-size:0.78rem;" onmouseover="this.style.color=\'#ff5f56\'" onmouseout="this.style.color=\'var(--muted)\'">&#x2715;</button></div><div style="font-size:0.7rem;color:var(--muted);padding-left:1rem;">'+escHtml(p.date)+'</div>';
-    list.appendChild(d);
+    card.querySelector('[data-act="open"]').onclick = function(e){
+      e.stopPropagation(); openProjectPreview(p.id);
+    };
+    card.querySelector('[data-act="del"]').onclick = function(e){
+      e.stopPropagation(); deleteProject(p.id);
+    };
+    card.onclick = function(){ openProjectPreview(p.id); };
+
+    list.appendChild(card);
   });
 }
 
@@ -2870,7 +3027,12 @@ async function loadProjects(){
   try {
     var data = await apiCall('GET', '/projects');
     projects = data.projects.map(function(p){
-      return { id: p.id, title: p.title, content: p.content, format: p.format, date: new Date(p.created_at).toLocaleDateString() };
+      return {
+        id: p.id, title: p.title, content: p.content, format: p.format,
+        date: new Date(p.created_at).toLocaleDateString(),
+        /* raw value kept alongside the display string so sorting is exact */
+        ts: new Date(p.created_at).getTime() || 0,
+      };
     });
     renderProjects();
     updateAuthUI(); /* refresh project count in hero stats */
@@ -5597,7 +5759,52 @@ function ttsPlayHistory(idx, btn){
           <div class="app-panel" id="panel-projects">
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Saved Projects</div>
-            <div id="projects-list"><div class="empty-state" id="projects-empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>No saved projects yet.<br>Create content and save it here.</div></div>
+            <!-- Toolbar. A flat list with no search becomes unusable at
+                 about twenty saved items, and there was no way to find
+                 anything again. -->
+            <div class="pj-bar" id="pj-bar" style="display:none;">
+              <div class="pj-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input id="pj-search" class="app-input" placeholder="Search your saved work"
+                       autocomplete="off" oninput="renderProjects()">
+                <button class="pj-clear" id="pj-clear" style="display:none;"
+                        onclick="document.getElementById('pj-search').value='';renderProjects();"
+                        aria-label="Clear search">&#10005;</button>
+              </div>
+              <div class="pj-filters">
+                <div class="cdd" id="cdd-pj-format">
+                  <div class="cdd-trigger" onclick="toggleCdd('cdd-pj-format')">
+                    <span id="cdd-pj-format-val">All formats</span>
+                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                  <div class="cdd-menu" id="cdd-pj-format-menu"></div>
+                </div>
+                <div class="cdd" id="cdd-pj-sort">
+                  <div class="cdd-trigger" onclick="toggleCdd('cdd-pj-sort')">
+                    <span id="cdd-pj-sort-val">Newest first</span>
+                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                  <div class="cdd-menu" id="cdd-pj-sort-menu">
+                    <div class="cdd-option selected" onclick="selectCdd('cdd-pj-sort','Newest first');renderProjects()">Newest first</div>
+                    <div class="cdd-option" onclick="selectCdd('cdd-pj-sort','Oldest first');renderProjects()">Oldest first</div>
+                    <div class="cdd-option" onclick="selectCdd('cdd-pj-sort','Title A to Z');renderProjects()">Title A to Z</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pj-count" id="pj-count" style="display:none;"></div>
+
+            <div id="projects-list">
+              <div class="empty-state" id="projects-empty">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                No saved projects yet.<br>Create content and save it here.
+              </div>
+              <div class="empty-state" id="projects-noresult" style="display:none;">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Nothing matches that.<br>Try a different search or filter.
+              </div>
+            </div>
           </div>
 
           <!-- VIDEO RESIZE -->
