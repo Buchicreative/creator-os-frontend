@@ -52,7 +52,7 @@
         "name": "Free Plan",
         "price": "0",
         "priceCurrency": "USD",
-        "description": "5 idea generations and 3 content pieces per day. AI Chat-bot, Voiceover Generator, Content Calendar, and Video Resizer included. No credit card required."
+        "description": "5 idea generations and 5 content pieces per day. AI Chat-bot, Voiceover Generator, Content Calendar, and Video Resizer included. No credit card required."
       },
       {
         "@type": "Offer",
@@ -118,7 +118,7 @@
         "name": "Is Crevers free to use?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. Crevers has a free plan that includes 5 idea generations and 3 content pieces per day, the AI Chat-bot, Content Calendar, and Video Resizer. No credit card is required to sign up. The Voiceover Generator is available on Pro and Creator plans."
+          "text": "Yes. Crevers has a free plan that includes 5 idea generations and 5 content pieces per day, the AI Chat-bot, Content Calendar, and Video Resizer. No credit card is required to sign up. The Voiceover Generator is available on Pro and Creator plans."
         }
       },
       {
@@ -166,7 +166,7 @@
         "name": "How much does Crevers cost?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Crevers has three plans. The Free plan is $0 and includes 5 daily idea generations, 3 content pieces per day, the AI Chat-bot, Voiceover Generator, Content Calendar, and Video Resizer. The Pro plan starts at $1 per month and adds 20 daily generations, Carousel Creator, Content Repurposer, and 2K/4K video with AI face tracking. The Creator plan starts at $4.50 per month and includes unlimited generations, all Pro features, priority support, and early access to new features."
+          "text": "Crevers has three plans. The Free plan is $0 and includes 5 daily idea generations, 5 content pieces per day, the AI Chat-bot, Voiceover Generator, Content Calendar, and Video Resizer. The Pro plan starts at $1 per month and adds 20 daily generations, Carousel Creator, Content Repurposer, and 2K/4K video with AI face tracking. The Creator plan starts at $4.50 per month and includes unlimited generations, all Pro features, priority support, and early access to new features."
         }
       },
       {
@@ -6022,7 +6022,7 @@ function renderSettingsPlan(){
   if(!el) return;
   var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
   var map = {
-    free    : { name: 'Free',    sub: '5 ideas and 3 pieces a day' },
+    free    : { name: 'Free',    sub: '5 ideas and 5 pieces a day' },
     pro     : { name: 'Pro',     sub: '20 generations a day, all formats' },
     team    : { name: 'Creator', sub: 'Unlimited generations' },
     creator : { name: 'Creator', sub: 'Unlimited generations' },
@@ -6980,7 +6980,7 @@ async function loadUsageStat(){
         <div class="price-period">forever free · no card needed</div>
         <ul class="price-features">
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 idea generations/day</li>
-          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 3 content pieces/day</li>
+          <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 content pieces/day</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Scripts &amp; Captions</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Video resize up to 3 mins</li>
           <li class="tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save up to 10 projects</li>
@@ -7050,7 +7050,7 @@ async function loadUsageStat(){
 
       <details class="faq-item">
         <summary>Is there a free plan?</summary>
-        <p>Yes. The Free plan gives you 5 idea generations and 3 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects. No credit card required.</p>
+        <p>Yes. The Free plan gives you 5 idea generations and 5 content pieces per day, script and caption output, video resizing up to 3 minutes, and up to 10 saved projects. No credit card required.</p>
       </details>
 
       <details class="faq-item">

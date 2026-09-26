@@ -36,7 +36,7 @@ Built in Enugu, Nigeria, for creators everywhere.
 
 Prices are shown in US dollars and charged in Nigerian naira at checkout.
 
-- **Free** — $0/month. 5 idea generations and 3 content pieces per day. Includes the AI Chat-bot, Content Calendar and Video Resizer. No credit card required.
+- **Free** — $0/month. 5 idea generations and 5 content pieces per day. Includes the AI Chat-bot, Content Calendar and Video Resizer. No credit card required.
 - **Pro** — $1/month, or $10/year. All content formats, repurposing, AI face tracking, and 5 voiceovers a day at up to 2,000 characters.
 - **Creator** — $4.50/month, or $45/year. Unlimited generations, unlimited voiceovers at up to 4,000 characters, priority support and early access.
 
