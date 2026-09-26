@@ -1629,6 +1629,9 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .ctrl-row .cdd{flex:1 1 100%;min-width:0;}
   .ctrl-row .app-btn-sm{flex:1 1 100%;}
 }
+
+/* one flex item, so the option's gap cannot split a word */
+.niche-sugg{display:inline;white-space:nowrap;}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -4165,9 +4168,17 @@ function filterNicheSuggestions(val){
   if(!matches.length){ dd.style.display='none'; _nicheActiveIdx=-1; return; }
 
   dd.innerHTML = matches.map(function(n, i){
-    var prefix = n.slice(0, val.length);
-    var rest   = n.slice(val.length);
-    var bold   = '<span style="color:var(--accent);font-weight:600;">' + prefix + '</span>' + rest;
+    /* Match against the trimmed query, not the raw value, or a stray
+       space in the box shifts where the highlight ends. */
+    var qLen   = val.trim().length;
+    var prefix = n.slice(0, qLen);
+    var rest   = n.slice(qLen);
+    /* .cdd-option is display:flex with gap:0.5rem, so a bare span plus a
+       loose text node become two flex items and the gap appears as a
+       space mid-word. Wrapping both in one span makes it a single item. */
+    var bold   = '<span class="niche-sugg">' +
+                 '<span style="color:var(--accent);font-weight:600;">' + escHtml(prefix) + '</span>' +
+                 escHtml(rest) + '</span>';
     return '<div class="cdd-option" data-val="' + n + '" onmousedown="selectNicheSuggestion(this.dataset.val)">' + bold + '</div>';
   }).join('');
 
