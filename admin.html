@@ -261,6 +261,28 @@ tr:hover td{background:rgba(255,255,255,0.02);}
   .cpn-grid{grid-template-columns:1fr;}
   .cpn-mode{flex:1 1 100%;}
 }
+
+/* ══ BLOG ══ */
+.bl-url{display:flex;align-items:center;gap:0;background:var(--surface2);
+  border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.bl-url span{padding:0 0 0 0.9rem;font-size:0.82rem;color:var(--muted);white-space:nowrap}
+.bl-url .field-input{border:none;background:transparent;border-radius:0;padding-left:0.2rem}
+.bl-hint{font-size:0.7rem;color:var(--muted);opacity:.75;margin-bottom:0.4rem}
+.bl-body{min-height:260px;font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:0.82rem;line-height:1.7}
+.bl-actions{display:flex;align-items:center;justify-content:space-between;
+  gap:0.75rem;margin-top:1.1rem;flex-wrap:wrap}
+.bl-pub{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--muted);cursor:pointer}
+.bl-pub input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.bl-msg{font-size:0.75rem;margin-top:0.6rem;display:none}
+.bl-msg.err{display:block;color:var(--accent2)}
+.bl-msg.ok{display:block;color:#26c281}
+.bl-tag{display:inline-block;font-size:0.62rem;font-weight:800;letter-spacing:0.05em;
+  text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.bl-tag.live{background:rgba(38,194,129,0.15);color:#26c281}
+.bl-tag.draft{background:rgba(139,136,168,0.15);color:var(--muted)}
+.bl-slug{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:0.76rem;color:var(--muted)}
+@media(max-width:600px){ .bl-actions{flex-direction:column;align-items:stretch} }
 </style>
 </head>
 <body>
@@ -346,6 +368,10 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <button class="nav-item" onclick="switchTab('users')">
         <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Users</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('blog')">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Blog</span>
       </button>
       <button class="nav-item" onclick="switchTab('coupons')">
         <svg viewBox="0 0 24 24"><path d="M20 12a2 2 0 0 1 2-2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 1-2-2z"/><line x1="12" y1="7" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
@@ -545,6 +571,61 @@ tr:hover td{background:rgba(255,255,255,0.02);}
         </div>
       </div>
 
+
+
+      <!-- BLOG -->
+      <div class="admin-page" id="tab-blog">
+
+        <div class="broadcast-card" style="margin-bottom:1.25rem;">
+          <div class="broadcast-title" style="margin-bottom:1.1rem;">
+            <span id="bl-mode">New post</span>
+          </div>
+
+          <div class="field-label">Title</div>
+          <input id="bl-title" class="field-input" placeholder="What to post when you have no ideas"
+                 oninput="blSlugPreview()">
+
+          <div class="field-label" style="margin-top:0.9rem;">URL</div>
+          <div class="bl-url"><span>crevers.com/blog/</span><input id="bl-slug" class="field-input" placeholder="auto from title"></div>
+
+          <div class="field-label" style="margin-top:0.9rem;">Summary <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:.65;">shown in search results and on the blog index</span></div>
+          <textarea id="bl-excerpt" class="field-textarea" style="min-height:64px;" maxlength="300"
+                    placeholder="One or two sentences describing the post."></textarea>
+
+          <div class="field-label" style="margin-top:0.9rem;">Read time</div>
+          <input id="bl-read" class="field-input" style="max-width:160px;" placeholder="6 min read">
+
+          <div class="field-label" style="margin-top:0.9rem;">Body</div>
+          <div class="bl-hint">## for a heading, ** for bold, - for a list, &gt; for a quote, [text](link) for a link</div>
+          <textarea id="bl-body" class="field-textarea bl-body" placeholder="Write the post here."></textarea>
+
+          <div class="bl-actions">
+            <label class="bl-pub">
+              <input type="checkbox" id="bl-published">
+              <span>Publish immediately</span>
+            </label>
+            <div>
+              <button class="admin-refresh" id="bl-cancel" style="display:none;" onclick="blNew()">Cancel</button>
+              <button class="send-btn" id="bl-save" onclick="blSave()">Save post</button>
+            </div>
+          </div>
+          <div class="bl-msg" id="bl-msg"></div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-top">
+            <div class="table-label">All posts <span id="bl-count" style="opacity:.55;font-weight:400;"></span></div>
+            <button class="admin-refresh" onclick="loadPosts()">Refresh</button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Title</th><th>URL</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+              <tbody id="bl-tbody"><tr><td colspan="5" class="table-empty"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
 
       <!-- COUPONS -->
       <div class="admin-page" id="tab-coupons">
@@ -838,6 +919,10 @@ tr:hover td{background:rgba(255,255,255,0.02);}
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Users
     </button>
+    <button class="admin-mobile-nav-item" onclick="switchTabMobile('blog')">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Blog
+    </button>
     <button class="admin-mobile-nav-item" onclick="switchTabMobile('coupons')">
       <svg viewBox="0 0 24 24"><path d="M20 12a2 2 0 0 1 2-2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3a2 2 0 0 1-2-2z"/><line x1="12" y1="7" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="17"/></svg>
       Coupons
@@ -1014,7 +1099,7 @@ function selectCddAdmin(id, value, label){
 }
 
 /* ══ TAB SWITCHING ══ */
-var TAB_TITLES = { overview:'Overview', users:'Users', revenue:'Revenue', broadcast:'Broadcast Email', activity:'Recent Activity', coupons:'Coupons' };
+var TAB_TITLES = { overview:'Overview', users:'Users', revenue:'Revenue', broadcast:'Broadcast Email', activity:'Recent Activity', coupons:'Coupons', blog:'Blog' };
 function switchTab(name){
   CURRENT_TAB = name;
   document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
@@ -1025,6 +1110,7 @@ function switchTab(name){
     if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+name+"'")) b.classList.add('active');
   });
   if(name === 'coupons') loadCoupons();
+  if(name === 'blog') loadPosts();
   var title = TAB_TITLES[name] || name;
   document.getElementById('page-title').textContent = title;
   var bodyTitle = document.getElementById('page-title-body');
@@ -2134,6 +2220,152 @@ function viewRedemptions(id, code){
       document.getElementById('cpn-redemptions-card').style.display = 'block';
     })
     .catch(function(){ adminToast('Could not load redemptions.'); });
+}
+
+/* ══════════ BLOG ══════════ */
+var BL_EDITING = null;
+
+function blMsg(t, kind){
+  var el = document.getElementById('bl-msg');
+  el.textContent = t || '';
+  el.className = 'bl-msg' + (kind ? ' ' + kind : '');
+}
+
+function blSlugify(s){
+  return String(s||'').toLowerCase().trim()
+    .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-')
+    .replace(/-+/g,'-').slice(0,80).replace(/^-|-$/g,'');
+}
+
+function blSlugPreview(){
+  var slug = document.getElementById('bl-slug');
+  if(!slug.value && !BL_EDITING){
+    slug.placeholder = blSlugify(document.getElementById('bl-title').value) || 'auto from title';
+  }
+}
+
+function blNew(){
+  BL_EDITING = null;
+  document.getElementById('bl-mode').textContent = 'New post';
+  ['bl-title','bl-slug','bl-excerpt','bl-read','bl-body'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('bl-published').checked = false;
+  document.getElementById('bl-save').textContent = 'Save post';
+  document.getElementById('bl-cancel').style.display = 'none';
+  blMsg('');
+}
+
+function loadPosts(){
+  fetch(ADMIN_API + '/admin/blog', { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var list = d.posts || [];
+      document.getElementById('bl-count').textContent = list.length ? '(' + list.length + ')' : '';
+      var tb = document.getElementById('bl-tbody');
+      if(!list.length){
+        tb.innerHTML = '<tr><td colspan="5" class="table-empty">No posts yet. Write your first one above.</td></tr>';
+        return;
+      }
+      tb.innerHTML = list.map(function(p){
+        var when = new Date(p.updated_at).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+        return '<tr>' +
+          '<td>' + escHtml(p.title) + '</td>' +
+          '<td><span class="bl-slug">/blog/' + escHtml(p.slug) + '</span></td>' +
+          '<td><span class="bl-tag ' + (p.published?'live':'draft') + '">' +
+            (p.published?'live':'draft') + '</span></td>' +
+          '<td>' + when + '</td>' +
+          '<td style="white-space:nowrap;">' +
+            '<button class="cpn-act" onclick="blEdit(\'' + p.id + '\')">Edit</button>' +
+            '<button class="cpn-act" onclick="blToggle(\'' + p.id + '\',' + (!p.published) + ')">' +
+              (p.published?'Unpublish':'Publish') + '</button>' +
+            (p.published ? '<button class="cpn-act" onclick="window.open(\'https://crevers.com/blog/' + escHtml(p.slug) + '\',\'_blank\')">View</button>' : '') +
+            '<button class="cpn-act danger" onclick="blDelete(\'' + p.id + '\')">Delete</button>' +
+          '</td></tr>';
+      }).join('');
+    })
+    .catch(function(){ adminToast('Could not load posts.'); });
+}
+
+function blEdit(id){
+  fetch(ADMIN_API + '/admin/blog/' + id, { headers: { 'X-Admin-Key': ADMIN_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var p = d.post;
+      BL_EDITING = id;
+      document.getElementById('bl-mode').textContent = 'Editing: ' + p.title;
+      document.getElementById('bl-title').value   = p.title || '';
+      document.getElementById('bl-slug').value    = p.slug || '';
+      document.getElementById('bl-excerpt').value = p.excerpt || '';
+      document.getElementById('bl-read').value    = p.read_time || '';
+      document.getElementById('bl-body').value    = p.body || '';
+      document.getElementById('bl-published').checked = !!p.published;
+      document.getElementById('bl-save').textContent = 'Update post';
+      document.getElementById('bl-cancel').style.display = 'inline-flex';
+      blMsg('');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(function(){ adminToast('Could not open that post.'); });
+}
+
+function blSave(){
+  var btn = document.getElementById('bl-save');
+  var body = {
+    title     : document.getElementById('bl-title').value.trim(),
+    slug      : document.getElementById('bl-slug').value.trim() ||
+                blSlugify(document.getElementById('bl-title').value),
+    excerpt   : document.getElementById('bl-excerpt').value.trim(),
+    read_time : document.getElementById('bl-read').value.trim(),
+    body      : document.getElementById('bl-body').value,
+    published : document.getElementById('bl-published').checked,
+  };
+  if(!body.title){ blMsg('Give the post a title.', 'err'); return; }
+  if(body.body.trim().length < 50){ blMsg('The post is too short.', 'err'); return; }
+
+  btn.disabled = true;
+  var label = btn.textContent;
+  btn.textContent = 'Saving...';
+
+  var url    = ADMIN_API + '/admin/blog' + (BL_EDITING ? '/' + BL_EDITING : '');
+  var method = BL_EDITING ? 'PATCH' : 'POST';
+
+  fetch(url, {
+    method  : method,
+    headers : { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY },
+    body    : JSON.stringify(body),
+  })
+  .then(function(r){ return r.json().then(function(j){ return { ok:r.ok, j:j }; }); })
+  .then(function(res){
+    btn.disabled = false; btn.textContent = label;
+    if(!res.ok){ blMsg(res.j.error || 'Could not save.', 'err'); return; }
+    blMsg(body.published ? 'Published. It is live now.' : 'Saved as a draft.', 'ok');
+    adminToast(BL_EDITING ? 'Post updated' : 'Post saved');
+    blNew();
+    loadPosts();
+  })
+  .catch(function(){
+    btn.disabled = false; btn.textContent = label;
+    blMsg('Could not save.', 'err');
+  });
+}
+
+function blToggle(id, publish){
+  fetch(ADMIN_API + '/admin/blog/' + id, {
+    method  : 'PATCH',
+    headers : { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY },
+    body    : JSON.stringify({ published: publish }),
+  })
+  .then(function(){ loadPosts(); adminToast(publish ? 'Published' : 'Unpublished'); })
+  .catch(function(){ adminToast('Could not update.'); });
+}
+
+function blDelete(id){
+  if(!confirm('Delete this post permanently?')) return;
+  fetch(ADMIN_API + '/admin/blog/' + id, {
+    method: 'DELETE', headers: { 'X-Admin-Key': ADMIN_KEY },
+  })
+  .then(function(){ loadPosts(); adminToast('Post deleted'); if(BL_EDITING===id) blNew(); })
+  .catch(function(){ adminToast('Could not delete.'); });
 }
 </script>
 </body>
