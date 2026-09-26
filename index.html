@@ -2100,6 +2100,7 @@ function updateAuthUI(){
     /* Update project count stat */
     var statProjects = document.getElementById('stat-projects');
     if(statProjects) statProjects.textContent = projects.length;
+    if(typeof loadUsageStat === 'function') loadUsageStat();
   }
 
   /* ── Dashboard greeting ── */
@@ -2245,6 +2246,7 @@ function renderIdeas(ideas, platform, niche){
                      ' on ' + escHtml(platform) + '</div>';
 
   addRecentNiche(niche);
+  if(typeof loadUsageStat === 'function') loadUsageStat();
 
   ideas.slice(0,8).forEach(function(idea, i){
     var d = document.createElement('div');
@@ -6035,6 +6037,28 @@ function renderSettingsPlan(){
       ? '<button class="set-plan-btn" onclick="switchPanel(\'dashboard\');setTimeout(function(){var el=document.getElementById(\'pricing\');if(el)el.scrollIntoView({behavior:\'smooth\'});},200);">Upgrade</button>'
       : '');
 }
+
+/* The Ideas stat was a hardcoded infinity with no id, so a free account
+   capped at five a day was told it had unlimited. */
+async function loadUsageStat(){
+  var num = document.getElementById('stat-ideas');
+  var lbl = document.getElementById('stat-ideas-label');
+  if(!num || !AUTH.token) return;
+  try {
+    var d = await apiCall('GET', '/ai/usage');
+    if(!d || !d.usage){ num.innerHTML = '&#x2014;'; return; }
+    var u = d.usage.ideas;
+    if(u.unlimited){
+      num.innerHTML = '&#x221E;';
+      if(lbl) lbl.textContent = 'Ideas Today';
+    } else {
+      num.textContent = u.remaining;
+      if(lbl) lbl.textContent = 'Ideas Left Today';
+    }
+  } catch(e){
+    num.innerHTML = '&#x2014;';   /* a stat is not worth an error state */
+  }
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -6266,7 +6290,7 @@ function renderSettingsPlan(){
       <div class="hero-stats" id="hero-user-stats">
         <div class="stat"><div class="stat-num" id="stat-projects">0</div><div class="stat-label">My Projects</div></div>
         <div class="stat"><div class="stat-num" id="stat-plan">Free</div><div class="stat-label">Current Plan</div></div>
-        <div class="stat"><div class="stat-num">&#x221E;</div><div class="stat-label">Ideas Available</div></div>
+        <div class="stat"><div class="stat-num" id="stat-ideas">&#x2014;</div><div class="stat-label" id="stat-ideas-label">Ideas Today</div></div>
       </div>
     </div>
 
