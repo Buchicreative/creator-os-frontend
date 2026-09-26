@@ -1669,6 +1669,71 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .rp-chip{flex:1 1 calc(50% - 0.2rem);text-align:center;padding:0.45rem 0.4rem;}
   .rp-go .app-btn-sm{width:100%;}
 }
+
+/* ════════ DASHBOARD: today and recent work ════════ */
+.dash-today{background:linear-gradient(135deg,rgba(124,92,252,0.1),rgba(252,92,125,0.05));
+  border:1px solid rgba(124,92,252,0.22);border-radius:14px;padding:1rem 1.1rem;
+  margin-top:1.25rem;}
+.dt-head{display:flex;align-items:center;justify-content:space-between;gap:0.6rem;
+  margin-bottom:0.8rem;flex-wrap:wrap;}
+.dt-title{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.9rem;color:var(--text);}
+.dt-date{font-size:0.72rem;color:var(--muted);}
+.dt-ahead{font-size:0.72rem;color:var(--muted);margin-bottom:0.6rem;opacity:0.85;}
+
+.dt-plan{display:flex;align-items:flex-start;gap:0.65rem;background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.8rem;
+  margin-bottom:0.45rem;}
+.dt-plan.done{opacity:0.5;}
+.dt-plan.done .dt-t{text-decoration:line-through;}
+.dt-tick{width:17px;height:17px;flex:0 0 17px;border-radius:5px;
+  border:1.5px solid var(--border);margin-top:1px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;transition:background .18s,border-color .18s;}
+.dt-tick:hover{border-color:var(--accent3);}
+.dt-tick svg{opacity:0;}
+.dt-plan.done .dt-tick{background:var(--accent3);border-color:var(--accent3);}
+.dt-plan.done .dt-tick svg{opacity:1;}
+.dt-m{flex:1;min-width:0;}
+.dt-t{font-size:0.82rem;line-height:1.45;color:var(--text);overflow-wrap:anywhere;}
+.dt-tags{display:flex;gap:0.3rem;margin-top:0.25rem;flex-wrap:wrap;}
+.dt-tag{font-size:0.6rem;font-weight:600;padding:1px 6px;border-radius:4px;
+  background:rgba(124,92,252,0.14);color:#b9a5ff;white-space:nowrap;}
+.dt-tag.f{background:rgba(255,255,255,0.05);color:var(--muted);}
+.dt-go{flex:0 0 auto;align-self:center;font-size:0.67rem;color:var(--muted);
+  border:1px solid var(--border);border-radius:7px;padding:4px 9px;background:none;
+  font-family:inherit;cursor:pointer;white-space:nowrap;
+  transition:border-color .18s,color .18s;}
+.dt-go:hover{border-color:var(--accent);color:var(--accent);}
+
+.dt-empty{text-align:center;padding:0.3rem 0 0.1rem;}
+.dt-empty p{font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0.8rem;}
+.dt-foot{display:flex;gap:0.5rem;margin-top:0.7rem;}
+.dt-btn{flex:1;border-radius:9px;padding:0.5rem;font-size:0.75rem;font-family:inherit;
+  cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);
+  transition:border-color .18s,color .18s;}
+.dt-btn:hover{border-color:var(--accent);color:var(--accent);}
+.dt-btn.solid{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+.dt-btn.solid:hover{background:#8a6dff;color:#fff;}
+
+.dr-head{display:flex;align-items:baseline;justify-content:space-between;
+  margin:1.6rem 0 0.6rem;gap:0.6rem;}
+.dr-head h3{font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text);}
+.dr-head a{font-size:0.72rem;color:var(--muted);cursor:pointer;text-decoration:none;}
+.dr-head a:hover{color:var(--accent);}
+.dr-row{display:flex;align-items:center;gap:0.7rem;background:var(--surface2);
+  border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.8rem;
+  margin-bottom:0.45rem;cursor:pointer;transition:border-color .18s,transform .18s;}
+.dr-row:hover{border-color:rgba(124,92,252,0.3);transform:translateX(2px);}
+.dr-f{font-size:0.58rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;background:rgba(124,92,252,0.14);color:#b9a5ff;
+  flex:0 0 auto;}
+.dr-t{flex:1;min-width:0;font-size:0.8rem;color:var(--text);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;}
+.dr-d{font-size:0.68rem;color:var(--muted);flex:0 0 auto;}
+
+@media(max-width:600px){
+  .dt-go{display:none;}   /* the row itself is the target on touch */
+  .dt-foot{flex-direction:column;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -3320,6 +3385,7 @@ function toggleMenu(){
 /* PANELS */
 var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','calendar','voiceover','settings'];
 function switchPanel(name){
+  if(name==='dashboard' && typeof renderDashboard==='function') renderDashboard();
   if(name==='repurpose' && typeof rpUpdateLabel==='function') rpUpdateLabel();
   if(name==='ideas' && typeof renderRecentNiches==='function') renderRecentNiches();
   document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
@@ -5800,6 +5866,120 @@ function createToVoiceover(){
   if(!text || text.length < 10){ showToast('Generate something first.'); return; }
   if(typeof ttsSendScript === 'function') ttsSendScript(text);
 }
+
+/* ══════════ DASHBOARD ══════════ */
+
+function dashTimeAgo(ts){
+  var d = Math.floor((Date.now() - ts) / 86400000);
+  if(d <= 0) return 'today';
+  if(d === 1) return 'yesterday';
+  if(d < 7)   return d + 'd ago';
+  if(d < 30)  return Math.floor(d/7) + 'w ago';
+  return Math.floor(d/30) + 'mo ago';
+}
+
+function renderDashToday(){
+  var wrap = document.getElementById('dash-today');
+  if(!wrap) return;
+
+  calLoadPlans();
+  var today    = new Date(); today.setHours(0,0,0,0);
+  var todayKey = calDateKey(today);
+  var plans    = CAL_PLANS.filter(function(p){ return p.date === todayKey; });
+
+  /* if today is clear, look ahead rather than showing an empty box —
+     people often plan in the evening for the next day */
+  var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+  var tmrPlans = CAL_PLANS.filter(function(p){ return p.date === calDateKey(tomorrow); });
+
+  /* CAL_DAYS and CAL_MONTHS are abbreviated, and the browser already
+     knows how to spell these out in the user's locale */
+  var dateLine = today.toLocaleDateString(undefined, {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+
+  var head = '<div class="dt-head">' +
+    '<span class="dt-title">Today</span>' +
+    '<span class="dt-date">' + dateLine + '</span></div>';
+
+  if(!plans.length && !tmrPlans.length){
+    wrap.innerHTML = head +
+      '<div class="dt-empty">' +
+        '<p>Nothing planned for today.<br>Generate a few ideas and put one in the calendar.</p>' +
+        '<div class="dt-foot">' +
+          '<button class="dt-btn" onclick="switchPanel(\'calendar\')">Open calendar</button>' +
+          '<button class="dt-btn solid" onclick="switchPanel(\'ideas\')">Generate ideas</button>' +
+        '</div></div>';
+    return;
+  }
+
+  var showing = plans.length ? plans : tmrPlans;
+  var label   = plans.length ? '' :
+    '<div class="dt-ahead">Nothing today. Here is tomorrow.</div>';
+
+  var rows = showing.map(function(plan){
+    var idx = CAL_PLANS.indexOf(plan);
+    return '<div class="dt-plan' + (plan.done ? ' done' : '') + '">' +
+      '<div class="dt-tick" onclick="dashToggle(' + idx + ')">' +
+        '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:#0a0714;stroke-width:3.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>' +
+      '</div>' +
+      '<div class="dt-m">' +
+        '<div class="dt-t">' + escHtml(plan.idea) + '</div>' +
+        '<div class="dt-tags">' +
+          (plan.platform ? '<span class="dt-tag">' + escHtml(plan.platform) + '</span>' : '') +
+          '<span class="dt-tag f">' + escHtml(plan.format) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<button class="dt-go" onclick="dashWrite(' + idx + ')">Write it</button>' +
+    '</div>';
+  }).join('');
+
+  wrap.innerHTML = head + label + rows +
+    '<div class="dt-foot">' +
+      '<button class="dt-btn" onclick="switchPanel(\'calendar\')">Open calendar</button>' +
+      '<button class="dt-btn solid" onclick="switchPanel(\'calendar\')">Plan something</button>' +
+    '</div>';
+}
+
+function dashToggle(idx){
+  var plan = CAL_PLANS[idx];
+  if(!plan) return;
+  plan.done = !plan.done;
+  calSavePlans();
+  renderDashToday();
+}
+
+function dashWrite(idx){
+  var plan = CAL_PLANS[idx];
+  if(!plan) return;
+  if(typeof calGenerateNow === 'function') calGenerateNow(plan);
+}
+
+function renderDashRecent(){
+  var wrap = document.getElementById('dash-recent');
+  if(!wrap) return;
+  if(!projects || !projects.length){ wrap.innerHTML = ''; return; }
+
+  var rows = projects.slice()
+    .sort(function(a,b){ return (b.ts||0) - (a.ts||0); })
+    .slice(0,3)
+    .map(function(p){
+      return '<div class="dr-row" onclick="openProjectPreview(\'' + p.id + '\')">' +
+        '<span class="dr-f">' + escHtml(p.format || 'other') + '</span>' +
+        '<span class="dr-t">' + escHtml(p.title || 'Untitled') + '</span>' +
+        '<span class="dr-d">' + (p.ts ? dashTimeAgo(p.ts) : escHtml(p.date || '')) + '</span>' +
+      '</div>';
+    }).join('');
+
+  wrap.innerHTML =
+    '<div class="dr-head"><h3>Pick up where you left off</h3>' +
+    '<a onclick="switchPanel(\'projects\')">All projects &rsaquo;</a></div>' + rows;
+}
+
+function renderDashboard(){
+  try { renderDashToday(); }  catch(e){ console.warn('[Dash] today failed:', e.message); }
+  try { renderDashRecent(); } catch(e){ console.warn('[Dash] recent failed:', e.message); }
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -6076,16 +6256,21 @@ function createToVoiceover(){
               <div class="qa-btn" onclick="switchPanel('ideas')"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg><div class="qa-label">Generate Ideas</div></div>
               <div class="qa-btn" onclick="switchPanel('create')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div class="qa-label">Create Content</div></div>
               <div class="qa-btn" onclick="switchPanel('repurpose')"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><div class="qa-label">Repurpose</div></div>
-              <div class="qa-btn" onclick="switchPanel('projects')"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><div class="qa-label">Projects</div></div>
+              
 
               <div class="qa-btn" onclick="switchPanel('calendar')" style="border-color:rgba(124,92,252,0.3);background:rgba(124,92,252,0.05);position:relative;"><span style="position:absolute;top:-8px;right:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.55rem;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;">New</span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="qa-label">Calendar</div></div>
               <div class="qa-btn" onclick="switchPanel('voiceover')" style="border-color:rgba(124,92,252,0.3);background:rgba(124,92,252,0.05);position:relative;"><span style="position:absolute;top:-8px;right:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.55rem;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;">New</span><span style="position:absolute;top:-8px;right:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.55rem;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;">New</span><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><div class="qa-label">Voiceover</div></div>
-              <div class="qa-btn" onclick="switchPanel('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div class="qa-label">Settings</div></div>
+              
             </div>
-            <div class="trending-label">Trending Ideas</div>
-            <div class="idea-item" onclick="useIdea('5 mistakes new creators make in their first 90 days')"><span class="idea-dot"></span>5 mistakes new creators make in their first 90 days<span class="idea-tag">Script</span></div>
-            <div class="idea-item" onclick="useIdea('How I went from 0 to 10K followers in 90 days')"><span class="idea-dot"></span>How I went from 0 to 10K followers in 90 days<span class="idea-tag">Carousel</span></div>
-            <div class="idea-item" onclick="useIdea('The truth about passive income nobody talks about')"><span class="idea-dot"></span>The truth about passive income nobody talks about<span class="idea-tag">Thread</span></div>
+            <!-- The calendar already knew what was planned today and the
+                 dashboard never mentioned it. Sits below the tools because
+                 most people open Crevers to make something, not to check a
+                 schedule, and most will have nothing planned yet. -->
+            <div class="dash-today" id="dash-today"></div>
+
+            <!-- Trending Ideas used to live here: three hardcoded strings,
+                 identical for every user since launch. Recent work is real. -->
+            <div id="dash-recent"></div>
           </div>
 
           <!-- IDEAS -->
