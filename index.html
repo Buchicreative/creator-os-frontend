@@ -1566,6 +1566,44 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .pj-filters{width:100%;}
   .pj-filters .cdd{flex:1;min-width:0;}
 }
+
+/* ════════ IDEAS: actions on every result ════════ */
+.recent-niches{display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;}
+.rn-label{font-size:0.66rem;font-weight:700;letter-spacing:0.07em;
+  text-transform:uppercase;color:var(--muted);opacity:0.7;margin-right:0.15rem;}
+.rn-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;
+  color:var(--muted);padding:3px 11px;font-size:0.72rem;cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s;white-space:nowrap;}
+.rn-chip:hover{border-color:var(--accent);color:var(--accent);}
+
+.idea-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:0.7rem 0.85rem;margin-bottom:0.5rem;transition:border-color .18s;}
+.idea-row:hover{border-color:rgba(124,92,252,0.3);}
+.idea-top{display:flex;align-items:flex-start;gap:0.55rem;margin-bottom:0.55rem;}
+.idea-top .idea-dot{margin-top:0.45rem;}
+/* the idea wraps rather than being clipped, same reasoning as the calendar */
+.idea-text{flex:1;min-width:0;font-size:0.84rem;line-height:1.5;color:var(--text);
+  overflow-wrap:anywhere;}
+.idea-acts{display:flex;gap:0.3rem;flex-wrap:wrap;padding-left:1.1rem;}
+.idea-act{background:none;border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);padding:4px 10px;font-size:0.68rem;cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s,background .18s;}
+.idea-act:hover{border-color:var(--accent);color:var(--accent);}
+.idea-act.primary{border-color:rgba(124,92,252,0.4);color:#b9a5ff;}
+.idea-act.primary:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
+.idea-act.done{border-color:var(--accent3);color:var(--accent3);}
+.idea-act:disabled{opacity:0.7;cursor:default;}
+
+.idea-more{width:100%;background:none;border:1px dashed rgba(255,255,255,0.12);
+  border-radius:10px;color:var(--muted);padding:0.6rem;font-size:0.78rem;
+  cursor:pointer;font-family:inherit;margin-top:0.35rem;
+  transition:border-color .18s,color .18s;}
+.idea-more:hover{border-color:rgba(124,92,252,0.45);color:var(--accent);}
+
+@media(max-width:600px){
+  .idea-acts{padding-left:0;}
+  .idea-act{flex:1;min-width:0;text-align:center;padding:5px 6px;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -2052,13 +2090,41 @@ async function generateIdeas(){
 }
 function renderIdeas(ideas, platform, niche){
   var output = document.getElementById('ideasOutput');
-  output.innerHTML='<div class="out-label">Ideas for '+escHtml(niche)+' on '+escHtml(platform)+'</div>';
-  ideas.slice(0,8).forEach(function(idea,i){
-    var d=document.createElement('div'); d.className='idea-item';
-    d.style.cssText='animation:fadeUp 0.3s '+(i*0.06)+'s ease both;opacity:0;';
-    d.innerHTML='<span class="idea-dot"></span>'+escHtml(idea)+'<span class="idea-tag">Use</span>';
-    d.onclick=function(){useIdea(idea);}; output.appendChild(d);
+  output.innerHTML = '<div class="out-label">Ideas for ' + escHtml(niche) +
+                     ' on ' + escHtml(platform) + '</div>';
+
+  addRecentNiche(niche);
+
+  ideas.slice(0,8).forEach(function(idea, i){
+    var d = document.createElement('div');
+    d.className = 'idea-row';
+    d.style.cssText = 'animation:fadeUp 0.3s ' + (i*0.06) + 's ease both;opacity:0;';
+    d.innerHTML =
+      '<div class="idea-top">' +
+        '<span class="idea-dot"></span>' +
+        '<span class="idea-text">' + escHtml(idea) + '</span>' +
+      '</div>' +
+      '<div class="idea-acts">' +
+        '<button class="idea-act" data-a="copy">Copy</button>' +
+        '<button class="idea-act" data-a="save">Save</button>' +
+        '<button class="idea-act" data-a="cal">Calendar</button>' +
+        '<button class="idea-act primary" data-a="use">Write it</button>' +
+      '</div>';
+
+    d.querySelector('[data-a="copy"]').onclick = function(e){ e.stopPropagation(); copyIdea(idea); };
+    d.querySelector('[data-a="save"]').onclick = function(e){ e.stopPropagation(); saveIdea(idea, this); };
+    d.querySelector('[data-a="cal"]').onclick  = function(e){ e.stopPropagation(); ideaToCalendar(idea); };
+    d.querySelector('[data-a="use"]').onclick  = function(e){ e.stopPropagation(); useIdea(idea); };
+
+    output.appendChild(d);
   });
+
+  /* generating again used to mean scrolling back up and re-clicking */
+  var more = document.createElement('button');
+  more.className = 'idea-more';
+  more.textContent = 'Generate 8 more';
+  more.onclick = function(){ generateIdeas(); };
+  output.appendChild(more);
 }
 
 /* GENERATE CONTENT */
@@ -3078,6 +3144,7 @@ function toggleMenu(){
 /* PANELS */
 var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','calendar','voiceover','settings'];
 function switchPanel(name){
+  if(name==='ideas' && typeof renderRecentNiches==='function') renderRecentNiches();
   document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.sidebar-item').forEach(function(s){s.classList.remove('active');});
   var panel=document.getElementById('panel-'+name);
@@ -5418,6 +5485,96 @@ function ttsPlayHistory(idx, btn){
     TTS_HIST_AUDIO.onpause = function(){ btn.classList.remove('playing'); };
   } catch(e){}
 }
+
+/* ══════════ IDEAS: keep what you generate ══════════
+   Every idea used to offer one action, Use, which sent it to Create and
+   discarded the other seven. */
+
+var RECENT_NICHES_KEY = 'crv_recent_niches';
+
+function getRecentNiches(){
+  try { return JSON.parse(localStorage.getItem(RECENT_NICHES_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+
+function addRecentNiche(niche){
+  niche = String(niche || '').trim();
+  if(!niche) return;
+  try {
+    var list = getRecentNiches().filter(function(n){
+      return n.toLowerCase() !== niche.toLowerCase();
+    });
+    list.unshift(niche);
+    localStorage.setItem(RECENT_NICHES_KEY, JSON.stringify(list.slice(0, 6)));
+    renderRecentNiches();
+  } catch(e){}
+}
+
+function renderRecentNiches(){
+  var wrap = document.getElementById('recent-niches');
+  if(!wrap) return;
+  var list = getRecentNiches();
+  if(!list.length){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  wrap.innerHTML = '<span class="rn-label">Recent</span>' + list.map(function(n){
+    return '<button class="rn-chip" onclick="useRecentNiche(' +
+      JSON.stringify(n).replace(/"/g, '&quot;') + ')">' + escHtml(n) + '</button>';
+  }).join('');
+}
+
+function useRecentNiche(niche){
+  var inp = document.getElementById('nicheInput');
+  if(inp){ inp.value = niche; }
+  var dd = document.getElementById('niche-dropdown');
+  if(dd) dd.style.display = 'none';
+  generateIdeas();
+}
+
+function copyIdea(idea){
+  navigator.clipboard.writeText(idea)
+    .then(function(){ showToast('Copied.'); })
+    .catch(function(){ showToast('Could not copy.'); });
+}
+
+/* Save a single idea without needing an output element, unlike
+   saveToProjects which reads from the DOM. */
+async function saveIdea(idea, btn){
+  if(!AUTH.token){ openModal('loginModal'); return; }
+  if(btn){ btn.disabled = true; btn.textContent = 'Saving...'; }
+  try {
+    var data = await apiCall('POST', '/projects', {
+      title: idea.slice(0, 60), content: idea, format: 'idea',
+    });
+    projects.unshift({
+      id: data.project.id, title: data.project.title, content: data.project.content,
+      format: data.project.format,
+      date: new Date(data.project.created_at).toLocaleDateString(),
+      ts: new Date(data.project.created_at).getTime() || Date.now(),
+    });
+    renderProjects();
+    if(btn){ btn.textContent = 'Saved'; btn.classList.add('done'); }
+    showToast('Saved to Projects.');
+  } catch(e){
+    if(btn){ btn.disabled = false; btn.textContent = 'Save'; }
+    showToast(e && e.message ? e.message : 'Could not save.');
+  }
+}
+
+/* Straight from an idea into the week, which is the whole point of
+   having a calendar next to an idea generator. */
+function ideaToCalendar(idea){
+  switchPanel('calendar');
+  setTimeout(function(){
+    if(typeof calOpenAddModal !== 'function') return;
+    calOpenAddModal(new Date());
+    var inp = document.getElementById('cal-idea-input');
+    if(inp) inp.value = idea;
+    var plat = cddValues['cdd-platform'];
+    if(plat && typeof selectCdd === 'function'){
+      try { selectCdd('cdd-cal-platform', plat); } catch(e){}
+    }
+  }, 120);
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -5720,6 +5877,8 @@ function ttsPlayHistory(idx, btn){
                   autocomplete="off">
                 <div id="niche-dropdown" class="cdd-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;max-height:220px;overflow-y:auto;opacity:1;transform:none;pointer-events:all;"></div>
               </div>
+              <!-- what you generated for before, one tap to run it again -->
+              <div class="recent-niches" id="recent-niches" style="display:none;"></div>
               <!-- Row 2: Platform + Generate + Refresh on same line -->
               <div style="display:flex;gap:0.5rem;align-items:center;">
                 <div class="cdd" id="cdd-platform" style="flex:1;min-width:0;"><div class="cdd-trigger" onclick="toggleCdd('cdd-platform')"><span id="cdd-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-platform','TikTok')">TikTok</div>
