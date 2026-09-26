@@ -1504,7 +1504,7 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 /* ════════ SAVED PROJECTS ════════
    Was a flat list with title, format and a delete cross. No search, no
    filter, no sort, no sense of what was inside any item. */
-.pj-bar{display:flex;gap:0.6rem;margin-bottom:0.75rem;flex-wrap:wrap;}
+.pj-bar{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;flex-wrap:wrap;}
 /* The wrapper is the field. Overlaying an absolutely positioned icon on
    an inline-block input left a baseline gap underneath it and put the
    icon outside the box. Flex children inside a styled wrapper cannot
@@ -1515,6 +1515,9 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 .pj-search:focus-within{border-color:var(--accent);}
 .pj-search svg{width:14px;height:14px;flex:0 0 14px;stroke:var(--muted);fill:none;
   stroke-width:2;stroke-linecap:round;display:block;}
+/* an svg with a viewBox and no dimensions falls back to 300x150 */
+.pj-bar svg{max-width:16px;max-height:16px;}
+.pj-bar .cdd-trigger svg{max-width:12px;max-height:12px;}
 .pj-search .app-input{flex:1;min-width:0;background:none;border:none;
   padding:0.55rem 0;margin:0;border-radius:0;outline:none;font-size:0.82rem;
   display:block;}
@@ -5772,7 +5775,7 @@ function ttsPlayHistory(idx, btn){
                  anything again. -->
             <div class="pj-bar" id="pj-bar" style="display:none;">
               <div class="pj-search">
-                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg viewBox="0 0 24 24" style="width:14px;height:14px;flex:0 0 14px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;display:block;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input id="pj-search" class="app-input" placeholder="Search your saved work"
                        autocomplete="off" oninput="renderProjects()">
                 <button class="pj-clear" id="pj-clear" style="display:none;"
@@ -5783,14 +5786,14 @@ function ttsPlayHistory(idx, btn){
                 <div class="cdd" id="cdd-pj-format">
                   <div class="cdd-trigger" onclick="toggleCdd('cdd-pj-format')">
                     <span id="cdd-pj-format-val">All formats</span>
-                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                    <svg viewBox="0 0 24 24" style="width:12px;height:12px;flex:0 0 12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"/></svg>
                   </div>
                   <div class="cdd-menu" id="cdd-pj-format-menu"></div>
                 </div>
                 <div class="cdd" id="cdd-pj-sort">
                   <div class="cdd-trigger" onclick="toggleCdd('cdd-pj-sort')">
                     <span id="cdd-pj-sort-val">Newest first</span>
-                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                    <svg viewBox="0 0 24 24" style="width:12px;height:12px;flex:0 0 12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"/></svg>
                   </div>
                   <div class="cdd-menu" id="cdd-pj-sort-menu">
                     <div class="cdd-option selected" onclick="selectCdd('cdd-pj-sort','Newest first');renderProjects()">Newest first</div>
@@ -5809,7 +5812,7 @@ function ttsPlayHistory(idx, btn){
                 No saved projects yet.<br>Create content and save it here.
               </div>
               <div class="empty-state" id="projects-noresult" style="display:none;">
-                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg viewBox="0 0 24 24" style="width:32px;height:32px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 Nothing matches that.<br>Try a different search or filter.
               </div>
             </div>
