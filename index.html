@@ -1365,6 +1365,74 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 #calModal .cdd-menu{max-height:210px;overflow-y:auto;}
 #calModal .cdd{width:100%;}
 #calModal .cdd-trigger{width:100%;}
+
+/* ════════ VOICEOVER — script first ════════ */
+.tts-sec{display:flex;align-items:baseline;justify-content:space-between;gap:0.75rem;
+  margin:1.4rem 0 0.55rem;}
+.tts-sec:first-of-type{margin-top:0.5rem;}
+.tts-sec h3{font-family:'Outfit',sans-serif;font-size:0.86rem;font-weight:700;
+  letter-spacing:-0.01em;color:var(--text);}
+.tts-hint{font-size:0.72rem;color:var(--muted);}
+.tts-hint.over{color:var(--accent2);}
+
+.tts-scriptbox{background:var(--surface2);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;transition:border-color 0.2s;}
+.tts-scriptbox:focus-within{border-color:rgba(124,92,252,0.45);}
+.tts-scriptbox textarea{width:100%;min-height:150px;background:none;border:none;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.7;
+  padding:0.95rem 1rem 0.6rem;resize:vertical;outline:none;display:block;}
+.tts-scriptbox textarea::placeholder{color:#4b4860;}
+.tts-scriptfoot{display:flex;align-items:center;justify-content:space-between;
+  gap:0.6rem;padding:0.5rem 0.7rem 0.5rem 1rem;border-top:1px solid var(--border);
+  background:rgba(255,255,255,0.015);flex-wrap:wrap;}
+.tts-scriptmeta{display:flex;gap:0.9rem;font-size:0.72rem;color:var(--muted);flex-wrap:wrap;}
+.tts-scriptmeta b{color:var(--text);font-weight:600;}
+.tts-scriptbtns{display:flex;gap:0.35rem;}
+.tts-mini{background:none;border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);padding:4px 9px;font-size:0.68rem;cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s;}
+.tts-mini:hover{border-color:var(--accent);color:var(--accent);}
+
+.tts-presets{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* the play circle was a 9px icon in a 0.6rem button, nested inside a
+   card that was also clickable. Barely tappable on a phone. */
+.voice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:0.55rem;}
+.voice-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;
+  padding:0.7rem 0.75rem;cursor:pointer;transition:border-color .18s,background .18s;
+  display:flex;align-items:center;gap:0.6rem;text-align:left;}
+.voice-card:hover{border-color:rgba(124,92,252,0.35);}
+.voice-card.selected{border-color:var(--accent);background:rgba(124,92,252,0.08);}
+.tts-vplay{width:30px;height:30px;flex:0 0 30px;border-radius:50%;
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);display:flex;
+  align-items:center;justify-content:center;cursor:pointer;transition:all .18s;}
+.tts-vplay:hover{background:var(--accent);border-color:var(--accent);}
+.tts-vplay svg{width:10px;height:10px;fill:var(--text);stroke:none;margin-left:1px;}
+.tts-vplay:hover svg{fill:#fff;}
+.tts-vtxt{min-width:0;flex:1;}
+.voice-card-name{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.84rem;
+  line-height:1.2;color:var(--text);}
+.tts-vtags{display:flex;gap:0.25rem;margin-top:0.2rem;flex-wrap:wrap;}
+.tts-vt{font-size:0.58rem;font-weight:600;padding:1px 5px;border-radius:4px;
+  background:rgba(255,255,255,0.06);color:var(--muted);white-space:nowrap;}
+.tts-vt.f{background:rgba(252,92,125,0.13);color:#ff9ab0;}
+.tts-vt.m{background:rgba(92,240,208,0.11);color:#7fe3cd;}
+
+/* one control instead of four loose buttons */
+.tts-seg{display:flex;background:var(--surface2);border:1px solid var(--border);
+  border-radius:11px;padding:3px;gap:2px;}
+.tts-seg .tts-speed-btn{flex:1;background:none;border:none;color:var(--muted);
+  font-family:inherit;font-size:0.76rem;padding:0.48rem 0.3rem;border-radius:8px;
+  cursor:pointer;transition:all .18s;white-space:nowrap;}
+.tts-seg .tts-speed-btn:hover{color:var(--text);background:none;border:none;}
+.tts-seg .tts-speed-btn.selected{background:var(--accent);color:#fff;font-weight:600;
+  border:none;}
+
+@media(max-width:600px){
+  .voice-grid{grid-template-columns:1fr 1fr;}
+  .tts-scriptfoot{flex-direction:column;align-items:stretch;gap:0.5rem;}
+  .tts-scriptbtns{justify-content:flex-end;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -4293,12 +4361,14 @@ var TTS_HISTORY_KEY = 'crv_tts_history';
 
 function ttsSelectVoice(voice, el){
   TTS_VOICE = voice;
+  if(typeof ttsClearPreset === 'function') ttsClearPreset();
   document.querySelectorAll('.voice-card').forEach(function(c){ c.classList.remove('selected'); });
   if(el) el.classList.add('selected');
 }
 
 function ttsSetSpeed(speed, el){
   TTS_SPEED = speed;
+  if(typeof ttsClearPreset === 'function') ttsClearPreset();
   document.querySelectorAll('.tts-speed-btn').forEach(function(b){ b.classList.remove('selected'); });
   if(el) el.classList.add('selected');
   ttsUpdateMeta();
@@ -4327,13 +4397,25 @@ function ttsUpdateMeta(){
   var wordEl  = document.getElementById('tts-word-count');
   var durEl   = document.getElementById('tts-est-duration');
   var genBtn  = document.getElementById('tts-gen-btn');
+  var pl2   = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+  var maxCh = pl2 === 'creator' ? 4000 : 2000;
+
+  /* the markup supplies the words/characters labels, so these are numbers only */
   if(countEl){
-    var pl2 = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
-    var maxCh = pl2 === 'creator' ? 4000 : 2000;
-    countEl.textContent = chars + ' / ' + maxCh + ' characters' + (pl2 === 'pro' ? ' (Pro limit)' : pl2 === 'creator' ? ' (Creator limit)' : '');
-    countEl.style.color = chars > maxCh ? 'var(--accent2)' : chars > maxCh * 0.9 ? '#f59e0b' : 'var(--muted)';
+    countEl.textContent = chars;
+    countEl.style.color = chars > maxCh ? 'var(--accent2)' : '';
   }
-  if(wordEl) wordEl.textContent = words + ' words';
+  if(wordEl) wordEl.textContent = words;
+
+  /* the limit belongs beside the heading, where it is read before typing */
+  var remEl = document.getElementById('tts-remaining');
+  if(remEl){
+    var left = maxCh - chars;
+    remEl.textContent = left >= 0
+      ? left.toLocaleString() + ' characters left'
+      : Math.abs(left).toLocaleString() + ' over the limit';
+    remEl.className = 'tts-hint' + (left < 0 ? ' over' : '');
+  }
   if(durEl && words > 0){
     var secs = Math.round((words / (150 * TTS_SPEED)) * 60);
     durEl.textContent = 'Est. ~' + (secs < 60 ? secs + 's' : Math.floor(secs/60) + 'm ' + (secs%60) + 's');
@@ -4912,6 +4994,37 @@ async function bvForget(){
     bvMsg('Could not remove it right now.', 'err');
   }
 }
+
+/* Paste straight into the script box. Most people arrive with the text
+   already copied, so making them long press is friction for nothing. */
+async function ttsPasteScript(){
+  var ta = document.getElementById('tts-script');
+  if(!ta) return;
+  try {
+    if(!navigator.clipboard || !navigator.clipboard.readText){
+      ta.focus();
+      showToast('Long press the box and choose Paste.');
+      return;
+    }
+    var text = await navigator.clipboard.readText();
+    if(!text){ showToast('Nothing on your clipboard.'); return; }
+    ta.value = text;
+    ttsUpdateMeta();
+    ta.focus();
+    showToast('Pasted.');
+  } catch(e){
+    /* Safari and some mobile browsers refuse without a gesture, or the
+       user denied permission. Fall back rather than failing silently. */
+    ta.focus();
+    showToast('Long press the box and choose Paste.');
+  }
+}
+
+/* A preset sets voice and speed. Changing either by hand used to leave
+   the preset highlighted, which was no longer true. */
+function ttsClearPreset(){
+  document.querySelectorAll('.tts-preset').forEach(function(b){ b.classList.remove('selected'); });
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -5397,43 +5510,48 @@ async function bvForget(){
   <div class="panel-title">Voiceover Generator</div>
   <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">Turn any script into a professional voiceover. Pick a voice, set speed, download as MP3.</p>
 
-  <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Quick Presets</div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;">
+  <!-- Script first: it is the thing the user actually arrives with.
+       Voice and speed are settings and belong underneath it. -->
+  <div class="tts-sec">
+    <h3>Your script</h3>
+    <span class="tts-hint" id="tts-remaining"></span>
+  </div>
+  <div class="tts-scriptbox">
+    <textarea id="tts-script" placeholder="Paste your script here, or send one over from Script Writer."
+      oninput="ttsUpdateMeta()" aria-label="Script for voiceover"></textarea>
+    <div class="tts-scriptfoot">
+      <div class="tts-scriptmeta">
+        <span><b id="tts-word-count">0</b> words</span>
+        <span><b id="tts-char-count">0</b> characters</span>
+        <span id="tts-est-duration"></span>
+      </div>
+      <div class="tts-scriptbtns">
+        <button class="tts-mini" onclick="ttsPasteScript()">Paste</button>
+        <button class="tts-mini" onclick="ttsCopyScript()">Copy</button>
+        <button class="tts-mini" onclick="ttsClearScript()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tts-sec"><h3>Quick presets</h3><span class="tts-hint">sets voice and speed together</span></div>
+  <div class="tts-presets">
     <button class="tts-preset selected" onclick="ttsPreset('alloy',1,this)">YouTube Intro</button>
     <button class="tts-preset" onclick="ttsPreset('nova',1.1,this)">Instagram Reel</button>
     <button class="tts-preset" onclick="ttsPreset('onyx',0.9,this)">Podcast</button>
     <button class="tts-preset" onclick="ttsPreset('shimmer',1,this)">Ad Copy</button>
   </div>
 
-  <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Choose Voice</div>
-  <div class="voice-grid">
-    <div class="voice-card selected" onclick="ttsSelectVoice('alloy',this)"><div class="voice-card-name">Alloy</div><div class="voice-card-desc">Neutral & Balanced</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('alloy')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('echo',this)"><div class="voice-card-name">Echo</div><div class="voice-card-desc">Male & Clear</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('echo')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('fable',this)"><div class="voice-card-name">Fable</div><div class="voice-card-desc">Warm & Expressive</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('fable')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('onyx',this)"><div class="voice-card-name">Onyx</div><div class="voice-card-desc">Male & Deep</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('onyx')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('nova',this)"><div class="voice-card-name">Nova</div><div class="voice-card-desc">Female & Energetic</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('nova')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-    <div class="voice-card" onclick="ttsSelectVoice('shimmer',this)"><div class="voice-card-name">Shimmer</div><div class="voice-card-desc">Female & Soft</div><button class="tts-script-action-btn" style="padding:2px 5px;margin-top:2px;font-size:0.6rem;" onclick="event.stopPropagation();ttsPreviewVoice('shimmer')"><svg viewBox="0 0 24 24" style="width:9px;height:9px;fill:currentColor;stroke:none;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Preview</button></div>
-  </div>
+  <div class="tts-sec"><h3>Voice</h3><span class="tts-hint">tap the circle to hear it</span></div>
+  <div class="voice-grid"><div class="voice-card selected" onclick="ttsSelectVoice('alloy',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('alloy')" aria-label="Preview Alloy"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Alloy</div><div class="tts-vtags"><span class="tts-vt">Neutral</span><span class="tts-vt">Even</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('echo',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('echo')" aria-label="Preview Echo"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Echo</div><div class="tts-vtags"><span class="tts-vt m">Male</span><span class="tts-vt">Crisp</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('fable',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('fable')" aria-label="Preview Fable"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Fable</div><div class="tts-vtags"><span class="tts-vt">Warm</span><span class="tts-vt">Storytelling</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('onyx',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('onyx')" aria-label="Preview Onyx"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Onyx</div><div class="tts-vtags"><span class="tts-vt m">Male</span><span class="tts-vt">Deep</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('nova',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('nova')" aria-label="Preview Nova"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Nova</div><div class="tts-vtags"><span class="tts-vt f">Female</span><span class="tts-vt">Upbeat</span></div></div></div><div class="voice-card" onclick="ttsSelectVoice('shimmer',this)"><div class="tts-vplay" onclick="event.stopPropagation();ttsPreviewVoice('shimmer')" aria-label="Preview Shimmer"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="tts-vtxt"><div class="voice-card-name">Shimmer</div><div class="tts-vtags"><span class="tts-vt f">Female</span><span class="tts-vt">Gentle</span></div></div></div></div>
 
-  <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Speed</div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;">
-    <button class="tts-speed-btn" onclick="ttsSetSpeed(0.75,this)">Slow</button>
+  <div class="tts-sec"><h3>Speed</h3></div>
+  <div class="tts-seg">
+    <button class="tts-speed-btn" onclick="ttsSetSpeed(0.75,this)">Slower</button>
     <button class="tts-speed-btn selected" onclick="ttsSetSpeed(1.0,this)">Normal</button>
-    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.25,this)">Fast</button>
-    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.5,this)">Very Fast</button>
+    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.25,this)">Faster</button>
+    <button class="tts-speed-btn" onclick="ttsSetSpeed(1.5,this)">Fastest</button>
   </div>
 
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-    <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Your Script</div>
-    <span style="font-size:0.72rem;color:var(--muted);" id="tts-est-duration"></span>
-  </div>
-  <div class="tts-script-wrap">
-    <textarea id="tts-script" class="app-input" placeholder="Paste your script here, or generate one in Script Writer and click Send to Voiceover..." style="width:100%;min-height:140px;resize:vertical;margin-bottom:0;font-family:'DM Sans',sans-serif;line-height:1.6;font-size:16px;padding-top:2.2rem;" oninput="ttsUpdateMeta()" aria-label="Script for voiceover"></textarea>
-    <div class="tts-script-actions">
-      <button class="tts-script-action-btn" onclick="ttsCopyScript()"><svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
-      <button class="tts-script-action-btn" onclick="ttsClearScript()"><svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear</button>
-    </div>
-  </div>
   <div style="display:flex;justify-content:space-between;margin-top:0.4rem;margin-bottom:1rem;">
     <span style="font-size:0.72rem;" id="tts-char-count">0 / 4000 characters</span>
     <span style="font-size:0.72rem;color:var(--muted);" id="tts-word-count">0 words</span>
