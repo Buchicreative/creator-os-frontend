@@ -1632,6 +1632,43 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
 
 /* one flex item, so the option's gap cannot split a word */
 .niche-sugg{display:inline;white-space:nowrap;}
+
+/* ════════ REPURPOSE: many formats in one run ════════ */
+.rp-label{font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;}
+.rp-label span{color:var(--text);font-weight:600;}
+.rp-chips{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.85rem;}
+.rp-chip{background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;
+  color:var(--muted);padding:0.4rem 0.85rem;font-size:0.76rem;cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s,background .18s;
+  white-space:nowrap;}
+.rp-chip:hover{border-color:rgba(124,92,252,0.4);color:var(--text);}
+.rp-chip.on{border-color:var(--accent);color:var(--accent);
+  background:rgba(124,92,252,0.1);font-weight:600;}
+
+.rp-go{display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;margin-bottom:0.3rem;}
+.rp-note{font-size:0.7rem;color:var(--muted);opacity:0.8;}
+
+.rp-result{background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:0.8rem 0.9rem;margin-bottom:0.6rem;}
+.rp-result.rp-failed{border-color:rgba(252,92,125,0.3);}
+.rp-res-head{display:flex;align-items:center;justify-content:space-between;
+  gap:0.6rem;margin-bottom:0.55rem;flex-wrap:wrap;}
+.rp-res-name{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.8rem;
+  color:var(--accent);}
+.rp-res-acts{display:flex;gap:0.3rem;}
+.rp-act{background:none;border:1px solid var(--border);border-radius:7px;
+  color:var(--muted);padding:3px 10px;font-size:0.67rem;cursor:pointer;
+  font-family:inherit;transition:border-color .18s,color .18s;}
+.rp-act:hover{border-color:var(--accent);color:var(--accent);}
+.rp-act.done{border-color:var(--accent3);color:var(--accent3);}
+.rp-act:disabled{opacity:0.7;cursor:default;}
+.rp-res-body{white-space:pre-wrap;font-size:0.8rem;line-height:1.75;color:var(--text);
+  opacity:0.92;}
+
+@media(max-width:600px){
+  .rp-chip{flex:1 1 calc(50% - 0.2rem);text-align:center;padding:0.45rem 0.4rem;}
+  .rp-go .app-btn-sm{width:100%;}
+}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -2064,7 +2101,7 @@ function selectCdd(id, value){
   closeCdds();
 }
 document.addEventListener('click', function(e){ if(!e.target.closest('.cdd')) closeCdds(); });
-['cdd-platform','cdd-tone','cdd-repurpose-target','cdd-settings-niche','cdd-settings-tone','cdd-settings-platform'].forEach(function(id){
+['cdd-platform','cdd-tone','cdd-settings-niche','cdd-settings-tone','cdd-settings-platform'].forEach(function(id){
   var sel = document.querySelector('#'+id+'-menu .cdd-option.selected');
   if(sel) cddValues[id] = sel.textContent.trim();
 });
@@ -2215,25 +2252,133 @@ async function generateContent(){
 }
 
 /* REPURPOSE */
+var RP_MAX = 4;   /* four sequential calls sits well inside the 20/min limit */
+
+function rpSelected(){
+  return Array.prototype.slice.call(document.querySelectorAll('.rp-chip.on'))
+    .map(function(b){ return b.dataset.t; });
+}
+
+function rpToggle(btn){
+  var on = rpSelected();
+  if(!btn.classList.contains('on') && on.length >= RP_MAX){
+    showToast('Up to ' + RP_MAX + ' formats at a time.');
+    return;
+  }
+  btn.classList.toggle('on');
+  /* never leave zero selected — the button would do nothing */
+  if(!rpSelected().length) btn.classList.add('on');
+  rpUpdateLabel();
+}
+
+function rpUpdateLabel(){
+  var n  = rpSelected().length;
+  var el = document.getElementById('rp-selected');
+  if(el) el.textContent = n + (n === 1 ? ' format' : ' formats');
+  var note = document.getElementById('rp-note');
+  if(note) note.textContent = n > 1 ? 'one after another' : '';
+}
+
 async function repurposeContent(){
-  var content=document.getElementById('repurposeInput').value.trim();
-  var target=cddValues['cdd-repurpose-target']||'Twitter / X Thread';
+  var content = document.getElementById('repurposeInput').value.trim();
+  var targets = rpSelected();
   if(!content){ showToast('Please paste your content first.'); return; }
+  if(!targets.length){ showToast('Pick at least one format.'); return; }
   if(!checkContentPlan('repurpose')) return;
-  var btn=document.getElementById('repurpose-btn'), loading=document.getElementById('repurpose-loading'), output=document.getElementById('repurposeOutput'), actions=document.getElementById('repurpose-actions');
-  btn.disabled=true; loading.classList.add('show'); actions.style.display='none';
-  var instr={'Twitter / X Thread':'Convert to a viral Twitter/X thread. 6 numbered tweets, max 280 chars each. Hook first, CTA last.','LinkedIn Post':'Convert to a professional LinkedIn post. Personal angle, short paragraphs, question at end.','Instagram Caption':'Convert to a punchy Instagram caption with hook, arrows, hashtags.','Reel Script':'Convert to a TikTok/Reel script: HOOK (3s), BODY (3 points), CTA (3s).','YouTube Description':'Convert to YouTube description with overview, timestamps, CTA.','Email Newsletter':'Convert to email newsletter: subject line, opener, numbered body, CTA.'};
+
+  var btn     = document.getElementById('repurpose-btn');
+  var loading = document.getElementById('repurpose-loading');
+  var output  = document.getElementById('repurposeOutput');
+  var actions = document.getElementById('repurpose-actions');
+
+  btn.disabled = true;
+  loading.classList.add('show');
+  if(actions) actions.style.display = 'none';
+  output.innerHTML = '';
+
+  var done = 0;
+  for(var i = 0; i < targets.length; i++){
+    var target = targets[i];
+    var label = targets.length > 1
+      ? 'Repurposing ' + (i+1) + ' of ' + targets.length + '...'
+      : 'Repurposing...';
+    var lt = loading.childNodes[loading.childNodes.length-1];
+    if(lt && lt.nodeType === 3) lt.nodeValue = ' ' + label;
+
+    try {
+      var result;
+      if(AUTH.token){
+        var resp = await apiCall('POST', '/ai/repurpose', { content: content, format: target });
+        result = resp.result || resp.content;
+      } else {
+        await delay(600);
+        result = '[' + target + ']\n\n' + content;
+      }
+
+      var card = document.createElement('div');
+      card.className = 'rp-result';
+      card.innerHTML =
+        '<div class="rp-res-head">' +
+          '<span class="rp-res-name">' + escHtml(target) + '</span>' +
+          '<div class="rp-res-acts">' +
+            '<button class="rp-act" data-a="copy">Copy</button>' +
+            '<button class="rp-act" data-a="save">Save</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rp-res-body">' + escHtml(result) + '</div>';
+
+      (function(text, name, el){
+        el.querySelector('[data-a="copy"]').onclick = function(){
+          navigator.clipboard.writeText(text)
+            .then(function(){ showToast('Copied.'); })
+            .catch(function(){ showToast('Could not copy.'); });
+        };
+        /* Save was not possible before: the output could only be copied */
+        el.querySelector('[data-a="save"]').onclick = function(){
+          rpSave(text, name, this);
+        };
+      })(result, target, card);
+
+      output.appendChild(card);
+      done++;
+
+    } catch(e){
+      var err = document.createElement('div');
+      err.className = 'rp-result rp-failed';
+      err.innerHTML = '<div class="rp-res-head"><span class="rp-res-name">' +
+        escHtml(target) + '</span></div>' +
+        '<div class="rp-res-body" style="color:#ff5f56;">' + escHtml(e.message) + '</div>';
+      output.appendChild(err);
+    }
+  }
+
+  loading.classList.remove('show');
+  btn.disabled = false;
+  if(done > 1) showToast(done + ' formats ready.');
+}
+
+async function rpSave(text, target, btn){
+  if(!AUTH.token){ openModal('loginModal'); return; }
+  btn.disabled = true; btn.textContent = 'Saving...';
   try {
-    var result;
-    if(AUTH.token){
-      var resp = await apiCall('POST', '/ai/repurpose', { content: content, format: target });
-      result = resp.result || resp.content;
-    } else { await delay(700); result=(repurposeFallback[target]||repurposeFallback['Twitter / X Thread'])(content); }
-    output.innerHTML='<div class="out-label">'+escHtml(target)+'</div><div style="white-space:pre-wrap;font-size:0.8rem;line-height:1.75;">'+escHtml(result)+'</div>';
-    actions.style.display='flex';
+    var data = await apiCall('POST', '/projects', {
+      title: target + ' - ' + text.slice(0, 40),
+      content: text,
+      format: 'repurpose',
+    });
+    projects.unshift({
+      id: data.project.id, title: data.project.title, content: data.project.content,
+      format: data.project.format,
+      date: new Date(data.project.created_at).toLocaleDateString(),
+      ts: new Date(data.project.created_at).getTime() || Date.now(),
+    });
+    renderProjects();
+    btn.textContent = 'Saved'; btn.classList.add('done');
+    showToast('Saved to Projects.');
   } catch(e){
-    output.innerHTML='<div class="out-label">Error</div><div style="color:#ff5f56;font-size:0.8rem;">'+escHtml(e.message)+'</div>';
-  } finally { btn.disabled=false; loading.classList.remove('show'); }
+    btn.disabled = false; btn.textContent = 'Save';
+    showToast(e && e.message ? e.message : 'Could not save.');
+  }
 }
 
 /* PROJECTS */
@@ -3175,6 +3320,7 @@ function toggleMenu(){
 /* PANELS */
 var panelNames=['dashboard','ideas','create','repurpose','projects','videoresize','calendar','voiceover','settings'];
 function switchPanel(name){
+  if(name==='repurpose' && typeof rpUpdateLabel==='function') rpUpdateLabel();
   if(name==='ideas' && typeof renderRecentNiches==='function') renderRecentNiches();
   document.querySelectorAll('.app-panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.sidebar-item').forEach(function(s){s.classList.remove('active');});
@@ -4078,7 +4224,7 @@ function vrReset(){
 
 function vrFmtTime(s){ var m=Math.floor(s/60),ss=Math.floor(s%60); return m+':'+(ss<10?'0':'')+ss; }
 
-['cdd-platform','cdd-tone','cdd-repurpose-target','cdd-settings-niche','cdd-settings-tone','cdd-settings-platform'].forEach(function(id){
+['cdd-platform','cdd-tone','cdd-settings-niche','cdd-settings-tone','cdd-settings-platform'].forEach(function(id){
   var sel=document.querySelector('#'+id+'-menu .cdd-option.selected');
   if(sel) cddValues[id]=sel.textContent.trim();
 });
@@ -4972,7 +5118,7 @@ function selectPlatformOther(cddId){
   var valEl = document.getElementById(cddId + '-val');
   if(valEl) valEl.textContent = 'Other';
   /* Hide all other platform inputs first */
-  ['cdd-platform','cdd-repurpose-target','cdd-settings-platform'].forEach(function(id){
+  ['cdd-platform','cdd-settings-platform'].forEach(function(id){
     var inp = document.getElementById(id + '-other-input');
     if(inp && id !== cddId) inp.style.display = 'none';
   });
@@ -6012,10 +6158,14 @@ function createToVoiceover(){
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Content Repurposer</div>
             <textarea id="repurposeInput" class="app-input" style="width:100%;resize:vertical;min-height:80px;margin-bottom:0.6rem;" placeholder="Paste your existing content here..."></textarea>
-            <div class="row-gap">
-              <div class="cdd" id="cdd-repurpose-target" style="flex:1;"><div class="cdd-trigger" onclick="toggleCdd('cdd-repurpose-target')" style="width:100%;"><span id="cdd-repurpose-target-val">Twitter / X Thread</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-repurpose-target-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-repurpose-target','Twitter / X Thread')">Twitter / X Thread</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','LinkedIn Post')">LinkedIn Post</div>
-<input id="cdd-repurpose-target-other-input" class="app-input" placeholder="Type your platform..." style="display:none;margin-top:6px;width:100%;font-size:0.82rem;" oninput="cddValues['cdd-repurpose-target']=this.value" /><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Instagram Caption')">Instagram Caption</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Reel Script')">Reel Script</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','YouTube Description')">YouTube Description</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Email Newsletter')">Email Newsletter</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','Facebook Post')">Facebook Post</div><div class="cdd-option" onclick="selectCdd('cdd-repurpose-target','WhatsApp Status')">WhatsApp Status</div><div class="cdd-option" onclick="selectPlatformOther('cdd-repurpose-target')">Other</div></div></div>
+            <!-- Multiple targets in one run. The upgrade popup already
+                 promises "turn one post into 6 formats with a single
+                 click"; it just was not possible. -->
+            <div class="rp-label">Turn it into <span id="rp-selected">1 format</span></div>
+            <div class="rp-chips" id="rp-chips"><button class="rp-chip on" data-t="Twitter / X Thread" onclick="rpToggle(this)">Twitter / X Thread</button><button class="rp-chip" data-t="LinkedIn Post" onclick="rpToggle(this)">LinkedIn Post</button><button class="rp-chip" data-t="Instagram Caption" onclick="rpToggle(this)">Instagram Caption</button><button class="rp-chip" data-t="Reel Script" onclick="rpToggle(this)">Reel Script</button><button class="rp-chip" data-t="YouTube Description" onclick="rpToggle(this)">YouTube Description</button><button class="rp-chip" data-t="Email Newsletter" onclick="rpToggle(this)">Email Newsletter</button><button class="rp-chip" data-t="Facebook Post" onclick="rpToggle(this)">Facebook Post</button><button class="rp-chip" data-t="WhatsApp Status" onclick="rpToggle(this)">WhatsApp Status</button></div>
+            <div class="rp-go">
               <button class="app-btn-sm" id="repurpose-btn" onclick="repurposeContent()">Repurpose</button>
+              <span class="rp-note" id="rp-note"></span>
             </div>
             <div class="ai-loading" id="repurpose-loading"><div class="spinner"></div><div class="typing-dots"><span></span><span></span><span></span></div>&nbsp;Repurposing...</div>
             <div id="repurposeOutput" class="output-box" style="min-height:110px;"><div class="out-label">Repurposed Output</div><div style="color:var(--muted);font-size:0.8rem;">Paste content, pick a target format, then click Repurpose.</div></div>
