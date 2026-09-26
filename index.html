@@ -1734,6 +1734,27 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .dt-go{display:none;}   /* the row itself is the target on touch */
   .dt-foot{flex-direction:column;}
 }
+
+/* ════════ SETTINGS: grouped instead of one flat column ════════
+   Everything sat in a single scroll with the coupon field at the top and
+   account details buried below a textarea. */
+.set-sec{margin:1.9rem 0 0.85rem;padding-top:1.4rem;border-top:1px solid var(--border);}
+.set-sec:first-of-type{margin-top:0.4rem;padding-top:0;border-top:none;}
+.set-sec h3{font-family:'Outfit',sans-serif;font-size:0.9rem;font-weight:700;
+  letter-spacing:-0.01em;color:var(--text);}
+.set-sec p{font-size:0.73rem;color:var(--muted);margin-top:0.2rem;line-height:1.55;}
+
+.set-plan{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;
+  background:var(--surface2);border:1px solid var(--border);border-radius:11px;
+  padding:0.8rem 1rem;margin-bottom:0.9rem;flex-wrap:wrap;}
+.set-plan-l{min-width:0;}
+.set-plan-name{font-family:'Outfit',sans-serif;font-weight:800;font-size:0.95rem;
+  color:var(--text);}
+.set-plan-sub{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.set-plan-btn{background:var(--accent);color:#fff;border:none;border-radius:9px;
+  padding:0.5rem 1rem;font-size:0.76rem;font-family:'Outfit',sans-serif;font-weight:700;
+  cursor:pointer;flex:0 0 auto;transition:background .18s;}
+.set-plan-btn:hover{background:#8a6dff;}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -3398,7 +3419,7 @@ function switchPanel(name){
   if(idx>=0&&items[idx]) items[idx].classList.add('active');
   if(name==='videoresize'){ setTimeout(vrInitDrop,50); vrCheckPlan(); }
   if(name==='settings' && typeof initEmailNotifToggle === 'function'){ initEmailNotifToggle(); }
-  if(name==='settings'){ loadSettingsPanel(); if(typeof loadCouponGrant === 'function') loadCouponGrant(); if(typeof loadBrandVoice === 'function') loadBrandVoice(); }
+  if(name==='settings'){ loadSettingsPanel(); if(typeof renderSettingsPlan==='function') renderSettingsPlan(); if(typeof loadCouponGrant === 'function') loadCouponGrant(); if(typeof loadBrandVoice === 'function') loadBrandVoice(); }
   if(name==='voiceover' && typeof ttsLoadHistory === 'function') ttsLoadHistory();
   if(name==='calendar' && typeof calRender === 'function') calRender();
   if(typeof crvUpdateSuggestions === 'function') crvUpdateSuggestions(name);
@@ -5991,6 +6012,29 @@ function renderDashboard(){
 crvReady(function(){
   if(typeof renderDashboard === 'function') renderDashboard();
 });
+
+/* Which plan you are on belongs in Plan and billing, where someone
+   looking for it would actually go. */
+function renderSettingsPlan(){
+  var el = document.getElementById('set-plan');
+  if(!el) return;
+  var plan = AUTH.plan || localStorage.getItem('cos_plan') || 'free';
+  var map = {
+    free    : { name: 'Free',    sub: '5 ideas and 3 pieces a day' },
+    pro     : { name: 'Pro',     sub: '20 generations a day, all formats' },
+    team    : { name: 'Creator', sub: 'Unlimited generations' },
+    creator : { name: 'Creator', sub: 'Unlimited generations' },
+  };
+  var p = map[plan] || map.free;
+  el.innerHTML =
+    '<div class="set-plan-l">' +
+      '<div class="set-plan-name">' + p.name + ' plan</div>' +
+      '<div class="set-plan-sub">' + p.sub + '</div>' +
+    '</div>' +
+    (plan === 'free'
+      ? '<button class="set-plan-btn" onclick="switchPanel(\'dashboard\');setTimeout(function(){var el=document.getElementById(\'pricing\');if(el)el.scrollIntoView({behavior:\'smooth\'});},200);">Upgrade</button>'
+      : '');
+}
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
@@ -6633,59 +6677,11 @@ crvReady(function(){
             <button class="panel-back-btn" onclick="switchPanel('dashboard')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Dashboard</button>
               <div class="panel-title">Profile &amp; Settings</div>
 
-            <!-- Coupon -->
-            <div class="settings-row">
-              <label class="settings-label">Have a code?</label>
-              <div class="crv-redeem">
-                <input id="coupon-code" class="app-input" placeholder="Enter your code"
-                       maxlength="32" autocomplete="off" spellcheck="false"
-                       oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')"
-                       onkeydown="if(event.key==='Enter'){event.preventDefault();redeemCoupon();}">
-                <button class="app-btn-sm" id="coupon-btn" onclick="redeemCoupon()">Redeem</button>
-              </div>
-              <div class="crv-redeem-msg" id="coupon-msg"></div>
-              <div id="coupon-grant" class="crv-grant" style="display:none;"></div>
+            
+            <div class="set-sec">
+              <h3>Account</h3>
             </div>
-
-            <!-- Brand Voice -->
-            <div class="settings-row">
-              <label class="settings-label">Brand Voice</label>
-              <div class="bv-intro">Paste a few posts you have written. Crevers learns how you write and matches it in everything it generates for you.</div>
-
-              <div id="bv-untrained">
-                <textarea id="bv-samples" class="app-input bv-textarea"
-                  placeholder="Paste 3 to 5 of your own posts here.&#10;&#10;Leave a blank line between each one."
-                  spellcheck="false" oninput="bvCount()"></textarea>
-                <div class="bv-meta">
-                  <span id="bv-chars">0 characters</span>
-                  <button class="app-btn-sm" id="bv-train-btn" onclick="bvTrain()">Learn my voice</button>
-                </div>
-              </div>
-
-              <div id="bv-trained" style="display:none;">
-                <div class="bv-card">
-                  <div class="bv-card-top">
-                    <span class="bv-badge">Trained</span>
-                    <span id="bv-when" class="bv-when"></span>
-                  </div>
-                  <div id="bv-profile" class="bv-profile"></div>
-                </div>
-                <div class="bv-actions">
-                  <label class="bv-toggle">
-                    <input type="checkbox" id="bv-enabled" onchange="bvToggle(this.checked)">
-                    <span>Use my voice when generating</span>
-                  </label>
-                  <div>
-                    <button class="bv-link" onclick="bvRetrain()">Retrain</button>
-                    <button class="bv-link danger" onclick="bvForget()">Forget</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bv-msg" id="bv-msg"></div>
-            </div>
-
-            <!-- Account Email (read-only) -->
+<!-- Account Email (read-only) -->
             <div class="settings-row">
               <label class="settings-label">Account Email</label>
               <div id="settings-email-display" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;font-size:0.88rem;color:var(--muted);cursor:not-allowed;">—</div>
@@ -6701,7 +6697,12 @@ crvReady(function(){
               <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">This is how your name appears on the homepage greeting.</div>
             </div>
 
-            <!-- Niche -->
+            
+            <div class="set-sec">
+              <h3>Content defaults</h3>
+              <p>Used as the starting point whenever you generate something.</p>
+            </div>
+<!-- Niche -->
             <div class="settings-row">
               <label class="settings-label">Your Niche</label>
               <div class="cdd" id="cdd-settings-niche">
@@ -6743,11 +6744,83 @@ crvReady(function(){
             <div class="settings-row"><label class="settings-label">Content Tone</label><div class="cdd" id="cdd-settings-tone"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-tone')" style="width:100%;"><span id="cdd-settings-tone-val">Bold</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-tone-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-tone','Bold')">Bold</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Educational')">Educational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Entertaining')">Entertaining</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Inspirational')">Inspirational</div><div class="cdd-option" onclick="selectCdd('cdd-settings-tone','Conversational')">Conversational</div></div></div></div>
 
             <!-- Platform -->
-            <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram
-<input id="cdd-settings-platform-other-input" class="app-input" placeholder="Type your platform..." style="display:none;margin-top:6px;width:100%;font-size:0.82rem;" oninput="cddValues['cdd-settings-platform']=this.value" /></div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div>
+            <div class="settings-row"><label class="settings-label">Primary Platform</label><div class="cdd" id="cdd-settings-platform"><div class="cdd-trigger" onclick="toggleCdd('cdd-settings-platform')" style="width:100%;"><span id="cdd-settings-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-settings-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-settings-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','TikTok')">TikTok</div>
 <input id="cdd-settings-platform-other-input" class="app-input" placeholder="Type your platform..." style="display:none;margin-top:6px;width:100%;font-size:0.82rem;" oninput="cddValues['cdd-settings-platform']=this.value" /><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','YouTube')">YouTube</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','Facebook')">Facebook</div><div class="cdd-option" onclick="selectCdd('cdd-settings-platform','WhatsApp')">WhatsApp</div><div class="cdd-option" onclick="selectPlatformOther('cdd-settings-platform')">Other</div></div></div></div>
 
-            <!-- Email Notifications -->
+            
+            <button class="app-btn-sm" style="width:100%;margin-top:0.25rem;" onclick="saveSettings()">Save Settings</button>
+
+            <div class="set-sec">
+              <h3>Brand Voice</h3>
+              <p>Teach Crevers how you write, so output sounds like you.</p>
+            </div>
+<!-- Brand Voice -->
+            <div class="settings-row">
+              <div class="bv-intro">Paste a few posts you have written. Crevers learns how you write and matches it in everything it generates for you.</div>
+
+              <div id="bv-untrained">
+                <textarea id="bv-samples" class="app-input bv-textarea"
+                  placeholder="Paste 3 to 5 of your own posts here.&#10;&#10;Leave a blank line between each one."
+                  spellcheck="false" oninput="bvCount()"></textarea>
+                <div class="bv-meta">
+                  <span id="bv-chars">0 characters</span>
+                  <button class="app-btn-sm" id="bv-train-btn" onclick="bvTrain()">Learn my voice</button>
+                </div>
+              </div>
+
+              <div id="bv-trained" style="display:none;">
+                <div class="bv-card">
+                  <div class="bv-card-top">
+                    <span class="bv-badge">Trained</span>
+                    <span id="bv-when" class="bv-when"></span>
+                  </div>
+                  <div id="bv-profile" class="bv-profile"></div>
+                </div>
+                <div class="bv-actions">
+                  <label class="bv-toggle">
+                    <input type="checkbox" id="bv-enabled" onchange="bvToggle(this.checked)">
+                    <span>Use my voice when generating</span>
+                  </label>
+                  <div>
+                    <button class="bv-link" onclick="bvRetrain()">Retrain</button>
+                    <button class="bv-link danger" onclick="bvForget()">Forget</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bv-msg" id="bv-msg"></div>
+            </div>
+
+            
+            <div class="set-sec">
+              <h3>Plan and billing</h3>
+            </div>
+            <div class="set-plan" id="set-plan"></div>
+<!-- Coupon -->
+            <div class="settings-row">
+              <label class="settings-label">Have a code?</label>
+              <div class="crv-redeem">
+                <input id="coupon-code" class="app-input" placeholder="Enter your code"
+                       maxlength="32" autocomplete="off" spellcheck="false"
+                       oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')"
+                       onkeydown="if(event.key==='Enter'){event.preventDefault();redeemCoupon();}">
+                <button class="app-btn-sm" id="coupon-btn" onclick="redeemCoupon()">Redeem</button>
+              </div>
+              <div class="crv-redeem-msg" id="coupon-msg"></div>
+              <div id="coupon-grant" class="crv-grant" style="display:none;"></div>
+            </div>
+
+            <!-- Cancel subscription (only shown for paid users) -->
+            <div id="cancel-sub-wrap" style="display:none;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;">Subscription</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;">You'll keep access until the end of your billing period.</div>
+              <button class="app-btn-sm" style="width:100%;background:rgba(255,59,48,0.1);color:#ff3b30;border:1px solid rgba(255,59,48,0.2);" onclick="cancelSubscription()">Cancel Subscription</button>
+            </div>
+
+            <div class="set-sec">
+              <h3>Notifications</h3>
+            </div>
+<!-- Email Notifications -->
             <div class="settings-row" style="margin-top:1rem;">
               <label class="settings-label">Email Notifications</label>
               <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;">
@@ -6764,15 +6837,7 @@ crvReady(function(){
               <div style="font-size:0.68rem;color:var(--muted);margin-top:0.3rem;">You can turn this off at any time.</div>
             </div>
 
-            <button class="app-btn-sm" style="width:100%;margin-top:0.5rem;" onclick="saveSettings()">Save Settings</button>
-
-            <!-- Cancel subscription (only shown for paid users) -->
-            <div id="cancel-sub-wrap" style="display:none;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
-              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.3rem;">Subscription</div>
-              <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;">You'll keep access until the end of your billing period.</div>
-              <button class="app-btn-sm" style="width:100%;background:rgba(255,59,48,0.1);color:#ff3b30;border:1px solid rgba(255,59,48,0.2);" onclick="cancelSubscription()">Cancel Subscription</button>
-            </div>
-          </div>
+                      </div>
 
         </div>
       </div>
