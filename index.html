@@ -1505,14 +1505,22 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
    Was a flat list with title, format and a delete cross. No search, no
    filter, no sort, no sense of what was inside any item. */
 .pj-bar{display:flex;gap:0.6rem;margin-bottom:0.75rem;flex-wrap:wrap;}
-.pj-search{position:relative;flex:1 1 220px;min-width:0;}
-.pj-search svg{position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);
-  width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;
-  stroke-linecap:round;pointer-events:none;}
-.pj-search .app-input{padding-left:2.1rem;padding-right:2rem;width:100%;margin:0;}
-.pj-clear{position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);
-  background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.8rem;
-  padding:4px 6px;line-height:1;}
+/* The wrapper is the field. Overlaying an absolutely positioned icon on
+   an inline-block input left a baseline gap underneath it and put the
+   icon outside the box. Flex children inside a styled wrapper cannot
+   drift like that. */
+.pj-search{display:flex;align-items:center;gap:0.5rem;flex:1 1 220px;min-width:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:0 0.7rem;transition:border-color 0.2s;}
+.pj-search:focus-within{border-color:var(--accent);}
+.pj-search svg{width:14px;height:14px;flex:0 0 14px;stroke:var(--muted);fill:none;
+  stroke-width:2;stroke-linecap:round;display:block;}
+.pj-search .app-input{flex:1;min-width:0;background:none;border:none;
+  padding:0.55rem 0;margin:0;border-radius:0;outline:none;font-size:0.82rem;
+  display:block;}
+.pj-search .app-input:focus{border:none;}
+.pj-clear{flex:0 0 auto;background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:0.78rem;padding:2px 2px;line-height:1;}
 .pj-clear:hover{color:var(--accent2);}
 .pj-filters{display:flex;gap:0.5rem;flex:0 0 auto;}
 .pj-filters .cdd{min-width:132px;}
