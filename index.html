@@ -1358,6 +1358,13 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   .cal-go{display:none;}          /* tapping the card opens the menu on touch */
   .cal-plan{padding:0.65rem 0.75rem;}
 }
+
+/* The format dropdown has eight options and sits low in the modal, so
+   without a ceiling it runs off a short screen. Scoped to the calendar
+   modal so other dropdowns keep their current behaviour. */
+#calModal .cdd-menu{max-height:210px;overflow-y:auto;}
+#calModal .cdd{width:100%;}
+#calModal .cdd-trigger{width:100%;}
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -4129,20 +4136,32 @@ function calRender(){
 }
 
 /* Open add modal */
+/* a dropdown left open when the modal closes reappears open next time */
+function calCloseDropdowns(){
+  if(typeof closeCdds === 'function') closeCdds();
+}
+
 function calOpenAddModal(date){
+  calCloseDropdowns();
   CAL_SELECTED_DATE = date;
   var lbl = document.getElementById('cal-modal-date');
   if(lbl) lbl.textContent = CAL_DAYS[date.getDay()] + ', ' + CAL_MONTHS[date.getMonth()] + ' ' + date.getDate();
   var inp = document.getElementById('cal-idea-input');
   if(inp) inp.value = '';
+  /* reset both dropdowns so last week's choice does not carry over */
+  if(typeof selectCdd === 'function'){
+    selectCdd('cdd-cal-platform', 'Instagram');
+    selectCdd('cdd-cal-format',   'Script');
+  }
   openModal('calModal');
 }
 
 /* Save a new plan */
 function calSavePlan(){
   var idea     = (document.getElementById('cal-idea-input') || {}).value || '';
-  var platform = (document.getElementById('cal-platform-select') || {}).value || 'Instagram';
-  var format   = (document.getElementById('cal-format-select') || {}).value || 'Script';
+  /* the site's own dropdown stores its value in cddValues, not on the element */
+  var platform = cddValues['cdd-cal-platform'] || 'Instagram';
+  var format   = cddValues['cdd-cal-format']   || 'Script';
 
   if(!idea.trim()){ showToast('Please enter a content idea.'); return; }
   if(!AUTH.token){ showToast('Please log in to use the calendar.'); return; }
@@ -5360,25 +5379,11 @@ async function bvForget(){
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;">
         <div>
           <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Platform</div>
-          <select id="cal-platform-select" class="app-input" style="width:100%;">
-            <option>Instagram</option>
-            <option>TikTok</option>
-            <option>YouTube</option>
-            <option>Twitter / X</option>
-            <option>LinkedIn</option>
-            <option>Facebook</option>
-          </select>
+          <div class="cdd" id="cdd-cal-platform" style="width:100%;"><div class="cdd-trigger" onclick="toggleCdd('cdd-cal-platform')"><span id="cdd-cal-platform-val">Instagram</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-cal-platform-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-cal-platform','Instagram')">Instagram</div><div class="cdd-option" onclick="selectCdd('cdd-cal-platform','TikTok')">TikTok</div><div class="cdd-option" onclick="selectCdd('cdd-cal-platform','YouTube')">YouTube</div><div class="cdd-option" onclick="selectCdd('cdd-cal-platform','Twitter / X')">Twitter / X</div><div class="cdd-option" onclick="selectCdd('cdd-cal-platform','LinkedIn')">LinkedIn</div><div class="cdd-option" onclick="selectCdd('cdd-cal-platform','Facebook')">Facebook</div><div class="cdd-option" onclick="selectCdd('cdd-cal-platform','WhatsApp')">WhatsApp</div></div></div>
         </div>
         <div>
           <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Format</div>
-          <select id="cal-format-select" class="app-input" style="width:100%;">
-            <option>Script</option>
-            <option>Carousel</option>
-            <option>Caption</option>
-            <option>Thread</option>
-            <option>Short Video</option>
-            <option>Blog Post</option>
-          </select>
+          <div class="cdd" id="cdd-cal-format" style="width:100%;"><div class="cdd-trigger" onclick="toggleCdd('cdd-cal-format')"><span id="cdd-cal-format-val">Script</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="cdd-menu" id="cdd-cal-format-menu"><div class="cdd-option selected" onclick="selectCdd('cdd-cal-format','Script')">Script</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Carousel')">Carousel</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Caption')">Caption</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Thread')">Thread</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Short Video')">Short Video</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Reel')">Reel</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Story')">Story</div><div class="cdd-option" onclick="selectCdd('cdd-cal-format','Voiceover')">Voiceover</div></div></div>
         </div>
       </div>
 
