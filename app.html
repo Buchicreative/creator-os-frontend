@@ -592,6 +592,99 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 .tone-pick button{background:none;border:none;color:var(--faint);font-family:inherit;
   font-size:.8rem;padding:0;cursor:pointer;white-space:nowrap}
 .tone-pick button.on{color:#c0aeff;font-weight:600}
+
+/* ════════ DROPDOWN ════════
+   A sheet rather than an absolutely positioned menu: a menu inside a
+   scrolling screen gets clipped, and on a phone that means options you
+   cannot reach. */
+.dd{display:flex;align-items:center;justify-content:space-between;gap:.6rem;
+  width:100%;background:var(--s1);border:1px solid var(--line);border-radius:14px;
+  padding:.72rem .95rem;cursor:pointer;color:var(--ink);text-align:left;
+  font-family:inherit;font-size:.87rem;margin-bottom:.6rem}
+.dd:active{background:var(--s2)}
+.dd-lbl{font-size:.67rem;color:var(--dim);display:block;margin-bottom:1px}
+.dd-val{font-weight:500;display:block;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.dd-c{flex:1;min-width:0}
+.dd svg{width:13px;height:13px;flex:0 0 13px;stroke:var(--faint);fill:none;
+  stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dd-row{display:flex;gap:.55rem;margin-bottom:.6rem}
+.dd-row .dd{margin-bottom:0;flex:1;min-width:0}
+
+.dd-opt{display:flex;align-items:center;justify-content:space-between;gap:.7rem;
+  width:100%;background:none;border:none;border-bottom:1px solid var(--line);
+  color:var(--ink);padding:.9rem .2rem;font-family:inherit;font-size:.89rem;
+  cursor:pointer;text-align:left}
+.dd-opt:last-child{border-bottom:none}
+.dd-opt:active{background:var(--s2)}
+.dd-opt.on{color:#c0aeff;font-weight:600}
+.dd-opt .tickmark{width:16px;height:16px;flex:0 0 16px;stroke:var(--violet);fill:none;
+  stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.dd-opt.on .tickmark{opacity:1}
+.dd-opt small{display:block;font-size:.72rem;color:var(--dim);font-weight:400;margin-top:2px}
+
+.hear{display:flex;align-items:center;justify-content:center;gap:.45rem;width:100%;
+  background:none;border:1px solid rgba(124,92,252,.3);border-radius:13px;
+  color:#c0aeff;padding:.62rem;font-size:.8rem;font-family:inherit;cursor:pointer;
+  margin-bottom:.6rem}
+.hear svg{width:11px;height:11px;fill:currentColor;stroke:none}
+.hear:active{background:rgba(124,92,252,.1)}
+
+/* ── calendar ── */
+.week-nav{display:flex;gap:.4rem;margin-bottom:.9rem}
+.week-nav button{background:var(--s1);border:1px solid var(--line);border-radius:12px;
+  color:var(--dim);padding:.55rem;font-family:inherit;font-size:1rem;cursor:pointer;
+  flex:0 0 46px}
+.week-nav .this-week{flex:1;font-size:.8rem}
+.week-nav button:active{background:var(--s2)}
+.cal-bar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;
+  margin-bottom:.45rem}
+.cal-fill{height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--violet),var(--mint));transition:width .4s}
+.cal-sum{font-size:.73rem;color:var(--dim);margin-bottom:.4rem}
+.day-row{display:flex;gap:.85rem;padding:.8rem 0;border-top:1px solid var(--line)}
+.day-row.past{opacity:.45}
+.day-col{width:44px;flex:0 0 44px;text-align:center}
+.day-nm{font-size:.6rem;font-weight:700;letter-spacing:.08em;color:var(--dim)}
+.day-no{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.25rem}
+.day-row.today .day-nm,.day-row.today .day-no{color:var(--violet)}
+.day-body{flex:1;min-width:0}
+.add-day{width:100%;background:none;border:1px dashed rgba(255,255,255,.1);
+  border-radius:13px;color:var(--faint);padding:.6rem .8rem;font-size:.76rem;
+  cursor:pointer;font-family:inherit;text-align:left}
+.add-day:active{border-color:rgba(124,92,252,.4);color:#c0aeff}
+.plan-x{background:none;border:none;color:var(--faint);font-size:.8rem;
+  padding:2px 4px;cursor:pointer;flex:0 0 auto;align-self:center}
+
+/* ── video ── */
+.vid-drop{display:block;border:1px dashed rgba(124,92,252,.35);border-radius:20px;
+  padding:2.1rem 1.2rem;text-align:center;cursor:pointer;
+  background:rgba(124,92,252,.04);margin-bottom:1rem}
+.vid-drop b{font-family:'Outfit',sans-serif;font-size:.95rem;display:block}
+.vid-drop span{font-size:.76rem;color:var(--dim);display:block;margin-top:2px}
+.vid-stage{position:relative;border-radius:16px;overflow:hidden;background:#000;
+  margin-bottom:.7rem;display:flex;align-items:center;justify-content:center;
+  min-height:150px}
+.vid-stage video{width:100%;display:block}
+.vid-mask{position:absolute;top:0;bottom:0;border:2px solid var(--violet);
+  border-radius:8px;box-shadow:0 0 0 2000px rgba(0,0,0,.62);pointer-events:none;
+  transition:left .15s}
+.vid-meta{font-size:.73rem;color:var(--dim);margin-bottom:1rem;text-align:center}
+.pan{margin:.2rem 0 1rem}
+.pan span{font-size:.73rem;color:var(--dim);display:block;margin-bottom:.5rem}
+.pan input{width:100%;accent-color:var(--violet);height:22px}
+
+.faces{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem}
+.face{aspect-ratio:1;border-radius:14px;cursor:pointer;background:var(--s2);
+  border:2px solid transparent;display:flex;align-items:center;justify-content:center}
+.face.on{border-color:var(--violet);background:rgba(124,92,252,.14)}
+.face svg{width:52%;height:52%;stroke:var(--dim);fill:none;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.face.on svg{stroke:#c0aeff}
+.face-letter{font-family:'Outfit',sans-serif;font-weight:800;font-size:.95rem;
+  color:var(--dim)}
+.face.on .face-letter{color:#c0aeff}
+.avatar,.pfp{overflow:hidden}
 </style>
 </head>
 <body>
@@ -678,7 +771,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="niche" placeholder="What is your niche?">
       </div>
-      <div class="filt" id="idea-plats"></div>
+      <div id="idea-plats"></div>
       <button class="go" id="idea-btn" onclick="genIdeas()">Generate Ideas</button>
       <div class="meter" id="idea-meter"></div>
 
@@ -699,11 +792,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
       </div>
 
       <div class="area"><textarea id="w-idea" placeholder="What is it about?"></textarea></div>
-      <div class="filt" id="w-formats"></div>
-      <div class="tone-line">
-        <span>Tone</span>
-        <div class="tone-pick" id="w-tones"></div>
-      </div>
+      <div id="w-controls"></div>
       <button class="go" id="w-btn" onclick="genContent()">Generate</button>
       <div class="meter" id="w-meter"></div>
 
@@ -735,11 +824,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
       <div class="area"><textarea id="v-script" placeholder="Paste your script here." oninput="vMeta()"></textarea></div>
       <div class="meter" style="text-align:left;margin-bottom:1rem;" id="v-meta"></div>
 
-      <div class="sec"><h3>Voice</h3><span class="hint">tap the circle to hear it</span></div>
-      <div class="voices" id="v-voices"></div>
-
-      <div class="sec"><h3>Speed</h3></div>
-      <div class="seg" id="v-speed"></div>
+      <div id="v-controls"></div>
 
       <button class="go" id="v-btn" onclick="genVoice()" style="margin-top:1.1rem;">Generate voiceover</button>
       <div class="meter" id="v-usage"></div>
@@ -748,8 +833,53 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
       <audio id="v-audio" preload="metadata" style="display:none;"></audio>
     </div>
 
-    <div class="screen" id="s-video"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Video Auto Resize</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h4>Best on a laptop for now</h4><p>Resizing video in a phone browser is heavy. Use crevers.com on a computer until the native build.</p></div></div>
-    <div class="screen" id="s-cal"><div class="head"><h2>Content Calendar</h2></div><div id="cal-out"></div></div>
+    <div class="screen" id="s-video">
+      <div class="head sub">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Video Auto Resize</h2>
+      </div>
+
+      <label class="vid-drop" id="vid-drop">
+        <input type="file" id="vid-file" accept="video/*" onchange="vidPicked(this)" hidden>
+        <div class="empty-mark"><svg viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+        <b>Choose a video</b>
+        <span>A landscape clip from your phone</span>
+      </label>
+
+      <div id="vid-work" style="display:none;">
+        <div class="vid-stage">
+          <video id="vid-prev" playsinline muted loop></video>
+          <div class="vid-mask" id="vid-mask"></div>
+        </div>
+        <div class="vid-meta" id="vid-meta"></div>
+
+        <div id="vid-controls"></div>
+
+        <div class="pan">
+          <span>Crop position</span>
+          <input type="range" id="vid-pan" min="0" max="100" value="50" oninput="vidPan()">
+        </div>
+
+        <button class="go" id="vid-btn" onclick="vidExport()">Export vertical</button>
+        <div class="meter" id="vid-note">Audio is copied across untouched, so it cannot drift</div>
+        <button class="go ghost" onclick="vidReset()">Choose a different video</button>
+      </div>
+    </div>
+
+    <div class="screen" id="s-cal">
+      <div class="head">
+        <div class="head-eyebrow" id="cal-range"></div>
+        <h2>Content Calendar</h2>
+      </div>
+      <div class="week-nav">
+        <button onclick="calWeek(-1)" aria-label="Previous week">&#8249;</button>
+        <button class="this-week" onclick="calWeek(0)">This week</button>
+        <button onclick="calWeek(1)" aria-label="Next week">&#8250;</button>
+      </div>
+      <div class="cal-bar"><div class="cal-fill" id="cal-fill"></div></div>
+      <div class="cal-sum" id="cal-sum"></div>
+      <div id="cal-out"></div>
+    </div>
     <div class="screen" id="s-library">
       <div class="head"><h2>Saved Projects</h2></div>
 
@@ -843,12 +973,34 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
     </div>
   </div>
 
+  <!-- plan something -->
+  <div class="scrim" id="pl-scrim" onclick="closePlan()"></div>
+  <div class="sheet" id="pl-sheet" style="max-height:82%;overflow-y:auto;">
+    <div class="grab"></div>
+    <h3 id="pl-title">Plan something</h3>
+    <p id="pl-day"></p>
+    <div class="area"><textarea id="pl-idea" placeholder="What are you posting?"></textarea></div>
+    <div id="pl-controls"></div>
+    <button class="go" onclick="savePlan(this)">Add to the day</button>
+  </div>
+
+  <!-- one picker for every dropdown -->
+  <div class="scrim" id="dd-scrim" onclick="closeDD()"></div>
+  <div class="sheet" id="dd-sheet" style="max-height:74%;overflow-y:auto;">
+    <div class="grab"></div>
+    <h3 id="dd-title"></h3>
+    <div id="dd-list" class="dd-list"></div>
+  </div>
+
   <!-- colour picker -->
   <div class="scrim" id="col-scrim" onclick="closeColours()"></div>
   <div class="sheet" id="col-sheet">
     <div class="grab"></div>
-    <h3>Pick your colour</h3>
-    <p>Loads instantly, costs no data, and works on any connection.</p>
+    <h3>Your avatar</h3>
+    <p>Drawn, not uploaded, so it loads instantly and costs no data.</p>
+    <div class="lbl" style="margin-bottom:.5rem;">Symbol</div>
+    <div class="faces" id="faces"></div>
+    <div class="lbl" style="margin:1.1rem 0 .5rem;">Colour</div>
     <div class="swatches" id="swatches"></div>
   </div>
 
@@ -1105,6 +1257,10 @@ function go(name){
   if(name === 'edit')    drawEdit();
   if(name === 'plans')   drawPlans();
   if(name === 'home')    drawHome();
+  if(name === 'ideas')     drawPlatforms();
+  if(name === 'write')     drawWriteControls();
+  if(name === 'repurpose') drawRpTargets();
+  if(name === 'voice')     drawVoiceControls();
   if(name === 'chat')    drawChat();
   /* typing, not navigating */
   var chatting = (name === 'chat');
@@ -1209,18 +1365,6 @@ function ago(ts){
 var PLATFORMS = ['Instagram','TikTok','YouTube','Twitter / X','LinkedIn','Facebook','WhatsApp'];
 var PLATFORM = 'Instagram';
 
-function drawPlatforms(){
-  document.getElementById('idea-plats').innerHTML = PLATFORMS.map(function(p){
-    return '<button class="' + (p===PLATFORM?'on':'') + '" onclick="pickPlat(this,\'' +
-      p.replace(/'/g,"\\'") + '\')">' + p + '</button>';
-  }).join('');
-}
-function pickPlat(el, p){
-  PLATFORM = p;
-  document.querySelectorAll('#idea-plats button').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-}
-
 async function loadUsage(){
   var el = document.getElementById('idea-meter');
   try {
@@ -1305,47 +1449,6 @@ function planIdea(i, btn){
 
 
 /* ══════════ CALENDAR ══════════ */
-function drawCalendar(){
-  loadPlans();
-  var out = document.getElementById('cal-out');
-  var today = new Date(); today.setHours(0,0,0,0);
-  var start = new Date(today); start.setDate(start.getDate() - start.getDay() + 1);
-
-  var html = '';
-  for(var i=0;i<7;i++){
-    var d = new Date(start); d.setDate(d.getDate()+i);
-    var k = dateKey(d);
-    var items = CAL_PLANS.filter(function(p){ return p.date === k; });
-    var isToday = k === dateKey(today);
-    var rows = items.length ? items.map(function(p){
-      var idx = CAL_PLANS.indexOf(p);
-      return '<div class="plan' + (p.done?' done':'') + '" style="background:var(--s1);">' +
-        '<div class="tick" onclick="togglePlanCal(' + idx + ')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-        '<div class="plan-b"><div class="plan-t">' + esc(p.idea) + '</div>' +
-        '<div class="chips">' + (p.platform?'<span class="chip">'+esc(p.platform)+'</span>':'') +
-        '<span class="chip q">' + esc(p.format||'') + '</span></div></div></div>';
-    }).join('')
-    : '<div style="border:1px dashed rgba(255,255,255,.09);border-radius:14px;padding:.65rem .85rem;font-size:.76rem;color:var(--faint);">Nothing planned</div>';
-
-    html += '<div style="display:flex;gap:.85rem;padding:.75rem 0;border-top:1px solid var(--line);' +
-      (d < today ? 'opacity:.45;' : '') + '">' +
-      '<div style="width:44px;flex:0 0 44px;text-align:center;">' +
-      '<div style="font-size:.6rem;font-weight:700;letter-spacing:.08em;color:' +
-        (isToday?'var(--violet)':'var(--dim)') + ';">' +
-        d.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase() + '</div>' +
-      '<div style="font-family:Outfit,sans-serif;font-weight:800;font-size:1.25rem;color:' +
-        (isToday?'var(--violet)':'var(--ink)') + ';">' + d.getDate() + '</div></div>' +
-      '<div style="flex:1;min-width:0;">' + rows + '</div></div>';
-  }
-  out.innerHTML = html;
-}
-function togglePlanCal(i){
-  if(!CAL_PLANS[i]) return;
-  CAL_PLANS[i].done = !CAL_PLANS[i].done;
-  savePlans();
-  drawCalendar();
-}
-
 /* ══════════ PROFILE ══════════ */
 
 
@@ -1408,29 +1511,6 @@ var FORMATS = [
 var TONES = ['Bold','Educational','Entertaining','Inspirational','Conversational'];
 var FORMAT = 'script', TONE = 'Bold';
 
-function drawWriteControls(){
-  document.getElementById('w-formats').innerHTML = FORMATS.map(function(f){
-    return '<button class="' + (f[0]===FORMAT?'on':'') +
-      '" onclick="pickFormat(this,\'' + f[0] + '\')">' + f[1] + '</button>';
-  }).join('');
-  /* tone is a taste rather than a mode, so it stays a quiet inline list */
-  document.getElementById('w-tones').innerHTML = TONES.map(function(t){
-    return '<button class="' + (t===TONE?'on':'') +
-      '" onclick="pickTone(this,\'' + t + '\')">' + t + '</button>';
-  }).join('');
-}
-function pickFormat(el, f){
-  FORMAT = f;
-  document.querySelectorAll('#w-formats button').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-}
-function pickTone(el, t){
-  TONE = t;
-  document.querySelectorAll('#w-tones button').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-}
-
-/* Carousel and Thread are Pro. Say so before the request, not after. */
 function planBlocks(feature){
   var plan = AUTH.plan || 'free';
   if(plan !== 'free') return false;
@@ -1451,7 +1531,8 @@ async function genContent(){
   out.innerHTML = '<div class="loading"><div class="spin"></div><p>Writing your ' + FORMAT + '...</p></div>';
 
   try {
-    var d = await api('POST','/ai/create',{ idea:idea, format:FORMAT, tone:TONE });
+    var d = await api('POST','/ai/create',{ idea:idea, format:FORMAT, tone:TONE,
+                                            platform:CREATE_PLATFORM });
     var text = d.content || d.result || '';
     if(!text) throw new Error('Nothing came back. Try again.');
     window.__DRAFT = text;
@@ -1582,31 +1663,6 @@ var VOICES = [
 var SPEEDS = [['0.75','Slower'],['1.0','Normal'],['1.25','Faster'],['1.5','Fastest']];
 var VOICE = 'alloy', SPEED = 1.0, PREVIEW = null;
 
-function drawVoiceControls(){
-  document.getElementById('v-voices').innerHTML = VOICES.map(function(v){
-    return '<button class="voice' + (v[0]===VOICE?' on':'') + '" onclick="pickVoice(this,\'' + v[0] + '\')">' +
-      '<div class="v-play" onclick="event.stopPropagation();previewVoice(\'' + v[0] + '\')">' +
-      '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
-      '<div><b>' + v[1] + '</b><span>' + v[2] + '</span></div></button>';
-  }).join('');
-  document.getElementById('v-speed').innerHTML = SPEEDS.map(function(s){
-    return '<button class="' + (parseFloat(s[0])===SPEED?'on':'') +
-      '" onclick="pickSpeed(this,' + s[0] + ')">' + s[1] + '</button>';
-  }).join('');
-  vMeta();
-}
-function pickVoice(el, v){
-  VOICE = v;
-  document.querySelectorAll('#v-voices .voice').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-  vMeta();
-}
-function pickSpeed(el, s){
-  SPEED = s;
-  document.querySelectorAll('#v-speed button').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-  vMeta();
-}
 function previewVoice(v){
   if(PREVIEW){ PREVIEW.pause(); }
   toast('Generating a sample takes a moment...');
@@ -1975,10 +2031,6 @@ function currentSwatch(){
   var n = parseInt(localStorage.getItem('crv_avatar') || '0', 10);
   return (n >= 0 && n < SWATCH.length) ? n : 0;
 }
-function applyAvatar(){
-  var g = avatarCss(currentSwatch());
-  document.querySelectorAll('.avatar, .pfp').forEach(function(el){ el.style.background = g; });
-}
 function drawSwatches(){
   var el = document.getElementById('swatches');
   if(!el) return;
@@ -1995,6 +2047,7 @@ function pickSwatch(i){
 }
 function openColours(){
   drawSwatches();
+  drawFaces();
   document.getElementById('col-scrim').classList.add('on');
   setTimeout(function(){ document.getElementById('col-sheet').classList.add('on'); }, 10);
 }
@@ -2355,6 +2408,432 @@ function drawLibrary(){
       '<div class="pj-m"><b>' + esc(p.format||'other') + '</b><i></i>' + ago(p.ts) + '</div>' +
     '</button>';
   }).join('');
+}
+
+/* ══════════ DROPDOWN ══════════ */
+var DD = null;
+
+function ddButton(id, label, value){
+  return '<button class="dd" onclick="ddOpen(\'' + id + '\')">' +
+    '<div class="dd-c"><span class="dd-lbl">' + esc(label) + '</span>' +
+    '<span class="dd-val" id="' + id + '-val">' + esc(value) + '</span></div>' +
+    '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>';
+}
+
+var DD_DEFS = {};   /* id -> { title, options, get, set } */
+
+function ddOpen(id){
+  var def = DD_DEFS[id];
+  if(!def) return;
+  var current = def.get();
+  DD = { id: id, options: def.options(), def: def };
+  document.getElementById('dd-title').textContent = def.title;
+  document.getElementById('dd-list').innerHTML = DD.options.map(function(o, i){
+    var val  = Array.isArray(o) ? o[0] : o;
+    var name = Array.isArray(o) ? o[1] : o;
+    var note = (Array.isArray(o) && o[2]) ? '<small>' + esc(o[2]) + '</small>' : '';
+    return '<button class="dd-opt' + (String(val)===String(current)?' on':'') +
+      '" onclick="ddPick(' + i + ')"><span>' + esc(name) + note + '</span>' +
+      '<svg class="tickmark" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>';
+  }).join('');
+  document.getElementById('dd-scrim').classList.add('on');
+  setTimeout(function(){ document.getElementById('dd-sheet').classList.add('on'); }, 10);
+}
+
+function ddPick(i){
+  var o = DD.options[i];
+  var val  = Array.isArray(o) ? o[0] : o;
+  var name = Array.isArray(o) ? o[1] : o;
+  var id = DD.id, def = DD.def;
+  closeDD();
+  def.set(val);
+  var el = document.getElementById(id + '-val');
+  if(el) el.textContent = name;
+}
+
+function closeDD(){
+  document.getElementById('dd-sheet').classList.remove('on');
+  setTimeout(function(){ document.getElementById('dd-scrim').classList.remove('on'); }, 280);
+}
+
+/* ══════════ SCREEN CONTROLS ══════════
+   Painted when a screen opens rather than all at boot, so a control can
+   never be missing because of a timing race, and a failure in one
+   screen cannot leave another blank. */
+var CREATE_PLATFORM = 'Instagram';
+var FORMAT_NOTE = {
+  script:'Hook, body, call to action', caption:'Short lines and a CTA',
+  carousel:'Seven labelled slides', thread:'Six tweets',
+};
+var TONE_NOTE = {
+  Bold:'Direct, no hedging', Educational:'Teaches one thing clearly',
+  Entertaining:'Light, keeps people watching', Inspirational:'Lifts rather than instructs',
+  Conversational:'Like talking to one person',
+};
+
+DD_DEFS['dd-plat'] = { title:'Platform',
+  options:function(){ return PLATFORMS; },
+  get:function(){ return PLATFORM; }, set:function(v){ PLATFORM = v; } };
+
+DD_DEFS['dd-fmt'] = { title:'Format',
+  options:function(){ return FORMATS.map(function(f){ return [f[0], f[1], FORMAT_NOTE[f[0]]]; }); },
+  get:function(){ return FORMAT; }, set:function(v){ FORMAT = v; } };
+
+DD_DEFS['dd-plat2'] = { title:'Platform',
+  options:function(){ return PLATFORMS; },
+  get:function(){ return CREATE_PLATFORM; }, set:function(v){ CREATE_PLATFORM = v; } };
+
+DD_DEFS['dd-tone'] = { title:'Tone',
+  options:function(){ return TONES.map(function(t){ return [t, t, TONE_NOTE[t]]; }); },
+  get:function(){ return TONE; }, set:function(v){ TONE = v; } };
+
+DD_DEFS['dd-voice'] = { title:'Voice',
+  options:function(){ return VOICES.map(function(v){ return [v[0], v[1], v[2]]; }); },
+  get:function(){ return VOICE; }, set:function(v){ VOICE = v; vMeta(); } };
+
+DD_DEFS['dd-speed'] = { title:'Speed',
+  options:function(){ return SPEEDS.map(function(s){ return [s[0], s[1]]; }); },
+  get:function(){ return String(SPEED); }, set:function(v){ SPEED = parseFloat(v); vMeta(); } };
+
+function drawPlatforms(){
+  var el = document.getElementById('idea-plats');
+  if(el) el.innerHTML = ddButton('dd-plat', 'Platform', PLATFORM);
+}
+
+function drawWriteControls(){
+  var el = document.getElementById('w-controls');
+  if(!el) return;
+  var f = FORMATS.filter(function(x){ return x[0]===FORMAT; })[0] || FORMATS[0];
+  el.innerHTML =
+    '<div class="dd-row">' + ddButton('dd-fmt','Format', f[1]) +
+      ddButton('dd-plat2','Platform', CREATE_PLATFORM) + '</div>' +
+    ddButton('dd-tone','Tone', TONE);
+}
+
+function drawVoiceControls(){
+  var el = document.getElementById('v-controls');
+  if(!el) return;
+  var v = VOICES.filter(function(x){ return x[0]===VOICE; })[0] || VOICES[0];
+  var s = SPEEDS.filter(function(x){ return parseFloat(x[0])===SPEED; })[0] || SPEEDS[1];
+  el.innerHTML =
+    ddButton('dd-voice','Voice', v[1]) +
+    '<button class="hear" onclick="previewVoice(VOICE)">' +
+      '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Hear this voice</button>' +
+    ddButton('dd-speed','Speed', s[1]);
+  vMeta();
+}
+
+/* ══════════ CALENDAR ══════════
+   It had no way to add anything, which made it a read only view of
+   something nothing could write to from here. */
+var CAL_OFFSET = 0;
+var PLAN_DATE = null;
+var PLAN_PLATFORM = 'Instagram', PLAN_FORMAT = 'Script';
+var PLAN_FORMATS = ['Script','Carousel','Caption','Thread','Reel','Story','Voiceover'];
+
+DD_DEFS['dd-pl-plat'] = { title:'Platform',
+  options:function(){ return PLATFORMS; },
+  get:function(){ return PLAN_PLATFORM; }, set:function(v){ PLAN_PLATFORM = v; } };
+DD_DEFS['dd-pl-fmt'] = { title:'Format',
+  options:function(){ return PLAN_FORMATS; },
+  get:function(){ return PLAN_FORMAT; }, set:function(v){ PLAN_FORMAT = v; } };
+
+function weekStart(offset){
+  var d = new Date(); d.setHours(0,0,0,0);
+  var day = (d.getDay() + 6) % 7;          /* Monday first */
+  d.setDate(d.getDate() - day + (offset * 7));
+  return d;
+}
+
+function calWeek(dir){
+  CAL_OFFSET = dir === 0 ? 0 : CAL_OFFSET + dir;
+  drawCalendar();
+}
+
+function drawCalendar(){
+  loadPlans();
+  var out = document.getElementById('cal-out');
+  if(!out) return;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var start = weekStart(CAL_OFFSET);
+  var end = new Date(start); end.setDate(end.getDate() + 6);
+
+  document.getElementById('cal-range').textContent =
+    start.toLocaleDateString(undefined,{day:'numeric',month:'short'}) + ' to ' +
+    end.toLocaleDateString(undefined,{day:'numeric',month:'short'});
+
+  var keys = [];
+  for(var i=0;i<7;i++){ var d = new Date(start); d.setDate(d.getDate()+i); keys.push(dateKey(d)); }
+  var week = CAL_PLANS.filter(function(p){ return keys.indexOf(p.date) !== -1; });
+  var done = week.filter(function(p){ return p.done; }).length;
+
+  document.getElementById('cal-fill').style.width =
+    week.length ? Math.round(done/week.length*100) + '%' : '0%';
+  document.getElementById('cal-sum').textContent = !week.length
+    ? 'Nothing planned this week'
+    : done + ' of ' + week.length + ' posted';
+
+  var html = '';
+  for(var i=0;i<7;i++){
+    var d = new Date(start); d.setDate(d.getDate()+i);
+    var k = dateKey(d);
+    var items = CAL_PLANS.filter(function(p){ return p.date === k; });
+    var isToday = k === dateKey(today);
+
+    var rows = items.map(function(p){
+      var idx = CAL_PLANS.indexOf(p);
+      return '<div class="plan' + (p.done?' done':'') + '" style="background:var(--s1);">' +
+        '<div class="tick" onclick="togglePlanCal(' + idx + ')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="plan-b"><div class="plan-t">' + esc(p.idea) + '</div>' +
+        '<div class="chips">' + (p.platform?'<span class="chip">'+esc(p.platform)+'</span>':'') +
+        '<span class="chip q">' + esc(p.format||'') + '</span></div></div>' +
+        '<button class="plan-x" onclick="removePlan(' + idx + ')" aria-label="Remove">&#10005;</button>' +
+        '</div>';
+    }).join('');
+
+    rows += '<button class="add-day" onclick="openPlan(' + JSON.stringify(k).replace(/"/g,'&quot;') + ')">+ Plan something</button>';
+
+    html += '<div class="day-row' + (isToday?' today':'') + (d < today ? ' past' : '') + '">' +
+      '<div class="day-col"><div class="day-nm">' +
+        d.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase() + '</div>' +
+      '<div class="day-no">' + d.getDate() + '</div></div>' +
+      '<div class="day-body">' + rows + '</div></div>';
+  }
+  out.innerHTML = html;
+}
+
+function togglePlanCal(i){
+  if(!CAL_PLANS[i]) return;
+  CAL_PLANS[i].done = !CAL_PLANS[i].done;
+  savePlans(); drawCalendar();
+}
+
+function removePlan(i){
+  if(!CAL_PLANS[i]) return;
+  CAL_PLANS.splice(i,1);
+  savePlans(); drawCalendar(); toast('Removed.');
+}
+
+function openPlan(key){
+  PLAN_DATE = key;
+  var d = new Date(key + 'T00:00:00');
+  document.getElementById('pl-day').textContent =
+    d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('pl-idea').value = '';
+  document.getElementById('pl-controls').innerHTML =
+    '<div class="dd-row">' + ddButton('dd-pl-plat','Platform', PLAN_PLATFORM) +
+    ddButton('dd-pl-fmt','Format', PLAN_FORMAT) + '</div>';
+  document.getElementById('pl-scrim').classList.add('on');
+  setTimeout(function(){
+    document.getElementById('pl-sheet').classList.add('on');
+    document.getElementById('pl-idea').focus();
+  }, 10);
+}
+
+function closePlan(){
+  document.getElementById('pl-sheet').classList.remove('on');
+  setTimeout(function(){ document.getElementById('pl-scrim').classList.remove('on'); }, 280);
+}
+
+function savePlan(btn){
+  var idea = document.getElementById('pl-idea').value.trim();
+  if(!idea){ toast('What are you posting?'); return; }
+  loadPlans();
+  CAL_PLANS.push({ id:Date.now(), date:PLAN_DATE, idea:idea,
+                   platform:PLAN_PLATFORM, format:PLAN_FORMAT, done:false });
+  savePlans();
+  closePlan();
+  drawCalendar();
+  drawHome();
+  toast('Added.');
+}
+
+/* ══════════ VIDEO AUTO RESIZE ══════════
+   Runs on the phone with MediaRecorder. Heavy, so it warns on long
+   clips rather than silently taking five minutes. */
+var VID = { file:null, ratio:'9:16', pan:50, dur:0, w:0, h:0 };
+var RATIOS = [['9:16','Reels and TikTok','Full screen vertical'],
+              ['4:5','Feed portrait','Taller than square'],
+              ['1:1','Square','Feed and carousels']];
+
+DD_DEFS['dd-ratio'] = { title:'Crop to',
+  options:function(){ return RATIOS; },
+  get:function(){ return VID.ratio; }, set:function(v){ VID.ratio = v; vidMask(); } };
+
+function ratioNum(r){
+  var p = r.split(':');
+  return parseFloat(p[0]) / parseFloat(p[1]);
+}
+
+function vidPicked(input){
+  var f = input.files && input.files[0];
+  if(!f) return;
+  if(f.size > 120 * 1024 * 1024){ toast('That file is very large. Try a shorter clip.'); return; }
+  VID.file = f;
+  var url = URL.createObjectURL(f);
+  var v = document.getElementById('vid-prev');
+  v.src = url;
+  v.onloadedmetadata = function(){
+    VID.dur = v.duration; VID.w = v.videoWidth; VID.h = v.videoHeight;
+    document.getElementById('vid-meta').innerHTML =
+      VID.w + ' x ' + VID.h + ' &middot; ' + fmt(VID.dur) +
+      (VID.dur > 90 ? ' <span style="color:#ffb3c2;">&middot; long clips take a while on a phone</span>' : '');
+    document.getElementById('vid-controls').innerHTML = ddButton('dd-ratio','Crop to', '9:16');
+    document.getElementById('vid-drop').style.display = 'none';
+    document.getElementById('vid-work').style.display = 'block';
+    v.play().catch(function(){});
+    vidMask();
+  };
+}
+
+function vidMask(){
+  var v = document.getElementById('vid-prev');
+  var mask = document.getElementById('vid-mask');
+  if(!v || !mask || !VID.w) return;
+  var shown = v.getBoundingClientRect();
+  var target = ratioNum(VID.ratio);
+  var cropW = Math.min(shown.width, shown.height * target);
+  var pct = (cropW / shown.width) * 100;
+  mask.style.width = pct + '%';
+  mask.style.left = ((100 - pct) * (VID.pan / 100)) + '%';
+}
+
+function vidPan(){
+  VID.pan = parseInt(document.getElementById('vid-pan').value, 10);
+  vidMask();
+}
+
+function vidReset(){
+  VID = { file:null, ratio:'9:16', pan:50, dur:0, w:0, h:0 };
+  document.getElementById('vid-work').style.display = 'none';
+  document.getElementById('vid-drop').style.display = 'block';
+  document.getElementById('vid-file').value = '';
+}
+
+async function vidExport(){
+  if(!VID.file){ toast('Choose a video first.'); return; }
+  var btn = document.getElementById('vid-btn');
+  var note = document.getElementById('vid-note');
+  var src = document.createElement('video');
+  src.src = URL.createObjectURL(VID.file);
+  src.muted = false;
+  src.playsInline = true;
+
+  btn.disabled = true;
+
+  try {
+    await new Promise(function(res, rej){
+      src.onloadedmetadata = res; src.onerror = function(){ rej(new Error('Could not read that video.')); };
+    });
+
+    var target = ratioNum(VID.ratio);
+    var outH = Math.min(1920, src.videoHeight);
+    var outW = Math.round(outH * target);
+    var cropW = Math.min(src.videoWidth, src.videoHeight * target);
+    var sx = (src.videoWidth - cropW) * (VID.pan / 100);
+
+    var cv = document.createElement('canvas');
+    cv.width = outW; cv.height = outH;
+    var ctx = cv.getContext('2d');
+
+    var stream = cv.captureStream(30);
+    /* keep the original audio track rather than re-recording it, which
+       is what makes the sound drift */
+    if(src.captureStream){
+      var s2 = src.captureStream();
+      (s2.getAudioTracks() || []).forEach(function(t){ stream.addTrack(t); });
+    }
+
+    var chunks = [];
+    var mime = MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : 'video/webm';
+    var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 5000000 });
+    rec.ondataavailable = function(e){ if(e.data.size) chunks.push(e.data); };
+
+    var done = new Promise(function(res){ rec.onstop = res; });
+    rec.start();
+    src.currentTime = 0;
+    await src.play();
+
+    (function draw(){
+      if(src.paused || src.ended) return;
+      ctx.drawImage(src, sx, 0, cropW, src.videoHeight, 0, 0, outW, outH);
+      var pct = Math.round(src.currentTime / src.duration * 100);
+      btn.textContent = 'Exporting ' + pct + '%';
+      requestAnimationFrame(draw);
+    })();
+
+    await new Promise(function(res){ src.onended = res; });
+    if(rec.state !== 'inactive') rec.stop();
+    await Promise.race([done, new Promise(function(r){ setTimeout(r, 8000); })]);
+
+    var blob = new Blob(chunks, { type: mime });
+    var url = URL.createObjectURL(blob);
+    var ext = mime.indexOf('mp4') !== -1 ? 'mp4' : 'webm';
+    note.innerHTML = '<a href="' + url + '" download="crevers-' + VID.ratio.replace(':','x') + '.' + ext +
+      '" style="color:var(--mint);font-weight:600;">Download your vertical video</a>';
+    toast('Done.');
+  } catch(e){
+    note.textContent = e.message || 'Could not export. Try a shorter clip.';
+  }
+  btn.disabled = false; btn.textContent = 'Export vertical';
+}
+
+/* ══════════ AVATARS ══════════
+   A letter on a colour is fine, but people want a face. These are drawn,
+   so they cost nothing to load and need no storage. */
+var FACES = ['spark','bolt','leaf','wave','moon','flame','star','eye','drop','crown','pen','mic'];
+var FACE_PATHS = {
+  spark:'M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z',
+  bolt :'M13 2 4 14h7l-1 8 9-12h-7z',
+  leaf :'M4 20s1-9 8-13c5-3 8-2 8-2s0 5-3 9c-4 5-13 6-13 6zM4 20c3-4 6-6 9-7',
+  wave :'M2 12c2.5-4 5.5-4 8 0s5.5 4 8 0M2 17c2.5-4 5.5-4 8 0s5.5 4 8 0',
+  moon :'M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z',
+  flame:'M12 2s5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 1-3s1 2 2 2 0-6 2-9z',
+  star :'M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.8 6.6 19.6l1.2-6L3.3 9.4l6.1-.8z',
+  eye  :'M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  drop :'M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z',
+  crown:'M3 7l4 5 5-7 5 7 4-5v11H3z',
+  pen  :'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z',
+  mic  :'M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4',
+};
+
+function currentFace(){ return localStorage.getItem('crv_face') || ''; }
+
+function avatarInner(initial){
+  var f = currentFace();
+  if(!f || !FACE_PATHS[f]) return esc(initial);
+  return '<svg viewBox="0 0 24 24" style="width:52%;height:52%;stroke:#fff;fill:none;' +
+    'stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;">' +
+    '<path d="' + FACE_PATHS[f] + '"/></svg>';
+}
+
+function applyAvatar(){
+  var g = avatarCss(currentSwatch());
+  var u = AUTH.user || {};
+  var initial = (u.name || u.email || 'C').charAt(0).toUpperCase();
+  document.querySelectorAll('.avatar, .pfp').forEach(function(el){
+    el.style.background = g;
+    el.innerHTML = avatarInner(initial);
+  });
+}
+
+function pickFace(f){
+  if(f === currentFace()) localStorage.removeItem('crv_face');
+  else localStorage.setItem('crv_face', f);
+  drawFaces();
+  applyAvatar();
+}
+
+function drawFaces(){
+  var el = document.getElementById('faces');
+  if(!el) return;
+  var cur = currentFace();
+  el.innerHTML = '<button class="face' + (!cur?' on':'') + '" onclick="pickFace(\'\')">' +
+      '<span class="face-letter">A</span></button>' +
+    FACES.map(function(f){
+      return '<button class="face' + (f===cur?' on':'') + '" onclick="pickFace(\'' + f + '\')">' +
+        '<svg viewBox="0 0 24 24"><path d="' + FACE_PATHS[f] + '"/></svg></button>';
+    }).join('');
 }
 </script>
 </body>
