@@ -208,6 +208,7 @@ http.createServer(function(req, res) {
     '/about'     : 'about.html',
     '/changelog' : 'changelog.html',
     '/blog'      : 'blog.html',
+    '/app'       : 'app.html',
   };
 
   /* Blog posts. The slug is whitelisted by checking the file exists,

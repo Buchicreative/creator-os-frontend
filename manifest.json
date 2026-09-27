@@ -1,8 +1,8 @@
 {
   "name": "Crevers",
   "short_name": "Crevers",
-  "description": "The all-in-one AI content creation platform for creators.",
-  "start_url": "/",
+  "description": "Ideas, scripts, captions and voiceovers for whatever you are posting to.",
+  "start_url": "/app",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#050508",
@@ -38,5 +38,6 @@
       "type": "image/jpeg",
       "label": "Crevers Dashboard"
     }
-  ]
+  ],
+  "scope": "/"
 }

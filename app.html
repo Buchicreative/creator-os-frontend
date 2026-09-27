@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<title>Crevers</title>
+<meta name="description" content="Crevers on your phone. Ideas, scripts, captions and voiceovers for whatever you are posting to.">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crevers">
+<meta name="theme-color" content="#08070d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.crevers.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#08070d; --s1:#101018; --s2:#181822; --line:rgba(255,255,255,.08);
+  --violet:#7c5cfc; --rose:#fc5c7d; --mint:#5cf0d0;
+  --ink:#f0eeff; --dim:#8885a8; --faint:#56536a;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+html{-webkit-font-smoothing:antialiased;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;
+  height:100%;overflow:hidden;overscroll-behavior:none}
+button,input,textarea{font-family:inherit}
+input,textarea{font-size:16px}          /* stops iOS zooming on focus */
+
+.app{height:100%;display:flex;flex-direction:column;
+  padding-top:var(--safe-t)}
+
+/* ── top bar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:.55rem 1.15rem .5rem;flex-shrink:0}
+.mark{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.02rem;
+  letter-spacing:-.04em;
+  background:linear-gradient(96deg,#a88bff,#7c5cfc 38%,#d45bc0 72%,#fc5c7d);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.avatar{width:34px;height:34px;flex:0 0 34px;border-radius:12px;display:flex;
+  align-items:center;justify-content:center;font-family:'Outfit',sans-serif;
+  font-weight:800;font-size:.88rem;color:#fff;cursor:pointer;
+  background:linear-gradient(140deg,var(--violet),var(--rose))}
+
+/* ── screens ── */
+.viewport{flex:1;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 1.15rem calc(7.5rem + var(--safe-b));display:none;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.screen.on{display:block}
+
+.head{padding:.5rem 0 1.15rem}
+.head-eyebrow{font-size:.79rem;color:var(--dim);margin-bottom:.3rem}
+.head h2{font-family:'Outfit',sans-serif;font-weight:800;font-size:2rem;
+  letter-spacing:-.045em;line-height:1.04}
+.head-note{font-size:.84rem;color:var(--dim);margin-top:.45rem}
+.head.sub{display:flex;align-items:center;gap:.7rem;padding:.3rem 0 1rem}
+.head.sub h2{font-size:1.22rem;letter-spacing:-.035em;line-height:1.15}
+.back{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--s1);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  cursor:pointer}
+.back svg{width:15px;height:15px;stroke:var(--ink);fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ── today ── */
+.today{border-radius:26px;padding:1.15rem;margin-bottom:1.3rem;
+  background:
+    radial-gradient(120% 100% at 0% 0%,rgba(124,92,252,.22),transparent 62%),
+    radial-gradient(90% 90% at 100% 100%,rgba(252,92,125,.13),transparent 60%),
+    #12101c;
+  border:1px solid rgba(124,92,252,.22);
+  box-shadow:0 18px 40px -22px rgba(124,92,252,.5)}
+.today-top{display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:.85rem}
+.today-top b{font-family:'Outfit',sans-serif;font-size:.96rem;font-weight:700}
+.today-top span{font-size:.72rem;color:var(--dim)}
+.plan{display:flex;gap:.7rem;align-items:flex-start;background:rgba(0,0,0,.28);
+  border:1px solid var(--line);border-radius:15px;padding:.7rem .8rem;margin-bottom:.5rem}
+.plan.done{opacity:.45}
+.plan.done .plan-t{text-decoration:line-through}
+.tick{width:20px;height:20px;flex:0 0 20px;border-radius:7px;
+  border:1.5px solid rgba(255,255,255,.18);display:flex;align-items:center;
+  justify-content:center;margin-top:1px;cursor:pointer}
+.plan.done .tick{background:var(--mint);border-color:var(--mint)}
+.tick svg{width:11px;height:11px;stroke:#04150f;stroke-width:3.5;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.plan.done .tick svg{opacity:1}
+.plan-b{flex:1;min-width:0}
+.plan-t{font-size:.84rem;line-height:1.45;overflow-wrap:anywhere}
+.chips{display:flex;gap:.3rem;margin-top:.3rem;flex-wrap:wrap}
+.chip{font-size:.62rem;font-weight:600;padding:2px 7px;border-radius:6px;
+  background:rgba(124,92,252,.2);color:#c0aeff}
+.chip.q{background:rgba(255,255,255,.06);color:var(--dim)}
+.today-empty{text-align:center;padding:.3rem 0 .1rem}
+.today-empty p{font-size:.82rem;color:var(--dim);line-height:1.6;margin-bottom:.8rem}
+.today-foot{display:flex;gap:.5rem;margin-top:.7rem}
+.tbtn{flex:1;border-radius:11px;padding:.6rem;font-size:.78rem;cursor:pointer;
+  border:1px solid var(--line);background:none;color:var(--dim)}
+.tbtn.solid{background:var(--violet);border-color:var(--violet);color:#fff;font-weight:600}
+
+/* ── tools ── */
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.3rem}
+.tool{background:var(--s1);border:1px solid var(--line);border-radius:17px;
+  padding:.9rem;cursor:pointer;text-align:left;color:var(--ink)}
+.tool:active{transform:scale(.975)}
+.tool.wide{grid-column:span 2;display:flex;align-items:center;gap:.85rem;
+  border-radius:20px;padding:1rem;border-color:rgba(124,92,252,.2);
+  background:radial-gradient(130% 120% at 0% 0%,rgba(124,92,252,.16),transparent 70%),var(--s1)}
+.tool svg{width:21px;height:21px;stroke:var(--violet);fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;margin-bottom:.55rem;display:block}
+.tool.wide svg{margin:0;flex:0 0 23px;width:23px;height:23px}
+.tool b{font-family:'Outfit',sans-serif;font-weight:700;font-size:.87rem;display:block}
+.tool.wide b{font-size:.92rem}
+.tool span{font-size:.7rem;color:var(--dim);line-height:1.45;display:block;margin-top:2px}
+
+/* ── chat-bot invitation ── */
+.ask-card{width:100%;display:flex;align-items:center;gap:.85rem;text-align:left;
+  border-radius:20px;padding:.9rem 1rem;margin-bottom:1.5rem;cursor:pointer;
+  border:1px solid rgba(124,92,252,.24);color:var(--ink);
+  background:
+    radial-gradient(120% 130% at 0% 50%,rgba(124,92,252,.2),transparent 62%),
+    radial-gradient(90% 120% at 100% 50%,rgba(252,92,125,.12),transparent 58%),
+    var(--s1)}
+.ask-orb{width:40px;height:40px;flex:0 0 40px;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;
+  background:linear-gradient(140deg,var(--violet),var(--rose));
+  box-shadow:0 8px 20px -8px rgba(124,92,252,.9)}
+.ask-orb svg{width:19px;height:19px;fill:#fff;stroke:none}
+.ask-b{flex:1;min-width:0}
+.ask-b b{font-family:'Outfit',sans-serif;font-weight:700;font-size:.89rem;display:block}
+.ask-b span{font-size:.73rem;color:var(--dim);display:block;margin-top:2px}
+.ask-go{width:16px;height:16px;stroke:var(--faint);flex:0 0 16px;fill:none;stroke-width:2.2}
+
+/* ── generic bits ── */
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 .65rem}
+.sec h3{font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700}
+.sec a{font-size:.74rem;color:var(--dim);cursor:pointer}
+.row{display:flex;align-items:center;gap:.75rem;background:var(--s1);
+  border:1px solid var(--line);border-radius:15px;padding:.75rem .85rem;
+  margin-bottom:.5rem;cursor:pointer;width:100%;text-align:left;color:var(--ink)}
+.row-f{font-size:.58rem;font-weight:700;letter-spacing:.04em;padding:3px 8px;
+  border-radius:7px;background:rgba(124,92,252,.18);color:#c0aeff;flex:0 0 auto;
+  text-transform:uppercase}
+.row-b{flex:1;min-width:0}
+.row-t{font-size:.81rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-s{font-size:.68rem;color:var(--dim);margin-top:2px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.row-d{font-size:.68rem;color:var(--faint);flex:0 0 auto}
+
+.field{background:var(--s1);border:1px solid var(--line);border-radius:15px;
+  display:flex;align-items:center;gap:.6rem;padding:0 .9rem;margin-bottom:.6rem}
+.field:focus-within{border-color:rgba(124,92,252,.5)}
+.field svg{width:15px;height:15px;flex:0 0 15px;stroke:var(--faint);fill:none;
+  stroke-width:2;stroke-linecap:round}
+.field input{flex:1;min-width:0;background:none;border:none;outline:none;
+  color:var(--ink);padding:.8rem 0}
+.field input::placeholder{color:var(--faint)}
+.area{background:var(--s1);border:1px solid var(--line);border-radius:15px;
+  padding:.85rem .9rem;margin-bottom:.6rem}
+.area:focus-within{border-color:rgba(124,92,252,.5)}
+.area textarea{width:100%;background:none;border:none;outline:none;color:var(--ink);
+  line-height:1.65;resize:none;min-height:88px}
+.area textarea::placeholder{color:var(--faint)}
+
+.pills{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+.pill{background:var(--s1);border:1.5px solid var(--line);border-radius:22px;
+  color:var(--dim);padding:.42rem .9rem;font-size:.77rem;cursor:pointer}
+.pill.on{border-color:var(--violet);color:#c0aeff;background:rgba(124,92,252,.12);
+  font-weight:600}
+
+.go{width:100%;background:var(--violet);color:#fff;border:none;border-radius:15px;
+  padding:.95rem;font-family:'Outfit',sans-serif;font-weight:700;font-size:.93rem;
+  cursor:pointer;box-shadow:0 12px 30px rgba(124,92,252,.35);margin-bottom:.5rem}
+.go:active{transform:scale(.98)}
+.go:disabled{opacity:.6;box-shadow:none}
+.go.ghost{background:none;border:1px solid var(--line);color:var(--dim);box-shadow:none}
+.meter{text-align:center;font-size:.72rem;color:var(--dim);margin-bottom:1.2rem}
+.meter b{color:var(--ink)}
+
+.empty{text-align:center;padding:2.4rem 1.2rem}
+.empty-mark{width:64px;height:64px;margin:0 auto 1.1rem;border-radius:20px;
+  background:linear-gradient(145deg,rgba(124,92,252,.18),rgba(252,92,125,.08));
+  border:1px solid rgba(124,92,252,.22);display:flex;align-items:center;
+  justify-content:center}
+.empty-mark svg{width:26px;height:26px;stroke:var(--violet);fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.empty h4{font-family:'Outfit',sans-serif;font-size:1.02rem;font-weight:700;
+  margin-bottom:.4rem}
+.empty p{font-size:.81rem;color:var(--dim);line-height:1.6;margin-bottom:1.2rem}
+
+/* ── results ── */
+.idea{background:var(--s1);border:1px solid var(--line);border-radius:16px;
+  padding:.85rem .9rem;margin-bottom:.55rem}
+.idea-t{font-size:.85rem;line-height:1.5;margin-bottom:.6rem;overflow-wrap:anywhere}
+.idea-a{display:flex;gap:.35rem}
+.act{flex:1;background:none;border:1px solid var(--line);border-radius:10px;
+  color:var(--dim);padding:.45rem;font-size:.7rem;cursor:pointer}
+.act.key{border-color:rgba(124,92,252,.4);color:#c0aeff;font-weight:600}
+.act.done{border-color:var(--mint);color:var(--mint)}
+.act:disabled{opacity:.6}
+
+/* ── loading ── */
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.15);
+  border-top-color:var(--violet);border-radius:50%;animation:sp .7s linear infinite;
+  margin:0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{padding:2rem 0;text-align:center}
+.loading p{font-size:.78rem;color:var(--dim);margin-top:.7rem}
+
+/* ── toast ── */
+.toast{position:fixed;left:50%;bottom:calc(7rem + var(--safe-b));
+  transform:translate(-50%,14px);background:var(--s2);border:1px solid var(--line);
+  border-radius:14px;padding:.7rem 1.1rem;font-size:.8rem;z-index:200;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+  max-width:88%;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.55)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ── composer sheet ── */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);
+  z-index:70;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--s1);
+  border-radius:30px 30px 0 0;border:1px solid var(--line);border-bottom:none;
+  padding:.75rem 1.15rem calc(2rem + var(--safe-b));z-index:80;
+  transform:translateY(102%);transition:transform .34s cubic-bezier(.32,.72,0,1)}
+.sheet.on{transform:translateY(0)}
+.grab{width:38px;height:4px;border-radius:4px;background:rgba(255,255,255,.18);
+  margin:0 auto 1.15rem}
+.sheet h3{font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:800;
+  letter-spacing:-.03em;margin-bottom:.25rem}
+.sheet > p{font-size:.79rem;color:var(--dim);margin-bottom:1.1rem}
+.mk{display:flex;align-items:center;gap:.85rem;background:var(--s2);
+  border:1px solid var(--line);border-radius:17px;padding:.85rem .9rem;
+  margin-bottom:.5rem;cursor:pointer;width:100%;text-align:left;color:var(--ink)}
+.mk-i{width:38px;height:38px;flex:0 0 38px;border-radius:13px;display:flex;
+  align-items:center;justify-content:center;background:rgba(124,92,252,.15)}
+.mk-i svg{width:18px;height:18px;stroke:var(--violet);fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.mk-b{flex:1;min-width:0}
+.mk-b b{font-family:'Outfit',sans-serif;font-size:.89rem;display:block}
+.mk-b span{font-size:.71rem;color:var(--dim)}
+
+/* ── tab bar ── */
+.tabs{position:fixed;bottom:0;left:0;right:0;height:calc(88px + var(--safe-b));
+  z-index:50}
+.tab-surface{position:absolute;inset:0;width:100%;height:100%;
+  filter:drop-shadow(0 -10px 26px rgba(0,0,0,.55))}
+.tab-row{position:absolute;inset:0;display:flex;align-items:flex-start;
+  padding-top:30px;padding-bottom:var(--safe-b)}
+.tab-gap{flex:1}
+.tab{flex:1;background:none;border:none;cursor:pointer;display:flex;
+  flex-direction:column;align-items:center;gap:4px;color:var(--faint);
+  transition:color .2s;padding:0;position:relative}
+.tab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.75;
+  stroke-linecap:round;stroke-linejoin:round;transition:stroke-width .2s}
+.tab span{font-size:.59rem;font-weight:600;letter-spacing:-.012em;white-space:nowrap}
+.tab .dot{width:4px;height:4px;border-radius:50%;background:currentColor;
+  opacity:0;transform:scale(.4);transition:opacity .22s,transform .22s}
+.tab.on{color:#a88bff}
+.tab.on svg{stroke-width:2.1}
+.tab.on .dot{opacity:1;transform:scale(1)}
+.tab.chatbot{color:#8e7ad6}
+.tab.chatbot.on{color:#c9b8ff}
+.tab.chatbot::before{content:'';position:absolute;top:-6px;left:50%;
+  transform:translateX(-50%);width:34px;height:34px;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,92,252,.28),transparent 68%);
+  opacity:0;transition:opacity .25s;pointer-events:none}
+.tab.chatbot.on::before{opacity:1}
+.fab{position:absolute;left:50%;top:-3px;transform:translateX(-50%);
+  width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
+  background:conic-gradient(from 210deg,#7c5cfc,#d45bc0 42%,#fc5c7d 62%,#7c5cfc);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 28px -6px rgba(124,92,252,.75),0 0 0 5px var(--bg),
+             inset 0 1px 0 rgba(255,255,255,.28)}
+.fab:active{transform:translateX(-50%) scale(.93)}
+.fab svg{width:23px;height:23px;stroke:#fff;stroke-width:2.6;stroke-linecap:round;fill:none}
+
+/* ── auth ── */
+.auth{height:100%;display:flex;flex-direction:column;justify-content:center;
+  padding:2rem 1.5rem calc(2rem + var(--safe-b));overflow-y:auto}
+.auth-mark{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.5rem;
+  letter-spacing:-.04em;text-align:center;margin-bottom:.4rem;
+  background:linear-gradient(96deg,#a88bff,#7c5cfc 38%,#d45bc0 72%,#fc5c7d);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.auth h1{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.6rem;
+  letter-spacing:-.04em;text-align:center;line-height:1.15;margin-bottom:.5rem}
+.auth > p{font-size:.86rem;color:var(--dim);text-align:center;line-height:1.6;
+  margin-bottom:1.8rem}
+.auth-swap{text-align:center;font-size:.82rem;color:var(--dim);margin-top:1.1rem}
+.auth-swap b{color:#c0aeff;cursor:pointer;font-weight:600}
+.auth-err{font-size:.78rem;color:var(--rose);text-align:center;margin-bottom:.8rem;
+  display:none;line-height:1.5}
+.auth-err.on{display:block}
+</style>
+</head>
+<body>
+
+<!-- ════════ AUTH ════════ -->
+<div class="auth" id="auth" style="display:none;">
+  <div class="auth-mark">crevers</div>
+  <h1 id="auth-title">Welcome back</h1>
+  <p id="auth-sub">Pick up where you left off.</p>
+
+  <div class="auth-err" id="auth-err"></div>
+
+  <div class="field" id="name-field" style="display:none;">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <input id="au-name" placeholder="Your name" autocomplete="name">
+  </div>
+  <div class="field">
+    <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+    <input id="au-email" type="email" placeholder="Email" autocomplete="email" inputmode="email">
+  </div>
+  <div class="field">
+    <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <input id="au-pass" type="password" placeholder="Password" autocomplete="current-password">
+  </div>
+
+  <button class="go" id="auth-btn" onclick="doAuth()">Log in</button>
+  <div class="auth-swap" id="auth-swap">
+    New here? <b onclick="swapAuth()">Create an account</b>
+  </div>
+</div>
+
+<!-- ════════ APP ════════ -->
+<div class="app" id="app" style="display:none;">
+
+  <div class="topbar">
+    <div class="mark">crevers</div>
+    <div class="avatar" id="av" onclick="go('me')">B</div>
+  </div>
+
+  <div class="viewport">
+
+    <!-- HOME -->
+    <div class="screen on" id="s-home">
+      <div class="head">
+        <div class="head-eyebrow" id="home-date"></div>
+        <h2 id="home-greet">Hello</h2>
+        <p class="head-note" id="home-note"></p>
+      </div>
+
+      <div class="today" id="home-today"></div>
+
+      <div class="tools">
+        <button class="tool wide" onclick="go('ideas')">
+          <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+          <div><b>Stuck for an idea?</b><span>Ten for your niche in about twenty seconds</span></div>
+        </button>
+        <button class="tool" onclick="go('write')">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+          <b>Create Content</b><span>Scripts, captions, threads</span>
+        </button>
+        <button class="tool" onclick="go('repurpose')">
+          <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          <b>Repurpose</b><span>One post, every platform</span>
+        </button>
+      </div>
+
+      <button class="ask-card" onclick="go('chat')">
+        <div class="ask-orb"><svg viewBox="0 0 24 24"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></div>
+        <div class="ask-b"><b>Not sure what to post?</b><span>Ask the AI Chat-bot. Free on every plan.</span></div>
+        <svg class="ask-go" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <div id="home-recent"></div>
+    </div>
+
+    <!-- IDEAS -->
+    <div class="screen" id="s-ideas">
+      <div class="head sub">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Idea Generator</h2>
+      </div>
+
+      <div class="field">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="niche" placeholder="What is your niche?">
+      </div>
+      <div class="pills" id="idea-plats"></div>
+      <button class="go" id="idea-btn" onclick="genIdeas()">Generate Ideas</button>
+      <div class="meter" id="idea-meter"></div>
+
+      <div id="idea-out">
+        <div class="empty">
+          <div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg></div>
+          <h4>Nothing generated yet</h4>
+          <p>Set your niche and pick a platform. You will get ten ideas you can keep, plan, or write straight away.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- placeholders wired in the next pass -->
+    <div class="screen" id="s-write"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Content Creator</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div><h4>Coming in the next build</h4><p>The shell and the idea generator are live first, so the whole path is proven before the rest is wired.</p></div></div>
+    <div class="screen" id="s-repurpose"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Content Repurposer</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h4>Coming in the next build</h4><p>Use it on crevers.com in the meantime.</p></div></div>
+    <div class="screen" id="s-voice"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Voiceover</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div><h4>Coming in the next build</h4><p>Use it on crevers.com in the meantime.</p></div></div>
+    <div class="screen" id="s-video"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Video Auto Resize</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h4>Best on a laptop for now</h4><p>Resizing video in a phone browser is heavy. Use crevers.com on a computer until the native build.</p></div></div>
+    <div class="screen" id="s-cal"><div class="head"><h2>Content Calendar</h2></div><div id="cal-out"></div></div>
+    <div class="screen" id="s-library"><div class="head"><h2>Saved Projects</h2></div>
+      <div class="field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="lib-q" placeholder="Search titles or what is inside" oninput="drawLibrary()"></div>
+      <div id="lib-out"></div>
+    </div>
+    <div class="screen" id="s-chat"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Crevers AI Chat-bot</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-2.9-.4L4 21l1.4-4.1A8.3 8.3 0 0 1 3.6 11.5 8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4z"/></svg></div><h4>Coming in the next build</h4><p>Use it on crevers.com in the meantime.</p></div></div>
+    <div class="screen" id="s-me"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Profile &amp; Settings</h2></div><div id="me-out"></div></div>
+
+  </div>
+
+  <!-- composer -->
+  <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="grab"></div>
+    <h3>What are you making?</h3>
+    <p>Pick where you are starting from.</p>
+    <button class="mk" onclick="closeSheet();go('ideas')">
+      <div class="mk-i"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg></div>
+      <div class="mk-b"><b>I need an idea</b><span>Ten for your niche</span></div>
+    </button>
+    <button class="mk" onclick="closeSheet();go('write')">
+      <div class="mk-i"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div>
+      <div class="mk-b"><b>I know the idea</b><span>Script, caption, carousel or thread</span></div>
+    </button>
+    <button class="mk" onclick="closeSheet();go('repurpose')">
+      <div class="mk-i"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+      <div class="mk-b"><b>I already posted something</b><span>Repurpose it for other platforms</span></div>
+    </button>
+    <button class="mk" onclick="closeSheet();go('voice')">
+      <div class="mk-i"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></div>
+      <div class="mk-b"><b>I have a script</b><span>Turn it into audio</span></div>
+    </button>
+    <button class="mk" onclick="closeSheet();go('video')">
+      <div class="mk-i"><svg viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+      <div class="mk-b"><b>I filmed something</b><span>Cut it vertical for Reels</span></div>
+    </button>
+  </div>
+
+  <!-- tabs -->
+  <nav class="tabs">
+    <svg class="tab-surface" viewBox="0 0 372 88" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="barEdge" x1="0" y1="0" x2="372" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="rgba(124,92,252,0)"/>
+          <stop offset=".34" stop-color="rgba(124,92,252,.55)"/>
+          <stop offset=".5" stop-color="rgba(252,92,125,.6)"/>
+          <stop offset=".66" stop-color="rgba(124,92,252,.55)"/>
+          <stop offset="1" stop-color="rgba(124,92,252,0)"/>
+        </linearGradient>
+        <linearGradient id="barFill" x1="0" y1="24" x2="0" y2="88" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#14121d"/><stop offset="1" stop-color="#0a0910"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,24 H148 C165,24 163,54 186,54 C209,54 207,24 224,24 H372 V88 H0 Z" fill="url(#barFill)"/>
+      <path d="M0,24 H148 C165,24 163,54 186,54 C209,54 207,24 224,24 H372" fill="none" stroke="url(#barEdge)" stroke-width="1.25"/>
+    </svg>
+    <div class="tab-row">
+      <button class="tab on" id="t-home" onclick="go('home')">
+        <svg viewBox="0 0 26 26"><path d="M4 11.2 13 4l9 7.2"/><path d="M6.4 12.6V21a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1v-8.4"/><path d="M10.6 22v-5.2h4.8V22"/></svg>
+        <span>Home</span><i class="dot"></i>
+      </button>
+      <button class="tab" id="t-cal" onclick="go('cal')">
+        <svg viewBox="0 0 26 26"><rect x="3.5" y="5.5" width="19" height="17" rx="3.2"/><path d="M3.5 10.5h19"/><path d="M8.5 3.5v4M17.5 3.5v4"/><rect x="7" y="14" width="3.4" height="3.4" rx="1.1" fill="currentColor" stroke="none"/><rect x="15.6" y="14" width="3.4" height="3.4" rx="1.1"/></svg>
+        <span>Calendar</span><i class="dot"></i>
+      </button>
+      <div class="tab-gap"></div>
+      <button class="tab" id="t-library" onclick="go('library')">
+        <svg viewBox="0 0 26 26"><rect x="4" y="7.5" width="18" height="14.5" rx="3"/><path d="M7 7.5V5.6a1.6 1.6 0 0 1 1.6-1.6h8.8A1.6 1.6 0 0 1 19 5.6v1.9"/><path d="M9.5 13h7M9.5 17h4.4"/></svg>
+        <span>Projects</span><i class="dot"></i>
+      </button>
+      <button class="tab chatbot" id="t-chat" onclick="go('chat')">
+        <svg viewBox="0 0 26 26"><path d="M22.5 12.4a9 9 0 0 1-9.7 9 10.2 10.2 0 0 1-3.1-.5L4 22.5l1.6-4.4a8.9 8.9 0 0 1-2-5.7A9 9 0 0 1 13 3.5a9 9 0 0 1 9.5 8.9z"/><path d="M9.2 12.4h.01M13 12.4h.01M16.8 12.4h.01" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <span>Chat-bot</span><i class="dot"></i>
+      </button>
+    </div>
+    <button class="fab" onclick="openSheet()" aria-label="Make something">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5.5" x2="12" y2="18.5"/><line x1="5.5" y1="12" x2="18.5" y2="12"/></svg>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   Crevers mobile. Same API and the same localStorage keys as
+   crevers.com, so a session started on either one works on both.
+   ══════════════════════════════════════════════════════════ */
+var API = 'https://api.crevers.com';
+
+var AUTH = {
+  token   : localStorage.getItem('cos_token')   || null,
+  refresh : localStorage.getItem('cos_refresh') || null,
+  user    : JSON.parse(localStorage.getItem('cos_user') || 'null'),
+  plan    : localStorage.getItem('cos_plan')    || 'free',
+};
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+var toastT;
+function toast(msg){
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ el.classList.remove('on'); }, 2600);
+}
+
+async function api(method, path, body, retried){
+  var opts = {
+    method  : method,
+    headers : { 'Content-Type': 'application/json' },
+    credentials : 'include',
+  };
+  if(AUTH.token) opts.headers.Authorization = 'Bearer ' + AUTH.token;
+  if(body) opts.body = JSON.stringify(body);
+
+  var r = await fetch(API + path, opts);
+
+  /* one silent refresh before giving up, so a stale token does not
+     look like a logout */
+  if(r.status === 401 && AUTH.refresh && !retried){
+    var ok = await refreshSession();
+    if(ok) return api(method, path, body, true);
+  }
+
+  var data = {};
+  try { data = await r.json(); } catch(e){}
+  if(!r.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+  return data;
+}
+
+async function refreshSession(){
+  try {
+    var r = await fetch(API + '/auth/refresh', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body: JSON.stringify({ refresh_token: AUTH.refresh }),
+    });
+    if(!r.ok) return false;
+    var d = await r.json();
+    if(!d.token) return false;
+    AUTH.token = d.token;
+    localStorage.setItem('cos_token', d.token);
+    if(d.refresh_token){
+      AUTH.refresh = d.refresh_token;
+      localStorage.setItem('cos_refresh', d.refresh_token);
+    }
+    return true;
+  } catch(e){ return false; }
+}
+
+function saveAuth(d){
+  AUTH.token = d.token || AUTH.token;
+  AUTH.user  = d.user  || AUTH.user;
+  AUTH.plan  = (d.user && d.user.plan) || d.plan || 'free';
+  if(d.refresh_token) AUTH.refresh = d.refresh_token;
+  localStorage.setItem('cos_token', AUTH.token || '');
+  localStorage.setItem('cos_user', JSON.stringify(AUTH.user || null));
+  localStorage.setItem('cos_plan', AUTH.plan);
+  if(AUTH.refresh) localStorage.setItem('cos_refresh', AUTH.refresh);
+}
+
+function clearAuth(){
+  ['cos_token','cos_refresh','cos_user','cos_plan'].forEach(function(k){
+    localStorage.removeItem(k);
+  });
+  AUTH = { token:null, refresh:null, user:null, plan:'free' };
+}
+
+/* ══════════ AUTH SCREEN ══════════ */
+var MODE = 'login';
+
+function swapAuth(){
+  MODE = MODE === 'login' ? 'signup' : 'login';
+  var signup = MODE === 'signup';
+  document.getElementById('auth-title').textContent = signup ? 'Create your account' : 'Welcome back';
+  document.getElementById('auth-sub').textContent   = signup
+    ? 'Free to start. No card needed.'
+    : 'Pick up where you left off.';
+  document.getElementById('name-field').style.display = signup ? 'flex' : 'none';
+  document.getElementById('auth-btn').textContent = signup ? 'Create account' : 'Log in';
+  document.getElementById('auth-swap').innerHTML = signup
+    ? 'Already have an account? <b onclick="swapAuth()">Log in</b>'
+    : 'New here? <b onclick="swapAuth()">Create an account</b>';
+  document.getElementById('au-pass').setAttribute('autocomplete',
+    signup ? 'new-password' : 'current-password');
+  authErr('');
+}
+
+function authErr(msg){
+  var el = document.getElementById('auth-err');
+  el.textContent = msg || '';
+  el.classList.toggle('on', !!msg);
+}
+
+async function doAuth(){
+  var email = document.getElementById('au-email').value.trim();
+  var pass  = document.getElementById('au-pass').value;
+  var name  = document.getElementById('au-name').value.trim();
+  if(!email || !pass){ authErr('Enter your email and password.'); return; }
+  if(MODE === 'signup' && !name){ authErr('What should we call you?'); return; }
+
+  var btn = document.getElementById('auth-btn');
+  var label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'One moment...';
+  authErr('');
+
+  try {
+    var d = MODE === 'signup'
+      ? await api('POST','/auth/signup',{ email:email, password:pass, name:name })
+      : await api('POST','/auth/login', { email:email, password:pass });
+    saveAuth(d);
+    showApp();
+  } catch(e){
+    authErr(e.message);
+    btn.disabled = false; btn.textContent = label;
+  }
+}
+
+/* ══════════ ROUTING ══════════ */
+var SCREENS = ['home','ideas','write','repurpose','voice','video','cal','library','chat','me'];
+var TABBED  = { home:'t-home', cal:'t-cal', library:'t-library', chat:'t-chat' };
+
+function go(name){
+  SCREENS.forEach(function(s){
+    var el = document.getElementById('s-' + s);
+    if(el) el.classList.toggle('on', s === name);
+  });
+  Object.keys(TABBED).forEach(function(k){
+    document.getElementById(TABBED[k]).classList.toggle('on', k === name);
+  });
+  var vp = document.querySelector('.screen.on');
+  if(vp) vp.scrollTop = 0;
+  if(name === 'library') drawLibrary();
+  if(name === 'cal')     drawCalendar();
+  if(name === 'me')      drawMe();
+  if(name === 'home')    drawHome();
+  history.replaceState(null, '', '#' + name);
+}
+
+function openSheet(){
+  document.getElementById('scrim').classList.add('on');
+  setTimeout(function(){ document.getElementById('sheet').classList.add('on'); }, 10);
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('on');
+  setTimeout(function(){ document.getElementById('scrim').classList.remove('on'); }, 280);
+}
+
+/* ══════════ HOME ══════════ */
+var PROJECTS = [];
+var CAL_PLANS = [];
+
+function loadPlans(){
+  try { CAL_PLANS = JSON.parse(localStorage.getItem('crevers_cal_plans') || '[]'); }
+  catch(e){ CAL_PLANS = []; }
+}
+function savePlans(){
+  localStorage.setItem('crevers_cal_plans', JSON.stringify(CAL_PLANS));
+}
+function dateKey(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' +
+         String(d.getDate()).padStart(2,'0');
+}
+
+function drawHome(){
+  var h = new Date().getHours();
+  var greet = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+  var name = (AUTH.user && (AUTH.user.name || AUTH.user.email || '').split('@')[0]) || 'there';
+  document.getElementById('home-greet').textContent = greet + ', ' + name;
+  document.getElementById('home-date').textContent =
+    new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+
+  loadPlans();
+  var today = new Date(); today.setHours(0,0,0,0);
+  var mine = CAL_PLANS.filter(function(p){ return p.date === dateKey(today); });
+  var left = mine.filter(function(p){ return !p.done; }).length;
+  document.getElementById('home-note').textContent = !mine.length
+    ? 'Nothing planned today.'
+    : left === 0 ? 'All posted today. Nice.'
+    : left + (left === 1 ? ' thing left to post today.' : ' things left to post today.');
+
+  var box = document.getElementById('home-today');
+  var head = '<div class="today-top"><b>Planned today</b><span>' +
+    (mine.length ? (mine.length - left) + ' of ' + mine.length + ' posted' : '') + '</span></div>';
+
+  if(!mine.length){
+    box.innerHTML = head +
+      '<div class="today-empty"><p>Nothing planned for today.<br>Generate a few ideas and put one in the calendar.</p>' +
+      '<div class="today-foot">' +
+        '<button class="tbtn" onclick="go(\'cal\')">Open calendar</button>' +
+        '<button class="tbtn solid" onclick="go(\'ideas\')">Generate ideas</button>' +
+      '</div></div>';
+  } else {
+    box.innerHTML = head + mine.map(function(p){
+      var i = CAL_PLANS.indexOf(p);
+      return '<div class="plan' + (p.done?' done':'') + '">' +
+        '<div class="tick" onclick="togglePlan(' + i + ')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="plan-b"><div class="plan-t">' + esc(p.idea) + '</div>' +
+        '<div class="chips">' + (p.platform ? '<span class="chip">' + esc(p.platform) + '</span>' : '') +
+        '<span class="chip q">' + esc(p.format || '') + '</span></div></div></div>';
+    }).join('');
+  }
+
+  var rec = document.getElementById('home-recent');
+  if(!PROJECTS.length){ rec.innerHTML = ''; return; }
+  rec.innerHTML = '<div class="sec"><h3>Carry on</h3><a onclick="go(\'library\')">All projects</a></div>' +
+    PROJECTS.slice(0,3).map(function(p){
+      return '<button class="row" onclick="go(\'library\')">' +
+        '<span class="row-f">' + esc(p.format || '') + '</span>' +
+        '<div class="row-b"><div class="row-t">' + esc(p.title) + '</div></div>' +
+        '<span class="row-d">' + ago(p.ts) + '</span></button>';
+    }).join('');
+}
+
+function togglePlan(i){
+  if(!CAL_PLANS[i]) return;
+  CAL_PLANS[i].done = !CAL_PLANS[i].done;
+  savePlans();
+  drawHome();
+}
+
+function ago(ts){
+  if(!ts) return '';
+  var d = Math.floor((Date.now() - ts) / 86400000);
+  if(d <= 0) return 'today';
+  if(d === 1) return '1d';
+  if(d < 7)   return d + 'd';
+  if(d < 30)  return Math.floor(d/7) + 'w';
+  return Math.floor(d/30) + 'mo';
+}
+
+/* ══════════ IDEAS ══════════ */
+var PLATFORMS = ['Instagram','TikTok','YouTube','Twitter / X','LinkedIn','Facebook','WhatsApp'];
+var PLATFORM = 'Instagram';
+
+function drawPlatforms(){
+  document.getElementById('idea-plats').innerHTML = PLATFORMS.map(function(p){
+    return '<button class="pill' + (p===PLATFORM?' on':'') + '" onclick="pickPlat(this,\'' +
+      p.replace(/'/g,"\\'") + '\')">' + p + '</button>';
+  }).join('');
+}
+function pickPlat(el, p){
+  PLATFORM = p;
+  document.querySelectorAll('#idea-plats .pill').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+}
+
+async function loadUsage(){
+  var el = document.getElementById('idea-meter');
+  try {
+    var d = await api('GET','/ai/usage');
+    if(!d || !d.usage){ el.textContent = ''; return; }
+    var u = d.usage.ideas;
+    el.innerHTML = u.unlimited
+      ? 'Unlimited generations'
+      : '<b>' + u.remaining + '</b> of ' + u.limit + ' left today';
+  } catch(e){ el.textContent = ''; }
+}
+
+async function genIdeas(){
+  var niche = document.getElementById('niche').value.trim();
+  if(!niche){ toast('What is your niche?'); return; }
+
+  var btn = document.getElementById('idea-btn');
+  var out = document.getElementById('idea-out');
+  btn.disabled = true; btn.textContent = 'Thinking...';
+  out.innerHTML = '<div class="loading"><div class="spin"></div><p>Reading the room for ' + esc(niche) + '...</p></div>';
+
+  try {
+    var d = await api('POST','/ai/ideas',{ niche:niche, platform:PLATFORM });
+    var ideas = d.ideas || [];
+    if(!ideas.length) throw new Error('No ideas came back. Try a different niche.');
+
+    out.innerHTML = ideas.map(function(t, i){
+      return '<div class="idea"><div class="idea-t">' + esc(t) + '</div>' +
+        '<div class="idea-a">' +
+          '<button class="act" onclick="copyIdea(' + i + ')">Copy</button>' +
+          '<button class="act" onclick="saveIdea(' + i + ',this)">Save</button>' +
+          '<button class="act" onclick="planIdea(' + i + ',this)">Plan</button>' +
+        '</div></div>';
+    }).join('');
+    window.__IDEAS = ideas;
+    loadUsage();
+  } catch(e){
+    out.innerHTML = '<div class="empty"><h4>Could not generate</h4><p>' + esc(e.message) + '</p></div>';
+  }
+  btn.disabled = false; btn.textContent = 'Generate Ideas';
+}
+
+function copyIdea(i){
+  var t = (window.__IDEAS || [])[i];
+  if(!t) return;
+  navigator.clipboard.writeText(t).then(function(){ toast('Copied.'); })
+    .catch(function(){ toast('Could not copy.'); });
+}
+
+async function saveIdea(i, btn){
+  var t = (window.__IDEAS || [])[i];
+  if(!t) return;
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    var d = await api('POST','/projects',{ title:t.slice(0,60), content:t, format:'idea' });
+    PROJECTS.unshift({
+      id:d.project.id, title:d.project.title, content:d.project.content,
+      format:d.project.format, ts:new Date(d.project.created_at).getTime() || Date.now(),
+    });
+    btn.textContent = 'Saved'; btn.classList.add('done');
+    toast('Saved to Projects.');
+  } catch(e){
+    btn.disabled = false; btn.textContent = 'Save';
+    toast(e.message);
+  }
+}
+
+function planIdea(i, btn){
+  var t = (window.__IDEAS || [])[i];
+  if(!t) return;
+  loadPlans();
+  var today = new Date(); today.setHours(0,0,0,0);
+  CAL_PLANS.push({ id:Date.now(), date:dateKey(today), idea:t,
+                   platform:PLATFORM, format:'Script', done:false });
+  savePlans();
+  btn.textContent = 'Planned'; btn.classList.add('done'); btn.disabled = true;
+  toast('Added to today.');
+}
+
+/* ══════════ PROJECTS ══════════ */
+async function loadProjects(){
+  try {
+    var d = await api('GET','/projects');
+    PROJECTS = (d.projects || []).map(function(p){
+      return { id:p.id, title:p.title, content:p.content, format:p.format,
+               ts:new Date(p.created_at).getTime() || 0 };
+    });
+  } catch(e){ PROJECTS = []; }
+}
+
+function drawLibrary(){
+  var out = document.getElementById('lib-out');
+  var q = (document.getElementById('lib-q').value || '').trim().toLowerCase();
+  var rows = PROJECTS.filter(function(p){
+    if(!q) return true;
+    return (p.title||'').toLowerCase().indexOf(q) !== -1 ||
+           (p.content||'').toLowerCase().indexOf(q) !== -1;
+  });
+  if(!rows.length){
+    out.innerHTML = '<div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
+      '<h4>' + (q ? 'Nothing matches that' : 'Nothing saved yet') + '</h4>' +
+      '<p>' + (q ? 'Try a different search.' : 'Save an idea or a draft and it will wait here for you.') + '</p></div>';
+    return;
+  }
+  out.innerHTML = rows.map(function(p){
+    var snip = (p.content||'').replace(/\s+/g,' ').trim().slice(0,90);
+    return '<button class="row" onclick="toast(\'Opening projects is in the next build.\')">' +
+      '<span class="row-f">' + esc(p.format||'') + '</span>' +
+      '<div class="row-b"><div class="row-t">' + esc(p.title) + '</div>' +
+      '<div class="row-s">' + esc(snip) + '</div></div>' +
+      '<span class="row-d">' + ago(p.ts) + '</span></button>';
+  }).join('');
+}
+
+/* ══════════ CALENDAR ══════════ */
+function drawCalendar(){
+  loadPlans();
+  var out = document.getElementById('cal-out');
+  var today = new Date(); today.setHours(0,0,0,0);
+  var start = new Date(today); start.setDate(start.getDate() - start.getDay() + 1);
+
+  var html = '';
+  for(var i=0;i<7;i++){
+    var d = new Date(start); d.setDate(d.getDate()+i);
+    var k = dateKey(d);
+    var items = CAL_PLANS.filter(function(p){ return p.date === k; });
+    var isToday = k === dateKey(today);
+    var rows = items.length ? items.map(function(p){
+      var idx = CAL_PLANS.indexOf(p);
+      return '<div class="plan' + (p.done?' done':'') + '" style="background:var(--s1);">' +
+        '<div class="tick" onclick="togglePlanCal(' + idx + ')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="plan-b"><div class="plan-t">' + esc(p.idea) + '</div>' +
+        '<div class="chips">' + (p.platform?'<span class="chip">'+esc(p.platform)+'</span>':'') +
+        '<span class="chip q">' + esc(p.format||'') + '</span></div></div></div>';
+    }).join('')
+    : '<div style="border:1px dashed rgba(255,255,255,.09);border-radius:14px;padding:.65rem .85rem;font-size:.76rem;color:var(--faint);">Nothing planned</div>';
+
+    html += '<div style="display:flex;gap:.85rem;padding:.75rem 0;border-top:1px solid var(--line);' +
+      (d < today ? 'opacity:.45;' : '') + '">' +
+      '<div style="width:44px;flex:0 0 44px;text-align:center;">' +
+      '<div style="font-size:.6rem;font-weight:700;letter-spacing:.08em;color:' +
+        (isToday?'var(--violet)':'var(--dim)') + ';">' +
+        d.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase() + '</div>' +
+      '<div style="font-family:Outfit,sans-serif;font-weight:800;font-size:1.25rem;color:' +
+        (isToday?'var(--violet)':'var(--ink)') + ';">' + d.getDate() + '</div></div>' +
+      '<div style="flex:1;min-width:0;">' + rows + '</div></div>';
+  }
+  out.innerHTML = html;
+}
+function togglePlanCal(i){
+  if(!CAL_PLANS[i]) return;
+  CAL_PLANS[i].done = !CAL_PLANS[i].done;
+  savePlans();
+  drawCalendar();
+}
+
+/* ══════════ PROFILE ══════════ */
+function drawMe(){
+  var u = AUTH.user || {};
+  var plan = AUTH.plan || 'free';
+  var names = { free:'Free', pro:'Pro', team:'Creator', creator:'Creator' };
+  document.getElementById('me-out').innerHTML =
+    '<div style="display:flex;align-items:center;gap:.9rem;padding:.4rem 0 1.3rem;">' +
+      '<div class="avatar" style="width:56px;height:56px;flex:0 0 56px;border-radius:20px;font-size:1.4rem;">' +
+        esc((u.name || u.email || 'C').charAt(0).toUpperCase()) + '</div>' +
+      '<div><b style="font-family:Outfit,sans-serif;font-size:1.05rem;display:block;">' +
+        esc(u.name || 'You') + '</b>' +
+        '<span style="font-size:.78rem;color:var(--dim);">' + esc(u.email || '') + '</span></div>' +
+    '</div>' +
+    '<div style="background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);' +
+      'border-radius:20px;padding:1rem 1.05rem;margin-bottom:1.3rem;display:flex;' +
+      'align-items:center;justify-content:space-between;gap:.75rem;">' +
+      '<div><b style="font-family:Outfit,sans-serif;font-size:1.02rem;display:block;">' +
+        (names[plan]||'Free') + ' plan</b>' +
+      '<span style="font-size:.73rem;color:var(--dim);">Resets at midnight</span></div>' +
+      (plan==='free' ? '<a href="https://crevers.com/#pricing" class="go" style="width:auto;margin:0;padding:.55rem 1.05rem;font-size:.78rem;text-decoration:none;box-shadow:none;">Upgrade</a>' : '') +
+    '</div>' +
+    '<button class="go ghost" onclick="logout()">Log out</button>' +
+    '<p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;line-height:1.6;">' +
+      'Settings, Brand Voice and billing are on <a href="https://crevers.com" style="color:var(--dim);">crevers.com</a> until the next build.</p>';
+}
+
+async function logout(){
+  try { await api('POST','/auth/logout'); } catch(e){}
+  clearAuth();
+  location.reload();
+}
+
+/* ══════════ BOOT ══════════ */
+function showApp(){
+  document.getElementById('auth').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  var u = AUTH.user || {};
+  document.getElementById('av').textContent = (u.name || u.email || 'C').charAt(0).toUpperCase();
+  drawPlatforms();
+  drawHome();
+  loadUsage();
+  loadProjects().then(drawHome);
+  var hash = (location.hash || '').replace('#','');
+  if(SCREENS.indexOf(hash) !== -1) go(hash);
+}
+
+function showAuth(){
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth').style.display = 'flex';
+}
+
+(async function boot(){
+  if(!AUTH.token){ showAuth(); return; }
+  /* trust the stored session for the first paint, then confirm it */
+  showApp();
+  try {
+    var me = await api('GET','/auth/me');
+    AUTH.user = { id:me.id, email:me.email, name:me.name, plan:me.plan };
+    AUTH.plan = me.plan || 'free';
+    localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
+    localStorage.setItem('cos_plan', AUTH.plan);
+    document.getElementById('av').textContent =
+      (AUTH.user.name || AUTH.user.email || 'C').charAt(0).toUpperCase();
+    drawHome();
+  } catch(e){
+    clearAuth();
+    showAuth();
+  }
+})();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>

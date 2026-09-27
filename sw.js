@@ -2,9 +2,10 @@
    Crevers Service Worker
    Caches the app shell for instant loads
    ═══════════════════════════════════════ */
-var CACHE_NAME = 'crevers-v1';
+var CACHE_NAME = 'crevers-v2';
 var SHELL = [
   '/',
+  '/app',
   '/favicon.svg',
   '/favicon.ico',
   '/logo.svg',
@@ -48,7 +49,9 @@ self.addEventListener('fetch', function(e) {
      url.pathname.startsWith('/auth') ||
      url.pathname.startsWith('/ai') ||
      url.pathname.startsWith('/payments') ||
-     url.pathname.startsWith('/projects')) {
+     url.pathname.startsWith('/projects') ||
+     url.pathname.startsWith('/voice') ||
+     url.pathname.startsWith('/coupons')) {
     return;
   }
 
@@ -67,7 +70,10 @@ self.addEventListener('fetch', function(e) {
       .catch(function() {
         /* Network failed — serve from cache */
         return caches.match(e.request).then(function(cached) {
-          return cached || caches.match('/');
+          if(cached) return cached;
+          /* an app route offline should show the app shell, not the
+             marketing page, or someone mid-task lands somewhere strange */
+          return caches.match(url.pathname.indexOf('/app') === 0 ? '/app' : '/');
         });
       })
   );
