@@ -2,7 +2,7 @@
   "name": "Crevers",
   "short_name": "Crevers",
   "description": "Ideas, scripts, captions and voiceovers for whatever you are posting to.",
-  "start_url": "/app",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#050508",

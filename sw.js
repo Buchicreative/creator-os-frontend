@@ -2,10 +2,9 @@
    Crevers Service Worker
    Caches the app shell for instant loads
    ═══════════════════════════════════════ */
-var CACHE_NAME = 'crevers-v2';
+var CACHE_NAME = 'crevers-v3';
 var SHELL = [
   '/',
-  '/app',
   '/favicon.svg',
   '/favicon.ico',
   '/logo.svg',
