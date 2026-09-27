@@ -685,6 +685,120 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
   color:var(--dim)}
 .face.on .face-letter{color:#c0aeff}
 .avatar,.pfp{overflow:hidden}
+
+/* ════════ HOME ════════ */
+.hello{padding:.6rem 0 1.1rem}
+.hello .d{font-size:.73rem;color:var(--faint);letter-spacing:.02em;
+  text-transform:uppercase;font-weight:600;margin-bottom:.3rem}
+.hello h2{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.5rem;
+  letter-spacing:-.04em;line-height:1.1}
+
+.focus{border-radius:24px;padding:1.15rem;margin-bottom:1.6rem;
+  background:
+    radial-gradient(130% 110% at 0% 0%,rgba(124,92,252,.26),transparent 60%),
+    radial-gradient(100% 100% at 100% 100%,rgba(252,92,125,.14),transparent 58%),
+    #13111d;
+  border:1px solid rgba(124,92,252,.25);
+  box-shadow:0 22px 46px -24px rgba(124,92,252,.6)}
+.focus-top{display:flex;align-items:center;justify-content:space-between;
+  gap:.6rem;margin-bottom:.9rem}
+.focus-kicker{font-size:.64rem;font-weight:800;letter-spacing:.11em;
+  text-transform:uppercase;color:#b9a5ff}
+.focus-count{font-size:.71rem;color:var(--dim)}
+.focus-t{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem;
+  line-height:1.35;letter-spacing:-.02em;margin-bottom:.55rem;overflow-wrap:anywhere}
+.focus-tags{display:flex;gap:.35rem;margin-bottom:1.05rem;flex-wrap:wrap}
+.ftag{font-size:.64rem;font-weight:600;padding:3px 9px;border-radius:7px;
+  background:rgba(255,255,255,.07);color:#cfc7ea}
+.focus-do{display:flex;gap:.5rem}
+.fbtn{flex:1;border-radius:13px;padding:.78rem;font-family:'Outfit',sans-serif;
+  font-weight:700;font-size:.87rem;cursor:pointer;border:none;
+  background:rgba(255,255,255,.08);color:var(--ink)}
+.fbtn.solid{background:var(--violet);color:#fff;flex:2;
+  box-shadow:0 10px 24px -10px rgba(124,92,252,.9)}
+.fbtn:active{transform:scale(.98)}
+
+.upnext{display:flex;align-items:center;gap:.5rem;width:100%;margin-top:.95rem;
+  padding:.85rem 0 0;border:none;border-top:1px solid rgba(255,255,255,.08);
+  background:none;font-family:inherit;font-size:.75rem;color:var(--dim);
+  cursor:pointer;text-align:left}
+.upnext b{color:#cfc7ea;font-weight:500;flex:1;min-width:0}
+.upnext span{color:var(--faint)}
+.upnext svg{width:13px;height:13px;stroke:var(--faint);fill:none;stroke-width:2.2;
+  flex:0 0 13px;stroke-linecap:round;stroke-linejoin:round}
+
+/* nothing planned */
+.focus.blank{background:var(--s1);border-color:var(--line);box-shadow:none}
+.focus.blank .focus-t{font-size:1.02rem;font-weight:600;color:var(--dim);
+  line-height:1.55;margin-bottom:1.05rem}
+
+/* everything posted. A finished day should look finished, and must not
+   show tomorrow, or the two days blur together. */
+.focus.done{background:
+    radial-gradient(130% 110% at 0% 0%,rgba(92,240,208,.16),transparent 62%),#101a18;
+  border-color:rgba(92,240,208,.28);box-shadow:none}
+.focus.done .focus-kicker{color:var(--mint)}
+.done-row{display:flex;align-items:center;gap:.8rem}
+.done-mark{width:38px;height:38px;flex:0 0 38px;border-radius:50%;
+  background:rgba(92,240,208,.15);border:1px solid rgba(92,240,208,.35);
+  display:flex;align-items:center;justify-content:center}
+.done-mark svg{width:17px;height:17px;stroke:var(--mint);fill:none;stroke-width:2.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.done-b b{font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;display:block}
+.done-b span{font-size:.76rem;color:var(--dim)}
+.done-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.08);
+  overflow:hidden;margin-top:1rem}
+.done-fill{height:100%;width:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--violet),var(--mint))}
+
+/* tools strip */
+.strip-h{display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:.7rem}
+.strip-h span{font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:700;
+  color:var(--ink)}
+.strip{display:flex;gap:.5rem;margin-bottom:1.2rem}
+.strip .tool{flex:1;background:none;border:1px solid var(--line);border-radius:16px;
+  padding:.85rem .4rem;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:.45rem;color:var(--dim)}
+.strip .tool svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;margin:0}
+.strip .tool span{font-size:.66rem;font-weight:600;color:currentColor;margin:0}
+.strip .tool.key{color:#b9a5ff;border-color:rgba(124,92,252,.28);
+  background:rgba(124,92,252,.07)}
+
+/* chat invitation */
+.ask{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;
+  cursor:pointer;margin:0 0 1.7rem;padding:.7rem .85rem;border-radius:15px;
+  border:1px solid rgba(124,92,252,.2);color:var(--ink);position:relative;
+  overflow:hidden;
+  background:linear-gradient(100deg,rgba(124,92,252,.11),rgba(252,92,125,.05) 70%)}
+.ask::after{content:'';position:absolute;top:0;bottom:0;width:38%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.055),transparent);
+  transform:translateX(-140%);animation:sweep 7s ease-in-out infinite}
+@keyframes sweep{0%{transform:translateX(-140%)}22%{transform:translateX(320%)}
+                 100%{transform:translateX(320%)}}
+@media(prefers-reduced-motion:reduce){ .ask::after{animation:none;opacity:0} }
+.ask-orb{width:30px;height:30px;flex:0 0 30px;border-radius:11px;display:flex;
+  align-items:center;justify-content:center;
+  background:linear-gradient(140deg,var(--violet),var(--rose));
+  box-shadow:0 6px 16px -6px rgba(124,92,252,.9)}
+.ask-orb svg{width:15px;height:15px;fill:#fff;stroke:none}
+.ask-b{flex:1;min-width:0}
+.ask-b b{display:block;font-family:'Outfit',sans-serif;font-weight:700;
+  font-size:.83rem;line-height:1.3}
+.ask-b em{display:block;font-style:normal;font-size:.7rem;color:var(--dim);margin-top:1px}
+.ask-go{width:14px;height:14px;stroke:var(--faint);fill:none;stroke-width:2.2;flex:0 0 14px}
+
+/* recent, rules not cards */
+.rec{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;
+  background:none;border:none;border-top:1px solid var(--line);padding:.85rem .1rem;
+  cursor:pointer;color:var(--ink)}
+.rec-b{flex:1;min-width:0}
+.rec-t{font-size:.83rem;font-weight:500;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.rec-m{font-size:.69rem;color:var(--faint);margin-top:2px}
+.rec-m b{color:#a08cf0;font-weight:600;text-transform:capitalize}
+.rec svg{width:14px;height:14px;stroke:var(--faint);fill:none;stroke-width:2;flex:0 0 14px}
 </style>
 </head>
 <body>
@@ -728,32 +842,41 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 
     <!-- HOME -->
     <div class="screen on" id="s-home">
-      <div class="head">
-        <div class="head-eyebrow" id="home-date"></div>
+      <div class="hello">
+        <div class="d" id="home-date"></div>
         <h2 id="home-greet">Hello</h2>
-        <p class="head-note" id="home-note"></p>
       </div>
 
-      <div class="today" id="home-today"></div>
+      <!-- one block, three states: something to post, all done, or
+           nothing planned -->
+      <div id="home-focus"></div>
 
-      <div class="tools">
-        <button class="tool wide" onclick="go('ideas')">
+      <div class="strip-h"><span>Make something</span></div>
+      <div class="strip">
+        <button class="tool key" onclick="go('ideas')">
           <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-          <div><b>Stuck for an idea?</b><span>Ten for your niche in about twenty seconds</span></div>
+          <span>Ideas</span>
         </button>
         <button class="tool" onclick="go('write')">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
-          <b>Create Content</b><span>Scripts, captions, threads</span>
+          <span>Write</span>
         </button>
         <button class="tool" onclick="go('repurpose')">
           <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-          <b>Repurpose</b><span>One post, every platform</span>
+          <span>Repurpose</span>
+        </button>
+        <button class="tool" onclick="go('voice')">
+          <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+          <span>Voice</span>
         </button>
       </div>
 
-      <button class="ask-card" onclick="go('chat')">
-        <div class="ask-orb"><svg viewBox="0 0 24 24"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></div>
-        <div class="ask-b"><b>Not sure what to post?</b><span>Ask the AI Chat-bot. Free on every plan.</span></div>
+      <button class="ask" onclick="go('chat')">
+        <span class="ask-orb"><svg viewBox="0 0 24 24"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></span>
+        <span class="ask-b">
+          <b>Not sure what to post?</b>
+          <em>Ask the Chat-bot &middot; free on every plan</em>
+        </span>
         <svg class="ask-go" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
 
@@ -1292,63 +1415,6 @@ function savePlans(){
 function dateKey(d){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' +
          String(d.getDate()).padStart(2,'0');
-}
-
-function drawHome(){
-  var h = new Date().getHours();
-  var greet = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
-  var name = (AUTH.user && (AUTH.user.name || AUTH.user.email || '').split('@')[0]) || 'there';
-  document.getElementById('home-greet').textContent = greet + ', ' + name;
-  document.getElementById('home-date').textContent =
-    new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
-
-  loadPlans();
-  var today = new Date(); today.setHours(0,0,0,0);
-  var mine = CAL_PLANS.filter(function(p){ return p.date === dateKey(today); });
-  var left = mine.filter(function(p){ return !p.done; }).length;
-  document.getElementById('home-note').textContent = !mine.length
-    ? 'Nothing planned today.'
-    : left === 0 ? 'All posted today. Nice.'
-    : left + (left === 1 ? ' thing left to post today.' : ' things left to post today.');
-
-  var box = document.getElementById('home-today');
-  var head = '<div class="today-top"><b>Planned today</b><span>' +
-    (mine.length ? (mine.length - left) + ' of ' + mine.length + ' posted' : '') + '</span></div>';
-
-  if(!mine.length){
-    box.innerHTML = head +
-      '<div class="today-empty"><p>Nothing planned for today.<br>Generate a few ideas and put one in the calendar.</p>' +
-      '<div class="today-foot">' +
-        '<button class="tbtn" onclick="go(\'cal\')">Open calendar</button>' +
-        '<button class="tbtn solid" onclick="go(\'ideas\')">Generate ideas</button>' +
-      '</div></div>';
-  } else {
-    box.innerHTML = head + mine.map(function(p){
-      var i = CAL_PLANS.indexOf(p);
-      return '<div class="plan' + (p.done?' done':'') + '">' +
-        '<div class="tick" onclick="togglePlan(' + i + ')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
-        '<div class="plan-b"><div class="plan-t">' + esc(p.idea) + '</div>' +
-        '<div class="chips">' + (p.platform ? '<span class="chip">' + esc(p.platform) + '</span>' : '') +
-        '<span class="chip q">' + esc(p.format || '') + '</span></div></div></div>';
-    }).join('');
-  }
-
-  var rec = document.getElementById('home-recent');
-  if(!PROJECTS.length){ rec.innerHTML = ''; return; }
-  rec.innerHTML = '<div class="sec"><h3>Carry on</h3><a onclick="go(\'library\')">All projects</a></div>' +
-    PROJECTS.slice(0,3).map(function(p){
-      return '<button class="row" onclick="go(\'library\')">' +
-        '<span class="row-f">' + esc(p.format || '') + '</span>' +
-        '<div class="row-b"><div class="row-t">' + esc(p.title) + '</div></div>' +
-        '<span class="row-d">' + ago(p.ts) + '</span></button>';
-    }).join('');
-}
-
-function togglePlan(i){
-  if(!CAL_PLANS[i]) return;
-  CAL_PLANS[i].done = !CAL_PLANS[i].done;
-  savePlans();
-  drawHome();
 }
 
 function ago(ts){
@@ -2833,6 +2899,113 @@ function drawFaces(){
     FACES.map(function(f){
       return '<button class="face' + (f===cur?' on':'') + '" onclick="pickFace(\'' + f + '\')">' +
         '<svg viewBox="0 0 24 24"><path d="' + FACE_PATHS[f] + '"/></svg></button>';
+    }).join('');
+}
+
+/* ══════════ HOME ══════════
+   One block, three states. When the day is finished it says so and
+   stops there: showing tomorrow would blur the two days together. */
+function drawHome(){
+  var h = new Date().getHours();
+  var greet = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+  var u = AUTH.user || {};
+  var name = (u.name || (u.email || '').split('@')[0] || 'there').split(' ')[0];
+  document.getElementById('home-greet').textContent = greet + ', ' + name;
+  document.getElementById('home-date').textContent =
+    new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+
+  loadPlans();
+  var today = new Date(); today.setHours(0,0,0,0);
+  var mine = CAL_PLANS.filter(function(p){ return p.date === dateKey(today); });
+  var left = mine.filter(function(p){ return !p.done; });
+  var box = document.getElementById('home-focus');
+
+  if(!mine.length){
+    box.className = 'focus blank';
+    box.innerHTML =
+      '<div class="focus-top"><span class="focus-kicker" style="color:var(--dim);">Up today</span></div>' +
+      '<div class="focus-t">Nothing planned. What are you posting?</div>' +
+      '<div class="focus-do">' +
+        '<button class="fbtn solid" onclick="go(\'cal\')">Plan the week</button>' +
+        '<button class="fbtn" onclick="go(\'ideas\')">Generate</button>' +
+      '</div>';
+    drawRecent();
+    return;
+  }
+
+  if(!left.length){
+    box.className = 'focus done';
+    box.innerHTML =
+      '<div class="focus-top"><span class="focus-kicker">Up today</span>' +
+      '<span class="focus-count">' + mine.length + ' of ' + mine.length + ' posted</span></div>' +
+      '<div class="done-row">' +
+        '<div class="done-mark"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="done-b"><b>All posted today</b>' +
+        '<span>' + (mine.length === 1 ? 'One piece out.' : mine.length + ' pieces out.') + ' Nice work.</span></div>' +
+      '</div>' +
+      '<div class="done-bar"><div class="done-fill"></div></div>' +
+      '<button class="upnext" onclick="go(\'cal\')"><b>See the rest of your week</b>' +
+        '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>';
+    drawRecent();
+    return;
+  }
+
+  var next = left[0];
+  var idx = CAL_PLANS.indexOf(next);
+  var more = left.length - 1;
+  box.className = 'focus';
+  box.innerHTML =
+    '<div class="focus-top"><span class="focus-kicker">Up today</span>' +
+    '<span class="focus-count">' + (mine.length - left.length) + ' of ' + mine.length + ' posted</span></div>' +
+    '<div class="focus-t">' + esc(next.idea) + '</div>' +
+    '<div class="focus-tags">' +
+      (next.platform ? '<span class="ftag">' + esc(next.platform) + '</span>' : '') +
+      (next.format ? '<span class="ftag">' + esc(next.format) + '</span>' : '') +
+    '</div>' +
+    '<div class="focus-do">' +
+      '<button class="fbtn solid" onclick="focusGenerate(' + idx + ')">Generate</button>' +
+      '<button class="fbtn" onclick="focusDone(' + idx + ')">Done</button>' +
+    '</div>' +
+    (more > 0
+      ? '<button class="upnext" onclick="go(\'cal\')">' +
+          '<b>' + more + ' more planned today</b><span>Open calendar</span>' +
+          '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>'
+      : '');
+  drawRecent();
+}
+
+/* carries the plan into the Creator rather than making you retype it */
+function focusGenerate(i){
+  var p = CAL_PLANS[i];
+  if(!p) return;
+  go('write');
+  var el = document.getElementById('w-idea');
+  if(el) el.value = p.idea;
+  if(p.platform) CREATE_PLATFORM = p.platform;
+  var f = (p.format || '').toLowerCase();
+  if(FORMATS.filter(function(x){ return x[0] === f; }).length) FORMAT = f;
+  drawWriteControls();
+}
+
+function focusDone(i){
+  if(!CAL_PLANS[i]) return;
+  CAL_PLANS[i].done = true;
+  savePlans();
+  drawHome();
+  toast('Marked as posted.');
+}
+
+function drawRecent(){
+  var rec = document.getElementById('home-recent');
+  if(!rec) return;
+  if(!PROJECTS.length){ rec.innerHTML = ''; return; }
+  rec.innerHTML = '<div class="strip-h"><span>Carry on</span></div>' +
+    PROJECTS.slice(0,3).map(function(p){
+      return '<button class="rec" onclick="openPreview(' +
+        JSON.stringify(String(p.id)).replace(/"/g,'&quot;') + ')">' +
+        '<div class="rec-b"><div class="rec-t">' + esc(p.title || 'Untitled') + '</div>' +
+        '<div class="rec-m"><b>' + esc(p.format || 'other') + '</b> &middot; ' + ago(p.ts) + '</div></div>' +
+        '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>';
     }).join('');
 }
 </script>
