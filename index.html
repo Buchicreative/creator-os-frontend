@@ -1756,27 +1756,6 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   cursor:pointer;flex:0 0 auto;transition:background .18s;}
 .set-plan-btn:hover{background:#8a6dff;}
 
-/* ════════ APP BANNER ════════ */
-#app-banner{position:fixed;left:.7rem;right:.7rem;bottom:calc(.7rem + env(safe-area-inset-bottom,0px));
-  z-index:9998;align-items:center;gap:0.65rem;padding:0.7rem 0.8rem;
-  background:rgba(20,18,29,.97);backdrop-filter:blur(18px);
-  border:1px solid rgba(124,92,252,.28);border-radius:16px;
-  box-shadow:0 16px 40px rgba(0,0,0,.6);
-  animation:abUp .45s cubic-bezier(.22,1,.36,1) both;}
-#app-banner.show{display:flex;}
-@keyframes abUp{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}
-#app-banner img{flex:0 0 auto;height:17px;width:auto;}
-.ab-b{flex:1;min-width:0;}
-.ab-b b{display:block;font-family:'Outfit',sans-serif;font-weight:700;
-  font-size:0.8rem;color:var(--text);line-height:1.3;}
-.ab-b span{display:block;font-size:0.68rem;color:var(--muted);margin-top:1px;line-height:1.35;}
-.ab-go{flex:0 0 auto;background:var(--accent);color:#fff;border-radius:10px;
-  padding:0.45rem 0.9rem;font-family:'Outfit',sans-serif;font-weight:700;
-  font-size:0.76rem;text-decoration:none;white-space:nowrap;}
-.ab-x{flex:0 0 auto;background:none;border:none;color:var(--muted);cursor:pointer;
-  font-size:0.72rem;padding:4px 2px;line-height:1;}
-@media(min-width:861px){ #app-banner{display:none !important;} }
-@media(prefers-reduced-motion:reduce){ #app-banner{animation:none;} }
 </style>
 <!-- FFmpeg.wasm for WebM to MP4 conversion -->
 
@@ -1808,19 +1787,6 @@ nav.scrolled{padding-top:.6rem;padding-bottom:.6rem;}
   </script>
 </head>
 <body>
-
-<!-- Phone visitors are told the app exists rather than redirected, so
-     someone who wants the website still gets the website. Dismissing it
-     is remembered. -->
-<div id="app-banner" style="display:none;">
-  <img src="/logo.svg" alt="" width="34" height="17">
-  <div class="ab-b">
-    <b>Crevers works better as an app</b>
-    <span>Faster, and it installs to your home screen</span>
-  </div>
-  <a href="/app" class="ab-go">Open</a>
-  <button class="ab-x" onclick="dismissAppBanner()" aria-label="Dismiss">&#10005;</button>
-</div>
 
 <div id="project-preview-overlay" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:600px;width:100%;max-height:85vh;display:flex;flex-direction:column;position:relative;">
@@ -6096,34 +6062,6 @@ async function loadUsageStat(){
   }
 }
 
-/* ══════════ APP BANNER ══════════ */
-function dismissAppBanner(){
-  var el = document.getElementById('app-banner');
-  if(el) el.classList.remove('show');
-  try { localStorage.setItem('crv_app_banner', String(Date.now())); } catch(e){}
-}
-
-crvReady(function(){
-  var el = document.getElementById('app-banner');
-  if(!el) return;
-
-  /* already running as an installed app, so there is nothing to offer */
-  var standalone = window.matchMedia('(display-mode: standalone)').matches ||
-                   window.navigator.standalone === true;
-  if(standalone) return;
-
-  if(window.innerWidth > 860) return;
-
-  /* dismissing it holds for two weeks rather than forever, since someone
-     may change their mind, and forever means we can never mention it again */
-  try {
-    var last = parseInt(localStorage.getItem('crv_app_banner') || '0', 10);
-    if(last && Date.now() - last < 14 * 24 * 60 * 60 * 1000) return;
-  } catch(e){}
-
-  /* let the page settle first so it does not fight the first paint */
-  setTimeout(function(){ el.classList.add('show'); }, 2200);
-});
 </script>
 
 <!-- Crevers AI Chatbot Bubble -->
