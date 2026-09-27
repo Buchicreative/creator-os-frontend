@@ -496,6 +496,62 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
   background:var(--violet);color:#fff}
 .pc-btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
 .pc-btn:disabled{opacity:.55}
+
+/* ════════ TAB BAR, drawn at the real width ════════
+   It was one fixed viewBox stretched with preserveAspectRatio:none, so
+   the scoop became an ellipse on every screen that is not exactly 372px
+   and a round button sat in an oval hole. The path is now drawn in real
+   pixels, and the safe area is its own strip so it cannot stretch the
+   shape vertically either. */
+.tabs{position:fixed;bottom:0;left:0;right:0;height:calc(88px + var(--safe-b));z-index:50}
+.tab-surface{position:absolute;top:0;left:0;width:100%;height:88px;display:block;
+  filter:drop-shadow(0 -10px 26px rgba(0,0,0,.55))}
+.tab-foot{position:absolute;bottom:0;left:0;right:0;height:var(--safe-b);background:#0a0910}
+.tab-row{position:absolute;top:0;left:0;right:0;height:88px;display:flex;
+  align-items:flex-start;padding-top:30px;padding-bottom:0}
+.tab{flex:1 1 0;min-width:0}
+.tab-gap{flex:1 1 0;min-width:0}
+.tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;display:block;
+  text-align:center}
+.fab{position:absolute;left:50%;top:-3px;transform:translateX(-50%);
+  width:58px;height:58px}
+
+/* ── profile ── */
+.me-card{display:flex;align-items:center;gap:.9rem;width:100%;text-align:left;
+  background:none;border:none;color:var(--ink);padding:.2rem 0 1.2rem;cursor:pointer}
+.me-b{flex:1;min-width:0}
+.me-b b{font-family:'Outfit',sans-serif;font-size:1.05rem;display:block;font-weight:700}
+.me-b span{font-size:.78rem;color:var(--dim);display:block;word-break:break-all}
+.arrow{width:15px;height:15px;stroke:var(--faint);flex:0 0 15px;fill:none;stroke-width:2}
+
+.plan-strip{display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+  width:100%;text-align:left;cursor:pointer;margin-bottom:1rem;
+  background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);
+  border-radius:20px;padding:1rem 1.05rem;color:var(--ink)}
+.plan-strip b{font-family:'Outfit',sans-serif;font-size:1.02rem;display:block}
+.plan-strip span{font-size:.73rem;color:var(--dim)}
+.plan-up{background:var(--violet);color:#fff;border-radius:11px;padding:.5rem 1rem;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.78rem;flex:0 0 auto}
+
+.set-group{background:var(--s1);border:1px solid var(--line);border-radius:20px;
+  overflow:hidden}
+.set-block{border-bottom:1px solid var(--line)}
+.set-block:last-child{border-bottom:none}
+.set-row{display:flex;align-items:center;gap:.85rem;width:100%;text-align:left;
+  background:none;border:none;color:var(--ink);padding:1rem;cursor:pointer}
+.set-row:active{background:var(--s2)}
+.set-row .ic{width:18px;height:18px;flex:0 0 18px;stroke:var(--dim)}
+.set-row b{flex:1;font-weight:500;font-size:.88rem}
+.set-row .chev{transition:transform .25s}
+.set-block.open .set-row .chev{transform:rotate(90deg)}
+.set-block.open .set-row .ic{stroke:var(--violet)}
+.tagx{font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:20px;
+  background:linear-gradient(120deg,var(--violet),var(--rose));color:#fff;flex:0 0 auto}
+.set-body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 1rem}
+.set-block.open .set-body{max-height:700px;padding:0 1rem 1.1rem}
+.set-note{font-size:.76rem;color:var(--dim);line-height:1.55;margin-bottom:.75rem}
+.me-foot{font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;
+  line-height:1.6}
 </style>
 </head>
 <body>
@@ -799,7 +855,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 
   <!-- tabs -->
   <nav class="tabs">
-    <svg class="tab-surface" viewBox="0 0 372 88" preserveAspectRatio="none" aria-hidden="true">
+    <svg class="tab-surface" id="bar-svg" aria-hidden="true">
       <defs>
         <linearGradient id="barEdge" x1="0" y1="0" x2="372" y2="0" gradientUnits="userSpaceOnUse">
           <stop offset="0" stop-color="rgba(124,92,252,0)"/>
@@ -812,9 +868,11 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
           <stop offset="0" stop-color="#14121d"/><stop offset="1" stop-color="#0a0910"/>
         </linearGradient>
       </defs>
-      <path d="M0,24 H148 C165,24 163,54 186,54 C209,54 207,24 224,24 H372 V88 H0 Z" fill="url(#barFill)"/>
-      <path d="M0,24 H148 C165,24 163,54 186,54 C209,54 207,24 224,24 H372" fill="none" stroke="url(#barEdge)" stroke-width="1.25"/>
+      <path id="bar-fill" fill="url(#barFill)"/>
+      <path id="bar-line" fill="none" stroke="url(#barEdge)" stroke-width="1.25"/>
     </svg>
+    <div class="tab-foot"></div>
+
     <div class="tab-row">
       <button class="tab on" id="t-home" onclick="go('home')">
         <svg viewBox="0 0 26 26"><path d="M4 11.2 13 4l9 7.2"/><path d="M6.4 12.6V21a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1v-8.4"/><path d="M10.6 22v-5.2h4.8V22"/></svg>
@@ -1253,30 +1311,7 @@ function togglePlanCal(i){
 }
 
 /* ══════════ PROFILE ══════════ */
-function drawMe(){
-  var u = AUTH.user || {};
-  var plan = AUTH.plan || 'free';
-  var names = { free:'Free', pro:'Pro', team:'Creator', creator:'Creator' };
-  document.getElementById('me-out').innerHTML =
-    '<div style="display:flex;align-items:center;gap:.9rem;padding:.4rem 0 1.3rem;">' +
-      '<div class="avatar" style="width:56px;height:56px;flex:0 0 56px;border-radius:20px;font-size:1.4rem;">' +
-        esc((u.name || u.email || 'C').charAt(0).toUpperCase()) + '</div>' +
-      '<div><b style="font-family:Outfit,sans-serif;font-size:1.05rem;display:block;">' +
-        esc(u.name || 'You') + '</b>' +
-        '<span style="font-size:.78rem;color:var(--dim);">' + esc(u.email || '') + '</span></div>' +
-    '</div>' +
-    '<div style="background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);' +
-      'border-radius:20px;padding:1rem 1.05rem;margin-bottom:1.3rem;display:flex;' +
-      'align-items:center;justify-content:space-between;gap:.75rem;">' +
-      '<div><b style="font-family:Outfit,sans-serif;font-size:1.02rem;display:block;">' +
-        (names[plan]||'Free') + ' plan</b>' +
-      '<span style="font-size:.73rem;color:var(--dim);">Resets at midnight</span></div>' +
-      (plan==='free' ? '<a href="https://crevers.com/#pricing" class="go" style="width:auto;margin:0;padding:.55rem 1.05rem;font-size:.78rem;text-decoration:none;box-shadow:none;">Upgrade</a>' : '') +
-    '</div>' +
-    '<button class="go ghost" onclick="logout()">Log out</button>' +
-    '<p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;line-height:1.6;">' +
-      'Settings, Brand Voice and billing are on <a href="https://crevers.com" style="color:var(--dim);">crevers.com</a> until the next build.</p>';
-}
+
 
 async function logout(){
   try { await api('POST','/auth/logout'); } catch(e){}
@@ -1290,6 +1325,7 @@ function showApp(){
   document.getElementById('app').style.display = 'flex';
   var u = AUTH.user || {};
   document.getElementById('av').textContent = (u.name || u.email || 'C').charAt(0).toUpperCase();
+  drawBar();
   drawPlatforms();
   drawWriteControls();
   drawRpTargets();
@@ -2047,49 +2083,99 @@ function drawMe(){
   var u = AUTH.user || {};
   var plan = AUTH.plan || 'free';
   var initial = esc((u.name || u.email || 'C').charAt(0).toUpperCase());
+  var chev = '<svg class="arrow" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
 
   document.getElementById('me-out').innerHTML =
-    '<button class="set-row" style="padding:.2rem 0 1.3rem;border-bottom:none;" onclick="go(\'edit\')">' +
+    '<button class="me-card" onclick="go(\'edit\')">' +
       '<div class="avatar" style="width:56px;height:56px;flex:0 0 56px;border-radius:20px;font-size:1.4rem;">' + initial + '</div>' +
-      '<div style="flex:1;min-width:0;"><b style="font-family:Outfit,sans-serif;font-size:1.05rem;display:block;font-weight:700;">' +
-        esc(u.name || 'You') + '</b>' +
-        '<span style="font-size:.78rem;color:var(--dim);word-break:break-all;">' + esc(u.email || '') + '</span></div>' +
-      '<svg class="arrow" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+      '<div class="me-b"><b>' + esc(u.name || 'You') + '</b><span>' + esc(u.email || '') + '</span></div>' +
+      chev +
     '</button>' +
 
-    '<div style="background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);' +
-      'border-radius:20px;padding:1rem 1.05rem;margin-bottom:1rem;display:flex;align-items:center;' +
-      'justify-content:space-between;gap:.75rem;">' +
-      '<div><b style="font-family:Outfit,sans-serif;font-size:1.02rem;display:block;">' + PLAN_NAMES[plan] + ' plan</b>' +
-      '<span style="font-size:.73rem;color:var(--dim);">' + PLAN_SUBS[plan] + '</span></div>' +
-      (plan === 'free'
-        ? '<button onclick="go(\'plans\')" style="background:var(--violet);color:#fff;border:none;border-radius:11px;padding:.55rem 1.05rem;font-family:Outfit,sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;">Upgrade</button>'
-        : '') +
-    '</div>' +
+    '<button class="plan-strip" onclick="go(\'plans\')">' +
+      '<div><b>' + PLAN_NAMES[plan] + ' plan</b><span>' + PLAN_SUBS[plan] + '</span></div>' +
+      (plan === 'free' ? '<span class="plan-up">Upgrade</span>' : chev) +
+    '</button>' +
+
     '<div class="usage" id="me-usage"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
 
-    '<div class="set-sec"><h3>Content defaults</h3><p>The starting point whenever you generate something.</p></div>' +
-    '<div class="lbl">Your niche</div>' +
-    '<div class="field"><input id="set-niche" placeholder="e.g. Fitness coaching" value="' +
-      esc(localStorage.getItem('cos_niche') || '') + '"></div>' +
-    '<button class="go ghost" style="margin-top:.7rem;" onclick="saveNiche(this)">Save niche</button>' +
+    '<div class="set-group">' +
+      setRow('voice','Brand Voice',
+        '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>',
+        '<span class="tagx" id="bv-tag" style="display:none;">Trained</span>') +
+      setRow('defaults','Content defaults',
+        '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>','') +
+      setRow('code','Have a code?',
+        '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>','') +
+      setRow('help','Help and support',
+        '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>','') +
+    '</div>' +
 
-    '<div class="set-sec"><h3>Brand Voice</h3><p>Teach Crevers how you write, so output sounds like you.</p></div>' +
-    '<div id="me-voice"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
-
-    '<div class="set-sec"><h3>Plan and billing</h3></div>' +
-    '<div class="lbl">Have a code?</div>' +
-    '<div class="field"><input id="set-coupon" placeholder="Enter your code" autocapitalize="characters"></div>' +
-    '<button class="go ghost" style="margin-top:.6rem;" onclick="redeem(this)">Redeem</button>' +
-
-    '<div class="set-sec"><h3>Account</h3></div>' +
-    '<button class="go ghost" onclick="logout()">Log out</button>' +
-    '<p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;line-height:1.6;">' +
-      'Video resizing is heavy on a phone. Use crevers.com on a computer for that.</p>';
+    '<button class="go ghost" style="margin-top:1.4rem;" onclick="logout()">Log out</button>' +
+    '<p class="me-foot">Video resizing is heavy on a phone. Use crevers.com on a computer for that.</p>';
 
   applyAvatar();
   drawUsageBars();
-  drawBrandVoice();
+  peekBrandVoice();
+}
+
+/* One row per section, opening in place. Everything laid flat made this
+   a single long scroll where the basics sat below a textarea. */
+function setRow(key, label, path, badge){
+  return '<div class="set-block" id="blk-' + key + '">' +
+    '<button class="set-row" onclick="toggleSet(\'' + key + '\')">' +
+      '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>' +
+      '<b>' + label + '</b>' + (badge || '') +
+      '<svg class="arrow chev" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '</button><div class="set-body" id="body-' + key + '"></div></div>';
+}
+
+var OPEN_SET = null;
+function toggleSet(key){
+  var blk = document.getElementById('blk-' + key);
+  var body = document.getElementById('body-' + key);
+  if(!blk || !body) return;
+  if(OPEN_SET && OPEN_SET !== key){
+    var prev = document.getElementById('blk-' + OPEN_SET);
+    if(prev) prev.classList.remove('open');
+  }
+  if(blk.classList.contains('open')){
+    blk.classList.remove('open'); OPEN_SET = null; return;
+  }
+  body.innerHTML = setBody(key);
+  blk.classList.add('open');
+  OPEN_SET = key;
+  if(key === 'voice') drawBrandVoice();
+  setTimeout(function(){ blk.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 200);
+}
+
+function setBody(key){
+  if(key === 'voice')
+    return '<p class="set-note">Paste a few posts you have written and everything Crevers makes will sound like you.</p>' +
+           '<div id="me-voice"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>';
+  if(key === 'defaults')
+    return '<p class="set-note">The starting point whenever you generate something.</p>' +
+           '<div class="lbl">Your niche</div>' +
+           '<div class="field"><input id="set-niche" placeholder="e.g. Fitness coaching" value="' +
+             esc(localStorage.getItem('cos_niche') || '') + '"></div>' +
+           '<button class="go ghost" style="margin-top:.6rem;" onclick="saveNiche(this)">Save niche</button>';
+  if(key === 'code')
+    return '<p class="set-note">Unlock a plan for a set period.</p>' +
+           '<div class="field"><input id="set-coupon" placeholder="Enter your code" autocapitalize="characters"></div>' +
+           '<button class="go ghost" style="margin-top:.6rem;" onclick="redeem(this)">Redeem</button>';
+  if(key === 'help')
+    return '<p class="set-note">Something broken, or an idea for what we should build next?</p>' +
+           '<a class="go ghost" style="display:block;text-align:center;text-decoration:none;line-height:1.4;" href="mailto:hello@crevers.com?subject=Crevers%20app">Email hello@crevers.com</a>';
+  return '';
+}
+
+/* the badge on the closed row, so Brand Voice reads as trained without opening it */
+async function peekBrandVoice(){
+  try {
+    var d = await api('GET','/voice');
+    var tag = document.getElementById('bv-tag');
+    if(tag && d && d.trained) tag.style.display = 'inline-block';
+  } catch(e){}
 }
 
 async function saveNiche(btn){
@@ -2164,6 +2250,30 @@ async function startCheckout(planId, btn){
     toast(e.message);
   }
 }
+
+/* ══════════ TAB BAR SHAPE ══════════
+   Drawn to the viewport in real pixels so the scoop stays circular on a
+   320px phone and a 430px one alike. */
+function drawBar(){
+  var svg = document.getElementById('bar-svg');
+  if(!svg) return;
+  var w = Math.round(svg.getBoundingClientRect().width) || window.innerWidth || 372;
+  var h = 88, cx = w/2, top = 24, dip = 30, half = 38;
+
+  var d = 'M0,' + top +
+    ' H' + (cx - half) +
+    ' C' + (cx - half + 17) + ',' + top + ' ' + (cx - half + 15) + ',' + (top+dip) + ' ' + cx + ',' + (top+dip) +
+    ' C' + (cx + half - 15) + ',' + (top+dip) + ' ' + (cx + half - 17) + ',' + top + ' ' + (cx + half) + ',' + top +
+    ' H' + w;
+
+  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  document.getElementById('bar-fill').setAttribute('d', d + ' V' + h + ' H0 Z');
+  document.getElementById('bar-line').setAttribute('d', d);
+  var g = document.getElementById('barEdge');
+  if(g) g.setAttribute('x2', w);
+}
+window.addEventListener('resize', drawBar);
+window.addEventListener('orientationchange', function(){ setTimeout(drawBar, 150); });
 </script>
 </body>
 </html>
