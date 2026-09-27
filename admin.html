@@ -283,6 +283,17 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 .bl-tag.draft{background:rgba(139,136,168,0.15);color:var(--muted)}
 .bl-slug{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:0.76rem;color:var(--muted)}
 @media(max-width:600px){ .bl-actions{flex-direction:column;align-items:stretch} }
+
+/* ── broadcast header image ── */
+.hdr-img{display:flex;gap:.5rem;align-items:center}
+.hdr-img .field-input{flex:1;min-width:0}
+.hdr-img .admin-refresh{flex:0 0 auto}
+.hdr-note{font-size:0.7rem;color:var(--muted);margin:0.4rem 0 0.6rem;line-height:1.5}
+.hdr-note.err{color:var(--accent2)}
+#hdr-preview img{display:block;width:100%;max-width:340px;border-radius:10px;
+  border:1px solid var(--border);margin-bottom:0.9rem}
+.hdr-clear{background:none;border:none;color:var(--muted);font-size:0.7rem;
+  cursor:pointer;padding:2px 0;text-decoration:underline;margin-bottom:0.9rem}
 </style>
 </head>
 <body>
@@ -752,6 +763,16 @@ tr:hover td{background:rgba(255,255,255,0.02);}
 
           <div class="field-label">Subject Line</div>
           <input class="field-input" id="broadcast-subject" placeholder="e.g. New feature just dropped on Crevers">
+
+          <div class="field-label">Header image <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:.65;">optional, sits under the logo</span></div>
+          <div class="hdr-img">
+            <input class="field-input" id="broadcast-header" style="margin-bottom:0;"
+                   placeholder="https://crevers.com/..." oninput="previewHeader()">
+            <button class="admin-refresh" onclick="document.getElementById('hdr-file').click()">Upload</button>
+            <input type="file" id="hdr-file" accept="image/png,image/jpeg,image/gif,image/webp" hidden onchange="uploadHeader(this)">
+          </div>
+          <div class="hdr-note" id="hdr-note">Must be hosted on crevers.com or Supabase storage. Wide images work best, around 1024 by 400.</div>
+          <div id="hdr-preview"></div>
 
           <div class="field-label">Message</div>
           <textarea class="field-textarea" id="broadcast-body" placeholder="Write your message here. Keep it short, direct and valuable."></textarea>
@@ -1488,13 +1509,15 @@ async function sendBroadcast(){
     var resp=await fetch(ADMIN_API+'/admin/broadcast',{
       method:'POST',
       headers:{'Content-Type':'application/json','X-Admin-Key':ADMIN_KEY},
-      body:JSON.stringify({subject,body,target:BROADCAST_TARGET,specificEmail:specificEmail}),
+      body:JSON.stringify({subject,body,target:BROADCAST_TARGET,specificEmail:specificEmail,
+        headerImage:(document.getElementById('broadcast-header').value||'').trim()}),
     });
     var data=await resp.json();
     if(!resp.ok) throw new Error(data.error||'Failed.');
     status.textContent='✓ Sent to '+(data.sent||0)+' users successfully.';
     status.className='broadcast-status success';
     status.style.display='block';
+    clearHeader();
     document.getElementById('broadcast-subject').value='';
     document.getElementById('broadcast-body').value='';
   } catch(e){
@@ -2366,6 +2389,63 @@ function blDelete(id){
   })
   .then(function(){ loadPosts(); adminToast('Post deleted'); if(BL_EDITING===id) blNew(); })
   .catch(function(){ adminToast('Could not delete.'); });
+}
+
+/* ── broadcast header image ── */
+function hdrNote(msg, bad){
+  var el = document.getElementById('hdr-note');
+  el.textContent = msg;
+  el.className = 'hdr-note' + (bad ? ' err' : '');
+}
+
+function previewHeader(){
+  var url = document.getElementById('broadcast-header').value.trim();
+  var box = document.getElementById('hdr-preview');
+  if(!url){ box.innerHTML = ''; hdrNote('Must be hosted on crevers.com or Supabase storage. Wide images work best, around 1024 by 400.'); return; }
+  /* the server enforces this too; checking here saves a round trip */
+  var ok = /^https:\/\/[a-z0-9.-]*crevers\.com\//i.test(url) ||
+           /^https:\/\/[a-z0-9.-]*supabase\.co\//i.test(url);
+  if(!ok){
+    box.innerHTML = '';
+    hdrNote('That has to be on crevers.com or Supabase storage. Anywhere else can track who opened your email.', true);
+    return;
+  }
+  hdrNote('Looks good. This sits under the logo, above your message.');
+  box.innerHTML = '<img src="' + escHtml(url) + '" alt="" onerror="hdrBroken()">' +
+    '<button class="hdr-clear" onclick="clearHeader()">Remove image</button>';
+}
+
+function hdrBroken(){
+  document.getElementById('hdr-preview').innerHTML = '';
+  hdrNote('That image did not load. Check the address.', true);
+}
+
+function clearHeader(){
+  document.getElementById('broadcast-header').value = '';
+  previewHeader();
+}
+
+async function uploadHeader(input){
+  var f = input.files && input.files[0];
+  if(!f) return;
+  if(f.size > 3 * 1024 * 1024){ hdrNote('Keep it under 3MB, or it will be slow to load in the inbox.', true); return; }
+
+  hdrNote('Uploading...');
+  var fd = new FormData();
+  fd.append('image', f);
+  try {
+    var r = await fetch(ADMIN_API + '/admin/upload-image', {
+      method: 'POST', headers: { 'X-Admin-Key': ADMIN_KEY }, body: fd,
+    });
+    var d = await r.json();
+    if(!r.ok) throw new Error(d.error || 'Upload failed.');
+    document.getElementById('broadcast-header').value = d.url;
+    previewHeader();
+    adminToast('Image uploaded');
+  } catch(e){
+    hdrNote(e.message, true);
+  }
+  input.value = '';
 }
 </script>
 </body>
