@@ -404,6 +404,98 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
   background:linear-gradient(90deg,var(--violet),var(--mint))}
 .use-row > b{font-size:.73rem;width:52px;text-align:right;flex:0 0 52px;
   font-family:'Outfit',sans-serif}
+
+/* ── saved projects ── */
+.lib-x{flex:0 0 auto;background:none;border:none;color:var(--dim);cursor:pointer;
+  font-size:.75rem;padding:2px 2px;line-height:1}
+.lib-sort{display:flex;gap:.35rem;margin-bottom:.8rem}
+.sort-b{flex:1;background:var(--s1);border:1px solid var(--line);border-radius:11px;
+  color:var(--dim);padding:.45rem;font-size:.73rem;cursor:pointer}
+.sort-b.on{border-color:var(--violet);color:#c0aeff;background:rgba(124,92,252,.1);
+  font-weight:600}
+.lib-count{font-size:.72rem;color:var(--dim);margin-bottom:.7rem}
+.pj{background:var(--s1);border:1px solid var(--line);border-radius:16px;
+  padding:.8rem .9rem;margin-bottom:.55rem;cursor:pointer;width:100%;text-align:left;
+  color:var(--ink)}
+.pj:active{background:var(--s2)}
+.pj-h{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.4rem}
+.pj-t{flex:1;min-width:0;font-weight:600;font-size:.85rem;line-height:1.4;
+  overflow-wrap:anywhere}
+.pj-s{font-size:.75rem;line-height:1.55;color:var(--dim);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pj-d{font-size:.68rem;color:var(--faint);margin-top:.45rem;display:block}
+.hit{background:rgba(124,92,252,.3);color:var(--ink);border-radius:3px;padding:0 2px}
+
+/* ── project preview ── */
+.pv-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.pv-date{font-size:.72rem;color:var(--dim)}
+.pv-body{white-space:pre-wrap;font-size:.85rem;line-height:1.75;color:var(--ink);
+  opacity:.92;overflow-wrap:anywhere;max-height:44vh;overflow-y:auto}
+
+/* ── edit profile ── */
+.pfp-wrap{position:relative;width:104px;margin:.4rem auto .85rem}
+.pfp{width:104px;height:104px;border-radius:34px;display:flex;align-items:center;
+  justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;
+  font-size:2.6rem;color:#fff;
+  background:linear-gradient(140deg,var(--violet),var(--rose));
+  box-shadow:0 16px 36px -14px rgba(124,92,252,.8)}
+.pfp-edit{position:absolute;right:-4px;bottom:-4px;width:36px;height:36px;
+  border-radius:50%;background:var(--s2);border:2.5px solid var(--bg);cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.pfp-edit svg{width:15px;height:15px;stroke:var(--ink);fill:none;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.pfp-note{font-size:.75rem;color:var(--dim);text-align:center;line-height:1.55;
+  margin-bottom:1.5rem;padding:0 .6rem}
+.field.locked{opacity:.65}
+.field.locked input{color:var(--dim)}
+.swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:.55rem}
+.sw-c{aspect-ratio:1;border-radius:14px;cursor:pointer;border:2.5px solid transparent}
+.sw-c.on{border-color:#fff}
+
+/* ── settings rows ── */
+.set-row{display:flex;align-items:center;gap:.8rem;padding:.9rem .2rem;
+  border-bottom:1px solid var(--line);cursor:pointer;width:100%;text-align:left;
+  background:none;border-left:none;border-right:none;border-top:none;color:var(--ink)}
+.set-row:last-of-type{border-bottom:none}
+.set-row svg.ic{width:18px;height:18px;flex:0 0 18px;stroke:var(--dim);fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.set-row b{flex:1;font-weight:500;font-size:.87rem}
+.set-row .arrow{width:14px;height:14px;stroke:var(--faint);flex:0 0 14px;fill:none;
+  stroke-width:2}
+.set-row .tagx{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;
+  background:linear-gradient(120deg,var(--violet),var(--rose));color:#fff}
+
+/* ── chat error, so a failure is visible rather than silent ── */
+.chat-err{background:rgba(252,92,125,.1);border:1px solid rgba(252,92,125,.3);
+  border-radius:14px;padding:.75rem .9rem;font-size:.79rem;color:#ffb3c2;
+  line-height:1.55;margin:.5rem 0 .5rem 2.2rem}
+
+/* ── plans ── */
+.plan-card{border:1.5px solid var(--line);border-radius:20px;padding:1.1rem;
+  margin-bottom:.7rem;background:var(--s1)}
+.plan-card.best{border-color:rgba(124,92,252,.4);
+  background:radial-gradient(130% 110% at 0% 0%,rgba(124,92,252,.14),transparent 68%),var(--s1)}
+.plan-card.now{opacity:.65}
+.pc-top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;
+  margin-bottom:.15rem}
+.pc-top b{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.05rem}
+.pc-tag{font-size:.58rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:2px 8px;border-radius:20px;color:#fff;
+  background:linear-gradient(120deg,var(--violet),var(--rose))}
+.pc-price{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.7rem;
+  letter-spacing:-.03em;margin:.3rem 0 .1rem}
+.pc-price span{font-size:.8rem;font-weight:500;color:var(--dim);letter-spacing:0}
+.pc-ngn{font-size:.7rem;color:var(--faint);margin-bottom:.8rem}
+.pc-list{list-style:none;margin-bottom:1rem}
+.pc-list li{font-size:.79rem;color:var(--dim);line-height:1.5;padding-left:1.15rem;
+  position:relative;margin-bottom:.35rem}
+.pc-list li::before{content:'';position:absolute;left:0;top:.45rem;width:5px;height:5px;
+  border-radius:50%;background:var(--mint)}
+.pc-btn{width:100%;border:none;border-radius:13px;padding:.8rem;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.87rem;
+  background:var(--violet);color:#fff}
+.pc-btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.pc-btn:disabled{opacity:.55}
 </style>
 </head>
 <body>
@@ -559,10 +651,26 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 
     <div class="screen" id="s-video"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Video Auto Resize</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h4>Best on a laptop for now</h4><p>Resizing video in a phone browser is heavy. Use crevers.com on a computer until the native build.</p></div></div>
     <div class="screen" id="s-cal"><div class="head"><h2>Content Calendar</h2></div><div id="cal-out"></div></div>
-    <div class="screen" id="s-library"><div class="head"><h2>Saved Projects</h2></div>
-      <div class="field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="lib-q" placeholder="Search titles or what is inside" oninput="drawLibrary()"></div>
+    <div class="screen" id="s-library">
+      <div class="head"><h2>Saved Projects</h2></div>
+
+      <div class="field">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="lib-q" placeholder="Search titles or what is inside" oninput="drawLibrary()">
+        <button class="lib-x" id="lib-x" style="display:none;" onclick="clearLibSearch()" aria-label="Clear">&#10005;</button>
+      </div>
+
+      <div class="pills" id="lib-formats"></div>
+      <div class="lib-sort">
+        <button class="sort-b on" onclick="pickSort(this,'new')">Newest</button>
+        <button class="sort-b" onclick="pickSort(this,'old')">Oldest</button>
+        <button class="sort-b" onclick="pickSort(this,'az')">A to Z</button>
+      </div>
+      <div class="lib-count" id="lib-count"></div>
+
       <div id="lib-out"></div>
     </div>
+
     <div class="screen" id="s-chat">
       <div class="head sub" style="padding-bottom:.6rem;">
         <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
@@ -572,6 +680,47 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
         </div>
       </div>
       <div id="chat-log"></div>
+    </div>
+
+    <div class="screen" id="s-edit">
+      <div class="head sub">
+        <div class="back" onclick="go('me')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Edit profile</h2>
+      </div>
+
+      <div class="pfp-wrap">
+        <div class="pfp" id="pfp">B</div>
+        <button class="pfp-edit" onclick="openColours()" aria-label="Change colour">
+          <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2a10 10 0 0 0 0 20c.55 0 1-.45 1-1 0-.26-.1-.5-.26-.68-.17-.18-.27-.42-.27-.68 0-.55.45-1 1-1H16a6 6 0 0 0 6-6c0-5.52-4.48-10-10-10z"/></svg>
+        </button>
+      </div>
+      <p class="pfp-note">Tap to pick a colour. Your initial comes from your display name.</p>
+
+      <div class="lbl">Display name</div>
+      <div class="field"><input id="ed-name" placeholder="What should we call you?"></div>
+
+      <div class="lbl" style="margin-top:.9rem;">Email</div>
+      <div class="field locked">
+        <input id="ed-email" readonly>
+        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </div>
+      <p class="pfp-note" style="margin-bottom:1.4rem;">Contact support to change the email on your account.</p>
+
+      <button class="go" onclick="saveProfile(this)">Save changes</button>
+    </div>
+
+    <div class="screen" id="s-plans">
+      <div class="head sub">
+        <div class="back" onclick="go('me')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Plans</h2>
+      </div>
+      <div class="seg" id="bill-seg" style="margin-bottom:1.1rem;">
+        <button class="on" onclick="pickBilling(this,'m')">Monthly</button>
+        <button onclick="pickBilling(this,'y')">Yearly &middot; save 2 months</button>
+      </div>
+      <div id="plans-out"></div>
+      <p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1rem;line-height:1.6;">
+        Prices in US dollars, charged in naira. Cancel any time.</p>
     </div>
 
     <div class="screen" id="s-me">
@@ -591,6 +740,32 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
       <button class="chat-send" onclick="chatSend()" aria-label="Send">
         <svg viewBox="0 0 24 24"><path d="M4 12 20 4l-4 8 4 8z"/></svg>
       </button>
+    </div>
+  </div>
+
+  <!-- colour picker -->
+  <div class="scrim" id="col-scrim" onclick="closeColours()"></div>
+  <div class="sheet" id="col-sheet">
+    <div class="grab"></div>
+    <h3>Pick your colour</h3>
+    <p>Loads instantly, costs no data, and works on any connection.</p>
+    <div class="swatches" id="swatches"></div>
+  </div>
+
+  <!-- project preview -->
+  <div class="scrim" id="pv-scrim" onclick="closePreview()"></div>
+  <div class="sheet" id="pv-sheet" style="max-height:82%;overflow-y:auto;">
+    <div class="grab"></div>
+    <div class="pv-head">
+      <span class="row-f" id="pv-fmt"></span>
+      <span class="pv-date" id="pv-date"></span>
+    </div>
+    <h3 id="pv-title" style="font-size:1rem;margin-bottom:.8rem;"></h3>
+    <div class="pv-body" id="pv-body"></div>
+    <div class="out-a" style="margin-top:1rem;">
+      <button class="act" onclick="previewCopy()">Copy</button>
+      <button class="act" onclick="previewVoice2()">Voiceover</button>
+      <button class="act" style="color:var(--rose);border-color:rgba(252,92,125,.3);" onclick="previewDelete(this)">Delete</button>
     </div>
   </div>
 
@@ -809,7 +984,7 @@ async function doAuth(){
 }
 
 /* ══════════ ROUTING ══════════ */
-var SCREENS = ['home','ideas','write','repurpose','voice','video','cal','library','chat','me'];
+var SCREENS = ['home','ideas','write','repurpose','voice','video','cal','library','chat','me','edit','plans'];
 var TABBED  = { home:'t-home', cal:'t-cal', library:'t-library', chat:'t-chat' };
 
 function go(name){
@@ -825,6 +1000,8 @@ function go(name){
   if(name === 'library') drawLibrary();
   if(name === 'cal')     drawCalendar();
   if(name === 'me')      drawMe();
+  if(name === 'edit')    drawEdit();
+  if(name === 'plans')   drawPlans();
   if(name === 'home')    drawHome();
   if(name === 'chat')    drawChat();
   /* typing, not navigating */
@@ -1032,29 +1209,6 @@ async function loadProjects(){
   } catch(e){ PROJECTS = []; }
 }
 
-function drawLibrary(){
-  var out = document.getElementById('lib-out');
-  var q = (document.getElementById('lib-q').value || '').trim().toLowerCase();
-  var rows = PROJECTS.filter(function(p){
-    if(!q) return true;
-    return (p.title||'').toLowerCase().indexOf(q) !== -1 ||
-           (p.content||'').toLowerCase().indexOf(q) !== -1;
-  });
-  if(!rows.length){
-    out.innerHTML = '<div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>' +
-      '<h4>' + (q ? 'Nothing matches that' : 'Nothing saved yet') + '</h4>' +
-      '<p>' + (q ? 'Try a different search.' : 'Save an idea or a draft and it will wait here for you.') + '</p></div>';
-    return;
-  }
-  out.innerHTML = rows.map(function(p){
-    var snip = (p.content||'').replace(/\s+/g,' ').trim().slice(0,90);
-    return '<button class="row" onclick="toast(\'Opening projects is in the next build.\')">' +
-      '<span class="row-f">' + esc(p.format||'') + '</span>' +
-      '<div class="row-b"><div class="row-t">' + esc(p.title) + '</div>' +
-      '<div class="row-s">' + esc(snip) + '</div></div>' +
-      '<span class="row-d">' + ago(p.ts) + '</span></button>';
-  }).join('');
-}
 
 /* ══════════ CALENDAR ══════════ */
 function drawCalendar(){
@@ -1570,7 +1724,14 @@ async function chatSend(){
     CHAT.push({ role:'assistant', content:reply });
   } catch(e){
     t.remove();
-    chatBubble(e.message, 'bot');
+    /* an error styled as a bot reply reads as the bot saying something
+       strange. Make a failure look like a failure. */
+    var err = document.createElement('div');
+    err.className = 'chat-err';
+    err.textContent = e.message || 'Could not reach the chat-bot. Check your connection and try again.';
+    document.getElementById('chat-log').appendChild(err);
+    err.scrollIntoView({ behavior:'smooth', block:'end' });
+    CHAT.pop();   /* drop the unanswered turn so the next try is not confused */
   }
 }
 
@@ -1578,53 +1739,6 @@ async function chatSend(){
 var NICHES = ['Fitness','Business','Tech','Fashion','Food','Travel','Beauty','Finance',
               'Education','Real Estate','Health','Music','Gaming','Photography','Design'];
 
-async function drawMe(){
-  var u = AUTH.user || {};
-  var plan = AUTH.plan || 'free';
-  var names = { free:'Free', pro:'Pro', team:'Creator', creator:'Creator' };
-  var initial = esc((u.name || u.email || 'C').charAt(0).toUpperCase());
-
-  document.getElementById('me-out').innerHTML =
-    '<div style="display:flex;align-items:center;gap:.9rem;padding:.2rem 0 1.3rem;">' +
-      '<div class="avatar" style="width:56px;height:56px;flex:0 0 56px;border-radius:20px;font-size:1.4rem;">' + initial + '</div>' +
-      '<div style="min-width:0;"><b style="font-family:Outfit,sans-serif;font-size:1.05rem;display:block;">' +
-        esc(u.name || 'You') + '</b><span style="font-size:.78rem;color:var(--dim);word-break:break-all;">' +
-        esc(u.email || '') + '</span></div></div>' +
-
-    '<div style="background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);' +
-      'border-radius:20px;padding:1rem 1.05rem;margin-bottom:1rem;display:flex;align-items:center;' +
-      'justify-content:space-between;gap:.75rem;">' +
-      '<div><b style="font-family:Outfit,sans-serif;font-size:1.02rem;display:block;">' + (names[plan]||'Free') + ' plan</b>' +
-      '<span style="font-size:.73rem;color:var(--dim);">Resets at midnight</span></div>' +
-      (plan==='free'
-        ? '<a href="https://crevers.com/#pricing" style="background:var(--violet);color:#fff;border-radius:11px;padding:.55rem 1.05rem;font-family:Outfit,sans-serif;font-weight:700;font-size:.78rem;text-decoration:none;">Upgrade</a>'
-        : '') +
-    '</div>' +
-    '<div class="usage" id="me-usage"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
-
-    '<div class="set-sec"><h3>Content defaults</h3><p>The starting point whenever you generate something.</p></div>' +
-    '<div class="lbl">Your niche</div>' +
-    '<div class="field"><input id="set-niche" placeholder="e.g. Fitness coaching" value="' +
-      esc(localStorage.getItem('cos_niche') || '') + '"></div>' +
-    '<div class="lbl" style="margin-top:.8rem;">Display name</div>' +
-    '<div class="field"><input id="set-name" value="' + esc(u.name || '') + '"></div>' +
-    '<button class="go" style="margin-top:.9rem;" onclick="saveSettings(this)">Save changes</button>' +
-
-    '<div class="set-sec"><h3>Brand Voice</h3><p>Teach Crevers how you write, so output sounds like you.</p></div>' +
-    '<div id="me-voice"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
-
-    '<div class="set-sec"><h3>Have a code?</h3></div>' +
-    '<div class="field"><input id="set-coupon" placeholder="Enter your code" autocapitalize="characters"></div>' +
-    '<button class="go ghost" onclick="redeem(this)">Redeem</button>' +
-
-    '<div class="set-sec"><h3>Account</h3></div>' +
-    '<button class="go ghost" onclick="logout()">Log out</button>' +
-    '<p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;line-height:1.6;">' +
-      'Billing and video resizing are on <a href="https://crevers.com" style="color:var(--dim);">crevers.com</a>.</p>';
-
-  drawUsageBars();
-  drawBrandVoice();
-}
 
 async function drawUsageBars(){
   var el = document.getElementById('me-usage');
@@ -1710,6 +1824,345 @@ async function redeem(btn){
     drawMe();
   } catch(e){ toast(e.message); }
   btn.disabled = false; btn.textContent = 'Redeem';
+}
+
+/* ══════════ SAVED PROJECTS ══════════ */
+var LIB_FORMAT = 'All', LIB_SORT = 'new';
+
+function highlight(text, term){
+  var safe = esc(text);
+  if(!term) return safe;
+  try {
+    var re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','ig');
+    return safe.replace(re, '<span class="hit">$1</span>');
+  } catch(e){ return safe; }
+}
+
+function clearLibSearch(){
+  document.getElementById('lib-q').value = '';
+  drawLibrary();
+}
+
+function pickSort(el, s){
+  LIB_SORT = s;
+  document.querySelectorAll('.sort-b').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  drawLibrary();
+}
+
+function pickLibFormat(el, f){
+  LIB_FORMAT = f;
+  document.querySelectorAll('#lib-formats .pill').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  drawLibrary();
+}
+
+/* built from what the user actually has, so it can never offer a filter
+   that returns nothing */
+function drawLibFormats(){
+  var el = document.getElementById('lib-formats');
+  if(!el) return;
+  var seen = [];
+  PROJECTS.forEach(function(p){
+    var f = p.format || 'other';
+    if(seen.indexOf(f) === -1) seen.push(f);
+  });
+  seen.sort();
+  el.innerHTML = ['All'].concat(seen).map(function(f){
+    var label = f === 'All' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1);
+    return '<button class="pill' + (f===LIB_FORMAT?' on':'') +
+      '" onclick="pickLibFormat(this,' + JSON.stringify(f).replace(/"/g,'&quot;') + ')">' +
+      label + '</button>';
+  }).join('');
+}
+
+function drawLibrary(){
+  var out = document.getElementById('lib-out');
+  if(!out) return;
+  drawLibFormats();
+
+  var term = (document.getElementById('lib-q').value || '').trim();
+  document.getElementById('lib-x').style.display = term ? 'block' : 'none';
+
+  var rows = PROJECTS.filter(function(p){
+    if(LIB_FORMAT !== 'All' && (p.format||'other') !== LIB_FORMAT) return false;
+    if(!term) return true;
+    var t = term.toLowerCase();
+    /* search the content too, because what you remember is usually a
+       phrase from inside the piece rather than the title */
+    return (p.title||'').toLowerCase().indexOf(t) !== -1 ||
+           (p.content||'').toLowerCase().indexOf(t) !== -1;
+  });
+
+  if(LIB_SORT === 'old')      rows.sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
+  else if(LIB_SORT === 'az')  rows.sort(function(a,b){ return (a.title||'').localeCompare(b.title||''); });
+  else                        rows.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+
+  var count = document.getElementById('lib-count');
+  count.textContent = !PROJECTS.length ? ''
+    : rows.length === PROJECTS.length
+      ? PROJECTS.length + (PROJECTS.length===1?' saved item':' saved items')
+      : rows.length + ' of ' + PROJECTS.length + ' shown';
+
+  if(!rows.length){
+    /* two different problems need two different messages */
+    out.innerHTML = '<div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24">' +
+      (term || LIB_FORMAT !== 'All'
+        ? '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'
+        : '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>') +
+      '</svg></div><h4>' +
+      (term || LIB_FORMAT !== 'All' ? 'Nothing matches that' : 'Nothing saved yet') + '</h4><p>' +
+      (term || LIB_FORMAT !== 'All'
+        ? 'Try a different search or clear the filter.'
+        : 'Save an idea or a draft and it will wait here for you.') + '</p></div>';
+    return;
+  }
+
+  out.innerHTML = rows.map(function(p){
+    var snip = (p.content||'').replace(/\s+/g,' ').trim().slice(0,160);
+    return '<button class="pj" onclick="openPreview(' + JSON.stringify(String(p.id)).replace(/"/g,'&quot;') + ')">' +
+      '<div class="pj-h"><div class="pj-t">' + highlight(p.title || 'Untitled', term) + '</div>' +
+      '<span class="row-f">' + esc(p.format||'') + '</span></div>' +
+      (snip ? '<div class="pj-s">' + highlight(snip, term) + '</div>' : '') +
+      '<span class="pj-d">' + ago(p.ts) + '</span></button>';
+  }).join('');
+}
+
+/* ── preview ── */
+var PV = null;
+function openPreview(id){
+  PV = PROJECTS.filter(function(p){ return String(p.id) === String(id); })[0];
+  if(!PV) return;
+  document.getElementById('pv-fmt').textContent   = PV.format || '';
+  document.getElementById('pv-date').textContent  = ago(PV.ts);
+  document.getElementById('pv-title').textContent = PV.title || 'Untitled';
+  document.getElementById('pv-body').textContent  = PV.content || '';
+  document.getElementById('pv-scrim').classList.add('on');
+  setTimeout(function(){ document.getElementById('pv-sheet').classList.add('on'); }, 10);
+}
+function closePreview(){
+  document.getElementById('pv-sheet').classList.remove('on');
+  setTimeout(function(){ document.getElementById('pv-scrim').classList.remove('on'); }, 280);
+}
+function previewCopy(){ if(PV) copyText(PV.content || ''); }
+function previewVoice2(){
+  if(!PV) return;
+  closePreview();
+  setTimeout(function(){ toVoice(PV.content || ''); }, 260);
+}
+async function previewDelete(btn){
+  if(!PV) return;
+  if(!confirm('Delete this permanently?')) return;
+  btn.disabled = true; btn.textContent = 'Deleting...';
+  try {
+    await api('DELETE','/projects/' + PV.id);
+    PROJECTS = PROJECTS.filter(function(p){ return p.id !== PV.id; });
+    closePreview();
+    drawLibrary();
+    drawHome();
+    toast('Deleted.');
+  } catch(e){
+    btn.disabled = false; btn.textContent = 'Delete';
+    toast(e.message);
+  }
+}
+
+/* ══════════ AVATAR COLOUR ══════════ */
+var SWATCH = [
+  ['#7c5cfc','#fc5c7d'], ['#5cf0d0','#3b82f6'], ['#f97316','#fbbf24'],
+  ['#ec4899','#8b5cf6'], ['#22c55e','#84cc16'], ['#06b6d4','#6366f1'],
+  ['#ef4444','#f97316'], ['#a855f7','#ec4899'], ['#14b8a6','#22c55e'],
+  ['#64748b','#334155'], ['#eab308','#ef4444'], ['#3b82f6','#06b6d4'],
+];
+function avatarCss(i){
+  var p = SWATCH[i] || SWATCH[0];
+  return 'linear-gradient(140deg,' + p[0] + ',' + p[1] + ')';
+}
+function currentSwatch(){
+  var n = parseInt(localStorage.getItem('crv_avatar') || '0', 10);
+  return (n >= 0 && n < SWATCH.length) ? n : 0;
+}
+function applyAvatar(){
+  var g = avatarCss(currentSwatch());
+  document.querySelectorAll('.avatar, .pfp').forEach(function(el){ el.style.background = g; });
+}
+function drawSwatches(){
+  var el = document.getElementById('swatches');
+  if(!el) return;
+  var cur = currentSwatch();
+  el.innerHTML = SWATCH.map(function(p, i){
+    return '<div class="sw-c' + (i===cur?' on':'') + '" onclick="pickSwatch(' + i + ')" ' +
+      'style="background:' + avatarCss(i) + '"></div>';
+  }).join('');
+}
+function pickSwatch(i){
+  localStorage.setItem('crv_avatar', String(i));
+  drawSwatches();
+  applyAvatar();
+}
+function openColours(){
+  drawSwatches();
+  document.getElementById('col-scrim').classList.add('on');
+  setTimeout(function(){ document.getElementById('col-sheet').classList.add('on'); }, 10);
+}
+function closeColours(){
+  document.getElementById('col-sheet').classList.remove('on');
+  setTimeout(function(){ document.getElementById('col-scrim').classList.remove('on'); }, 280);
+}
+
+/* ══════════ EDIT PROFILE ══════════ */
+function drawEdit(){
+  var u = AUTH.user || {};
+  var initial = (u.name || u.email || 'C').charAt(0).toUpperCase();
+  document.getElementById('pfp').textContent = initial;
+  document.getElementById('ed-name').value  = u.name || '';
+  document.getElementById('ed-email').value = u.email || '';
+  applyAvatar();
+}
+
+async function saveProfile(btn){
+  var name = document.getElementById('ed-name').value.trim();
+  if(!name){ toast('What should we call you?'); return; }
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    await api('POST','/auth/update-profile',{ name: name });
+    AUTH.user = Object.assign({}, AUTH.user, { name: name });
+    localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
+    var i = name.charAt(0).toUpperCase();
+    document.getElementById('av').textContent = i;
+    document.getElementById('pfp').textContent = i;
+    toast('Saved.');
+    go('me');
+  } catch(e){ toast(e.message); }
+  btn.disabled = false; btn.textContent = 'Save changes';
+}
+
+/* ══════════ PROFILE ══════════ */
+var PLAN_NAMES = { free:'Free', pro:'Pro', team:'Creator', creator:'Creator' };
+var PLAN_SUBS  = { free:'5 ideas and 5 pieces a day',
+                   pro:'20 a day, all formats',
+                   team:'Unlimited', creator:'Unlimited' };
+
+function drawMe(){
+  var u = AUTH.user || {};
+  var plan = AUTH.plan || 'free';
+  var initial = esc((u.name || u.email || 'C').charAt(0).toUpperCase());
+
+  document.getElementById('me-out').innerHTML =
+    '<button class="set-row" style="padding:.2rem 0 1.3rem;border-bottom:none;" onclick="go(\'edit\')">' +
+      '<div class="avatar" style="width:56px;height:56px;flex:0 0 56px;border-radius:20px;font-size:1.4rem;">' + initial + '</div>' +
+      '<div style="flex:1;min-width:0;"><b style="font-family:Outfit,sans-serif;font-size:1.05rem;display:block;font-weight:700;">' +
+        esc(u.name || 'You') + '</b>' +
+        '<span style="font-size:.78rem;color:var(--dim);word-break:break-all;">' + esc(u.email || '') + '</span></div>' +
+      '<svg class="arrow" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '</button>' +
+
+    '<div style="background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);' +
+      'border-radius:20px;padding:1rem 1.05rem;margin-bottom:1rem;display:flex;align-items:center;' +
+      'justify-content:space-between;gap:.75rem;">' +
+      '<div><b style="font-family:Outfit,sans-serif;font-size:1.02rem;display:block;">' + PLAN_NAMES[plan] + ' plan</b>' +
+      '<span style="font-size:.73rem;color:var(--dim);">' + PLAN_SUBS[plan] + '</span></div>' +
+      (plan === 'free'
+        ? '<button onclick="go(\'plans\')" style="background:var(--violet);color:#fff;border:none;border-radius:11px;padding:.55rem 1.05rem;font-family:Outfit,sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;">Upgrade</button>'
+        : '') +
+    '</div>' +
+    '<div class="usage" id="me-usage"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
+
+    '<div class="set-sec"><h3>Content defaults</h3><p>The starting point whenever you generate something.</p></div>' +
+    '<div class="lbl">Your niche</div>' +
+    '<div class="field"><input id="set-niche" placeholder="e.g. Fitness coaching" value="' +
+      esc(localStorage.getItem('cos_niche') || '') + '"></div>' +
+    '<button class="go ghost" style="margin-top:.7rem;" onclick="saveNiche(this)">Save niche</button>' +
+
+    '<div class="set-sec"><h3>Brand Voice</h3><p>Teach Crevers how you write, so output sounds like you.</p></div>' +
+    '<div id="me-voice"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
+
+    '<div class="set-sec"><h3>Plan and billing</h3></div>' +
+    '<div class="lbl">Have a code?</div>' +
+    '<div class="field"><input id="set-coupon" placeholder="Enter your code" autocapitalize="characters"></div>' +
+    '<button class="go ghost" style="margin-top:.6rem;" onclick="redeem(this)">Redeem</button>' +
+
+    '<div class="set-sec"><h3>Account</h3></div>' +
+    '<button class="go ghost" onclick="logout()">Log out</button>' +
+    '<p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;line-height:1.6;">' +
+      'Video resizing is heavy on a phone. Use crevers.com on a computer for that.</p>';
+
+  applyAvatar();
+  drawUsageBars();
+  drawBrandVoice();
+}
+
+async function saveNiche(btn){
+  var niche = document.getElementById('set-niche').value.trim();
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    await api('POST','/auth/update-profile',{ niche: niche });
+    if(niche) localStorage.setItem('cos_niche', niche);
+    toast('Saved.');
+  } catch(e){ toast(e.message); }
+  btn.disabled = false; btn.textContent = 'Save niche';
+}
+
+/* ══════════ PLANS ══════════ */
+var BILLING = 'm';
+var PLAN_DATA = [
+  { id:'free', name:'Free', m:0, y:0, ngnM:0, ngnY:0,
+    lines:['5 idea generations a day','5 content pieces a day','AI Chat-bot','Content Calendar'] },
+  { id:'pro', name:'Pro', m:1, y:10, ngnM:1400, ngnY:14000, best:true,
+    lines:['20 generations a day','Every format, including carousels and threads',
+           'Repurposing into 4 formats at once','5 voiceovers a day','Brand Voice'] },
+  { id:'team', name:'Creator', m:4.5, y:45, ngnM:6300, ngnY:63000,
+    lines:['Unlimited generations','Unlimited voiceovers, longer scripts',
+           'Priority support','Early access to new features'] },
+];
+
+function pickBilling(el, b){
+  BILLING = b;
+  document.querySelectorAll('#bill-seg button').forEach(function(x){ x.classList.remove('on'); });
+  el.classList.add('on');
+  drawPlans();
+}
+
+function drawPlans(){
+  var cur = AUTH.plan || 'free';
+  var yearly = BILLING === 'y';
+  document.getElementById('plans-out').innerHTML = PLAN_DATA.map(function(p){
+    var isNow = (p.id === cur) || (cur === 'creator' && p.id === 'team');
+    var price = yearly ? p.y : p.m;
+    var ngn   = yearly ? p.ngnY : p.ngnM;
+    return '<div class="plan-card' + (p.best?' best':'') + (isNow?' now':'') + '">' +
+      '<div class="pc-top"><b>' + p.name + '</b>' +
+        (p.best && !isNow ? '<span class="pc-tag">Most popular</span>' : '') +
+        (isNow ? '<span class="pc-tag" style="background:rgba(92,240,208,.18);color:var(--mint);">Current</span>' : '') +
+      '</div>' +
+      '<div class="pc-price">$' + (price % 1 ? price.toFixed(2) : price) +
+        '<span> / ' + (yearly ? 'year' : 'month') + '</span></div>' +
+      '<div class="pc-ngn">' + (ngn ? 'Charged as \u20a6' + ngn.toLocaleString() : 'No card needed') + '</div>' +
+      '<ul class="pc-list">' + p.lines.map(function(l){ return '<li>' + esc(l) + '</li>'; }).join('') + '</ul>' +
+      (isNow
+        ? '<button class="pc-btn ghost" disabled>Your current plan</button>'
+        : p.id === 'free'
+          ? ''
+          : '<button class="pc-btn" onclick="startCheckout(\'' + p.id + '\',this)">Get ' + p.name + '</button>') +
+    '</div>';
+  }).join('');
+}
+
+/* Paystack checkout opens in the browser. In an installed app that means
+   leaving it briefly, which is unavoidable: payment must happen on
+   Paystack's own page. */
+async function startCheckout(planId, btn){
+  var code = planId + (BILLING === 'y' ? '_yearly' : '_monthly');
+  btn.disabled = true; btn.textContent = 'Opening checkout...';
+  try {
+    var d = await api('POST','/payments/initialize',{ plan: code });
+    var url = d.authorization_url || (d.data && d.data.authorization_url);
+    if(!url) throw new Error('Could not start checkout.');
+    window.location.href = url;
+  } catch(e){
+    btn.disabled = false; btn.textContent = 'Try again';
+    toast(e.message);
+  }
 }
 </script>
 </body>
