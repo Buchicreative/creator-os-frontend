@@ -38,10 +38,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 /* ── top bar ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;
   padding:.55rem 1.15rem .5rem;flex-shrink:0}
-.mark{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.02rem;
-  letter-spacing:-.04em;
-  background:linear-gradient(96deg,#a88bff,#7c5cfc 38%,#d45bc0 72%,#fc5c7d);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.mark{height:26px;width:auto;display:block}
 .avatar{width:34px;height:34px;flex:0 0 34px;border-radius:12px;display:flex;
   align-items:center;justify-content:center;font-family:'Outfit',sans-serif;
   font-weight:800;font-size:.88rem;color:#fff;cursor:pointer;
@@ -283,10 +280,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 /* ── auth ── */
 .auth{height:100%;display:flex;flex-direction:column;justify-content:center;
   padding:2rem 1.5rem calc(2rem + var(--safe-b));overflow-y:auto}
-.auth-mark{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.5rem;
-  letter-spacing:-.04em;text-align:center;margin-bottom:.4rem;
-  background:linear-gradient(96deg,#a88bff,#7c5cfc 38%,#d45bc0 72%,#fc5c7d);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.auth-mark{height:42px;width:auto;display:block;margin:0 auto 1.4rem}
 .auth h1{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.6rem;
   letter-spacing:-.04em;text-align:center;line-height:1.15;margin-bottom:.5rem}
 .auth > p{font-size:.86rem;color:var(--dim);text-align:center;line-height:1.6;
@@ -296,13 +290,127 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 .auth-err{font-size:.78rem;color:var(--rose);text-align:center;margin-bottom:.8rem;
   display:none;line-height:1.5}
 .auth-err.on{display:block}
+
+/* ── shared bits for the new screens ── */
+.hint{font-size:.72rem;color:var(--dim)}
+.hint.over{color:var(--rose)}
+.live{font-size:.72rem;color:var(--mint);display:flex;align-items:center;gap:4px}
+.live i{width:5px;height:5px;border-radius:50%;background:var(--mint);display:block}
+
+/* ── voiceover ── */
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.4rem}
+.voice{background:var(--s1);border:1.5px solid var(--line);border-radius:15px;
+  padding:.7rem .75rem;display:flex;align-items:center;gap:.6rem;cursor:pointer;
+  text-align:left;color:var(--ink)}
+.voice.on{border-color:var(--violet);background:rgba(124,92,252,.1)}
+.v-play{width:32px;height:32px;flex:0 0 32px;border-radius:50%;
+  background:rgba(255,255,255,.07);border:1px solid var(--line);display:flex;
+  align-items:center;justify-content:center}
+.v-play svg{width:10px;height:10px;fill:var(--ink);stroke:none;margin-left:1px}
+.voice.on .v-play{background:var(--violet);border-color:var(--violet)}
+.voice.on .v-play svg{fill:#fff}
+.voice b{font-family:'Outfit',sans-serif;font-size:.84rem;display:block}
+.voice span{font-size:.64rem;color:var(--dim)}
+.seg{display:flex;background:var(--s1);border:1px solid var(--line);
+  border-radius:13px;padding:3px;gap:2px}
+.seg button{flex:1;background:none;border:none;color:var(--dim);font-size:.76rem;
+  padding:.5rem .3rem;border-radius:10px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--violet);color:#fff;font-weight:600}
+
+.player{border-radius:20px;padding:1rem;margin-top:1.1rem;
+  background:radial-gradient(120% 100% at 0% 0%,rgba(124,92,252,.2),transparent 62%),#12101c;
+  border:1px solid rgba(124,92,252,.22)}
+.pl-top{display:flex;align-items:center;gap:.8rem;margin-bottom:.85rem}
+.pl-play{width:46px;height:46px;flex:0 0 46px;border-radius:50%;background:var(--violet);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 20px rgba(124,92,252,.4)}
+.pl-play svg{width:15px;height:15px;fill:#fff;stroke:none}
+.pl-i{flex:1;min-width:0}
+.pl-i b{font-family:'Outfit',sans-serif;font-size:.86rem;display:block;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-i span{font-size:.72rem;color:var(--dim)}
+.wave{display:flex;align-items:center;gap:2px;height:30px;margin-bottom:.85rem;
+  cursor:pointer}
+.wave i{flex:1;background:rgba(124,92,252,.28);border-radius:2px;min-width:2px;
+  transition:background .12s}
+.wave i.p{background:var(--violet)}
+
+/* ── repurpose results ── */
+.rp{background:var(--s1);border:1px solid var(--line);border-radius:16px;
+  padding:.85rem .9rem;margin-bottom:.55rem}
+.rp.failed{border-color:rgba(252,92,125,.3)}
+.rp-h{display:flex;align-items:center;justify-content:space-between;
+  gap:.6rem;margin-bottom:.5rem}
+.rp-h b{font-family:'Outfit',sans-serif;font-size:.78rem;color:#c0aeff}
+.rp-t{white-space:pre-wrap;font-size:.81rem;line-height:1.65;opacity:.92;
+  overflow-wrap:anywhere}
+
+/* ── output ── */
+.out{background:var(--s1);border:1px solid var(--line);border-radius:18px;
+  padding:1rem;margin-bottom:.6rem}
+.out-t{white-space:pre-wrap;font-size:.85rem;line-height:1.75;overflow-wrap:anywhere;
+  margin-bottom:.85rem}
+.out-a{display:flex;gap:.35rem;flex-wrap:wrap}
+
+/* ── chat ── */
+.msg{display:flex;gap:.6rem;margin-bottom:.75rem;align-items:flex-end}
+.msg.me{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;flex:0 0 28px;border-radius:10px;
+  background:linear-gradient(140deg,var(--violet),var(--rose));display:flex;
+  align-items:center;justify-content:center}
+.msg-av svg{width:14px;height:14px;fill:#fff;stroke:none}
+.bub{max-width:80%;padding:.7rem .9rem;border-radius:18px;font-size:.85rem;
+  line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.bot .bub{background:var(--s1);border:1px solid var(--line);
+  border-bottom-left-radius:6px}
+.msg.me .bub{background:var(--violet);color:#fff;border-bottom-right-radius:6px}
+.starters{display:flex;flex-direction:column;gap:.45rem;margin:1rem 0 0 2.2rem}
+.starter{text-align:left;background:none;border:1px solid var(--line);
+  border-radius:15px;color:var(--dim);padding:.65rem .85rem;font-size:.8rem;
+  cursor:pointer;line-height:1.45}
+.typing{display:flex;gap:4px;padding:.9rem 1rem}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--dim);
+  animation:blink 1.3s infinite}
+.typing i:nth-child(2){animation-delay:.18s}
+.typing i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.chat-bar{position:fixed;bottom:0;left:0;right:0;
+  padding:.7rem .95rem calc(1.4rem + var(--safe-b));
+  background:linear-gradient(180deg,transparent,var(--bg) 22%);z-index:52;display:none}
+.chat-bar.on{display:block}
+.chat-field{display:flex;align-items:center;gap:.5rem;background:var(--s1);
+  border:1px solid var(--line);border-radius:22px;padding:.3rem .3rem .3rem 1rem}
+.chat-field:focus-within{border-color:rgba(124,92,252,.5)}
+.chat-field input{flex:1;min-width:0;background:none;border:none;outline:none;
+  color:var(--ink);padding:.6rem 0}
+.chat-send{width:38px;height:38px;flex:0 0 38px;border-radius:50%;border:none;
+  background:linear-gradient(140deg,var(--violet),var(--rose));cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.chat-send svg{width:15px;height:15px;fill:#fff;stroke:none;margin-left:-1px}
+
+/* ── settings ── */
+.set-sec{margin:1.7rem 0 .7rem;padding-top:1.3rem;border-top:1px solid var(--line)}
+.set-sec:first-of-type{margin-top:.3rem;padding-top:0;border-top:none}
+.set-sec h3{font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700}
+.set-sec p{font-size:.73rem;color:var(--dim);margin-top:.2rem;line-height:1.55}
+.lbl{font-size:.76rem;color:var(--dim);margin-bottom:.4rem}
+.usage{background:var(--s1);border:1px solid var(--line);border-radius:18px;
+  padding:.9rem 1rem;margin-bottom:1.4rem}
+.use-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.65rem}
+.use-row:last-child{margin-bottom:0}
+.use-row > span{font-size:.76rem;color:var(--dim);width:72px;flex:0 0 72px}
+.use-bar{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.use-bar i{display:block;height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--violet),var(--mint))}
+.use-row > b{font-size:.73rem;width:52px;text-align:right;flex:0 0 52px;
+  font-family:'Outfit',sans-serif}
 </style>
 </head>
 <body>
 
 <!-- ════════ AUTH ════════ -->
 <div class="auth" id="auth" style="display:none;">
-  <div class="auth-mark">crevers</div>
+  <img src="/logo.svg" alt="Crevers" class="auth-mark" width="86" height="42">
   <h1 id="auth-title">Welcome back</h1>
   <p id="auth-sub">Pick up where you left off.</p>
 
@@ -331,7 +439,7 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
 <div class="app" id="app" style="display:none;">
 
   <div class="topbar">
-    <div class="mark">crevers</div>
+    <img src="/logo.svg" alt="Crevers" class="mark" width="53" height="26">
     <div class="avatar" id="av" onclick="go('me')">B</div>
   </div>
 
@@ -396,18 +504,94 @@ input,textarea{font-size:16px}          /* stops iOS zooming on focus */
     </div>
 
     <!-- placeholders wired in the next pass -->
-    <div class="screen" id="s-write"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Content Creator</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div><h4>Coming in the next build</h4><p>The shell and the idea generator are live first, so the whole path is proven before the rest is wired.</p></div></div>
-    <div class="screen" id="s-repurpose"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Content Repurposer</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h4>Coming in the next build</h4><p>Use it on crevers.com in the meantime.</p></div></div>
-    <div class="screen" id="s-voice"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Voiceover</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div><h4>Coming in the next build</h4><p>Use it on crevers.com in the meantime.</p></div></div>
+    <div class="screen" id="s-write">
+      <div class="head sub">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Content Creator</h2>
+      </div>
+
+      <div class="area"><textarea id="w-idea" placeholder="What is it about?"></textarea></div>
+      <div class="pills" id="w-formats"></div>
+      <div class="pills" id="w-tones"></div>
+      <button class="go" id="w-btn" onclick="genContent()">Generate</button>
+      <div class="meter" id="w-meter"></div>
+
+      <div id="w-out"></div>
+    </div>
+
+    <div class="screen" id="s-repurpose">
+      <div class="head sub">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Content Repurposer</h2>
+      </div>
+
+      <div class="area"><textarea id="rp-in" placeholder="Paste the post you already published."></textarea></div>
+      <div class="sec"><h3>Turn it into</h3><a id="rp-count">1 of 4</a></div>
+      <div class="pills" id="rp-targets"></div>
+      <button class="go" id="rp-btn" onclick="genRepurpose()">Repurpose</button>
+      <div class="meter">Each one written for that platform, not copied across</div>
+
+      <div id="rp-out"></div>
+    </div>
+
+    <div class="screen" id="s-voice">
+      <div class="head sub">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Voiceover</h2>
+      </div>
+
+      <div class="sec"><h3>Your script</h3><span class="hint" id="v-left"></span></div>
+      <div class="area"><textarea id="v-script" placeholder="Paste your script here." oninput="vMeta()"></textarea></div>
+      <div class="meter" style="text-align:left;margin-bottom:1rem;" id="v-meta"></div>
+
+      <div class="sec"><h3>Voice</h3><span class="hint">tap the circle to hear it</span></div>
+      <div class="voices" id="v-voices"></div>
+
+      <div class="sec"><h3>Speed</h3></div>
+      <div class="seg" id="v-speed"></div>
+
+      <button class="go" id="v-btn" onclick="genVoice()" style="margin-top:1.1rem;">Generate voiceover</button>
+      <div class="meter" id="v-usage"></div>
+
+      <div id="v-out"></div>
+      <audio id="v-audio" preload="metadata" style="display:none;"></audio>
+    </div>
+
     <div class="screen" id="s-video"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Video Auto Resize</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h4>Best on a laptop for now</h4><p>Resizing video in a phone browser is heavy. Use crevers.com on a computer until the native build.</p></div></div>
     <div class="screen" id="s-cal"><div class="head"><h2>Content Calendar</h2></div><div id="cal-out"></div></div>
     <div class="screen" id="s-library"><div class="head"><h2>Saved Projects</h2></div>
       <div class="field"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="lib-q" placeholder="Search titles or what is inside" oninput="drawLibrary()"></div>
       <div id="lib-out"></div>
     </div>
-    <div class="screen" id="s-chat"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Crevers AI Chat-bot</h2></div><div class="empty"><div class="empty-mark"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-2.9-.4L4 21l1.4-4.1A8.3 8.3 0 0 1 3.6 11.5 8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4z"/></svg></div><h4>Coming in the next build</h4><p>Use it on crevers.com in the meantime.</p></div></div>
-    <div class="screen" id="s-me"><div class="head sub"><div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div><h2>Profile &amp; Settings</h2></div><div id="me-out"></div></div>
+    <div class="screen" id="s-chat">
+      <div class="head sub" style="padding-bottom:.6rem;">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div>
+          <h2 style="font-size:1.15rem;">Crevers AI Chat-bot</h2>
+          <div class="live"><i></i>Free on every plan</div>
+        </div>
+      </div>
+      <div id="chat-log"></div>
+    </div>
 
+    <div class="screen" id="s-me">
+      <div class="head sub">
+        <div class="back" onclick="go('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Profile &amp; Settings</h2>
+      </div>
+      <div id="me-out"></div>
+    </div>
+
+  </div>
+
+  <!-- the chat swaps the tab bar for a writing bar -->
+  <div class="chat-bar" id="chat-bar">
+    <div class="chat-field">
+      <input id="chat-in" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')chatSend()">
+      <button class="chat-send" onclick="chatSend()" aria-label="Send">
+        <svg viewBox="0 0 24 24"><path d="M4 12 20 4l-4 8 4 8z"/></svg>
+      </button>
+    </div>
   </div>
 
   <!-- composer -->
@@ -642,6 +826,11 @@ function go(name){
   if(name === 'cal')     drawCalendar();
   if(name === 'me')      drawMe();
   if(name === 'home')    drawHome();
+  if(name === 'chat')    drawChat();
+  /* typing, not navigating */
+  var chatting = (name === 'chat');
+  document.querySelector('.tabs').style.display = chatting ? 'none' : '';
+  document.getElementById('chat-bar').classList.toggle('on', chatting);
   history.replaceState(null, '', '#' + name);
 }
 
@@ -948,6 +1137,9 @@ function showApp(){
   var u = AUTH.user || {};
   document.getElementById('av').textContent = (u.name || u.email || 'C').charAt(0).toUpperCase();
   drawPlatforms();
+  drawWriteControls();
+  drawRpTargets();
+  drawVoiceControls();
   drawHome();
   loadUsage();
   loadProjects().then(drawHome);
@@ -981,6 +1173,543 @@ function showAuth(){
 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+
+/* ══════════ CONTENT CREATOR ══════════ */
+var FORMATS = [
+  ['script','Script'], ['caption','Caption'], ['carousel','Carousel'], ['thread','Thread'],
+];
+var TONES = ['Bold','Educational','Entertaining','Inspirational','Conversational'];
+var FORMAT = 'script', TONE = 'Bold';
+
+function drawWriteControls(){
+  document.getElementById('w-formats').innerHTML = FORMATS.map(function(f){
+    return '<button class="pill' + (f[0]===FORMAT?' on':'') +
+      '" onclick="pickFormat(this,\'' + f[0] + '\')">' + f[1] + '</button>';
+  }).join('');
+  document.getElementById('w-tones').innerHTML = TONES.map(function(t){
+    return '<button class="pill' + (t===TONE?' on':'') +
+      '" onclick="pickTone(this,\'' + t + '\')">' + t + '</button>';
+  }).join('');
+}
+function pickFormat(el, f){
+  FORMAT = f;
+  document.querySelectorAll('#w-formats .pill').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+}
+function pickTone(el, t){
+  TONE = t;
+  document.querySelectorAll('#w-tones .pill').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+}
+
+/* Carousel and Thread are Pro. Say so before the request, not after. */
+function planBlocks(feature){
+  var plan = AUTH.plan || 'free';
+  if(plan !== 'free') return false;
+  return feature === 'carousel' || feature === 'thread' || feature === 'repurpose';
+}
+
+async function genContent(){
+  var idea = document.getElementById('w-idea').value.trim();
+  if(!idea){ toast('What is it about?'); return; }
+  if(planBlocks(FORMAT)){
+    toast((FORMAT === 'carousel' ? 'Carousels' : 'Threads') + ' are on Pro. Upgrade on crevers.com.');
+    return;
+  }
+
+  var btn = document.getElementById('w-btn');
+  var out = document.getElementById('w-out');
+  btn.disabled = true; btn.textContent = 'Writing...';
+  out.innerHTML = '<div class="loading"><div class="spin"></div><p>Writing your ' + FORMAT + '...</p></div>';
+
+  try {
+    var d = await api('POST','/ai/create',{ idea:idea, format:FORMAT, tone:TONE });
+    var text = d.content || d.result || '';
+    if(!text) throw new Error('Nothing came back. Try again.');
+    window.__DRAFT = text;
+
+    var words = text.trim().split(/\s+/).filter(Boolean).length;
+    var secs  = Math.round(words / 150 * 60);
+    var spoken = secs < 60 ? secs + 's' : Math.floor(secs/60) + 'm ' + (secs%60) + 's';
+
+    out.innerHTML = '<div class="out"><div class="out-t">' + esc(text) + '</div>' +
+      '<div class="out-a">' +
+        '<button class="act" onclick="copyText(window.__DRAFT)">Copy</button>' +
+        '<button class="act" onclick="saveText(window.__DRAFT,\'' + FORMAT + '\',this)">Save</button>' +
+        '<button class="act" onclick="toVoice(window.__DRAFT)">Voiceover</button>' +
+        '<button class="act key" onclick="genContent()">Again</button>' +
+      '</div></div>' +
+      '<div class="meter"><b>' + words + '</b> words &middot; <b>' + spoken + '</b> spoken</div>';
+    document.getElementById('w-meter').textContent = '';
+    loadUsage();
+  } catch(e){
+    out.innerHTML = '<div class="empty"><h4>Could not generate</h4><p>' + esc(e.message) + '</p></div>';
+  }
+  btn.disabled = false; btn.textContent = 'Generate';
+}
+
+function copyText(t){
+  navigator.clipboard.writeText(t)
+    .then(function(){ toast('Copied.'); })
+    .catch(function(){ toast('Could not copy.'); });
+}
+
+async function saveText(text, format, btn){
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    var d = await api('POST','/projects',{
+      title: text.slice(0,60), content: text, format: format });
+    PROJECTS.unshift({ id:d.project.id, title:d.project.title, content:d.project.content,
+      format:d.project.format, ts:new Date(d.project.created_at).getTime() || Date.now() });
+    btn.textContent = 'Saved'; btn.classList.add('done');
+    toast('Saved to Projects.');
+  } catch(e){
+    btn.disabled = false; btn.textContent = 'Save';
+    toast(e.message);
+  }
+}
+
+function toVoice(text){
+  go('voice');
+  var el = document.getElementById('v-script');
+  if(el){ el.value = text; vMeta(); }
+}
+
+/* ══════════ REPURPOSER ══════════ */
+var RP_TARGETS = ['Twitter / X Thread','LinkedIn Post','Instagram Caption','Reel Script',
+                  'YouTube Description','Email Newsletter','Facebook Post','WhatsApp Status'];
+var RP_PICKED = ['Twitter / X Thread'];
+var RP_MAX = 4;
+
+function drawRpTargets(){
+  document.getElementById('rp-targets').innerHTML = RP_TARGETS.map(function(t){
+    return '<button class="pill' + (RP_PICKED.indexOf(t)!==-1?' on':'') +
+      '" onclick="rpToggle(this,' + JSON.stringify(t).replace(/"/g,'&quot;') + ')">' +
+      t.replace(' Thread','').replace(' Post','').replace(' Description','').replace(' Newsletter','').replace(' Caption','').replace(' Script','').replace(' Status','') +
+      '</button>';
+  }).join('');
+  rpCount();
+}
+function rpToggle(el, t){
+  var i = RP_PICKED.indexOf(t);
+  if(i === -1){
+    if(RP_PICKED.length >= RP_MAX){ toast('Up to ' + RP_MAX + ' at a time.'); return; }
+    RP_PICKED.push(t); el.classList.add('on');
+  } else {
+    if(RP_PICKED.length === 1) return;   /* never leave zero selected */
+    RP_PICKED.splice(i,1); el.classList.remove('on');
+  }
+  rpCount();
+}
+function rpCount(){
+  document.getElementById('rp-count').textContent = RP_PICKED.length + ' of ' + RP_MAX;
+}
+
+async function genRepurpose(){
+  var content = document.getElementById('rp-in').value.trim();
+  if(!content){ toast('Paste your content first.'); return; }
+  if(planBlocks('repurpose')){ toast('Repurposing is on Pro. Upgrade on crevers.com.'); return; }
+
+  var btn = document.getElementById('rp-btn');
+  var out = document.getElementById('rp-out');
+  btn.disabled = true;
+  out.innerHTML = '';
+
+  for(var i=0;i<RP_PICKED.length;i++){
+    var target = RP_PICKED[i];
+    btn.textContent = RP_PICKED.length > 1
+      ? 'Repurposing ' + (i+1) + ' of ' + RP_PICKED.length + '...' : 'Repurposing...';
+    try {
+      var d = await api('POST','/ai/repurpose',{ content:content, format:target });
+      var text = d.result || d.content || '';
+      var card = document.createElement('div');
+      card.className = 'rp';
+      card.innerHTML = '<div class="rp-h"><b>' + esc(target) + '</b>' +
+        '<button class="act" style="flex:0 0 auto;padding:3px 10px;">Save</button></div>' +
+        '<div class="rp-t">' + esc(text) + '</div>';
+      (function(t, name, el){
+        el.querySelector('.act').onclick = function(){ saveText(t, 'repurpose', this); };
+        el.querySelector('.rp-t').onclick = function(){ copyText(t); };
+      })(text, target, card);
+      out.appendChild(card);
+    } catch(e){
+      /* one failure must not lose the whole run */
+      var err = document.createElement('div');
+      err.className = 'rp failed';
+      err.innerHTML = '<div class="rp-h"><b>' + esc(target) + '</b></div>' +
+        '<div class="rp-t" style="color:var(--rose);">' + esc(e.message) + '</div>';
+      out.appendChild(err);
+    }
+  }
+  btn.disabled = false; btn.textContent = 'Repurpose';
+  loadUsage();
+}
+
+/* ══════════ VOICEOVER ══════════ */
+var VOICES = [
+  ['alloy','Alloy','Neutral, even'], ['echo','Echo','Male, crisp'],
+  ['fable','Fable','Warm'],          ['onyx','Onyx','Male, deep'],
+  ['nova','Nova','Female, upbeat'],  ['shimmer','Shimmer','Female, gentle'],
+];
+var SPEEDS = [['0.75','Slower'],['1.0','Normal'],['1.25','Faster'],['1.5','Fastest']];
+var VOICE = 'alloy', SPEED = 1.0, PREVIEW = null;
+
+function drawVoiceControls(){
+  document.getElementById('v-voices').innerHTML = VOICES.map(function(v){
+    return '<button class="voice' + (v[0]===VOICE?' on':'') + '" onclick="pickVoice(this,\'' + v[0] + '\')">' +
+      '<div class="v-play" onclick="event.stopPropagation();previewVoice(\'' + v[0] + '\')">' +
+      '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>' +
+      '<div><b>' + v[1] + '</b><span>' + v[2] + '</span></div></button>';
+  }).join('');
+  document.getElementById('v-speed').innerHTML = SPEEDS.map(function(s){
+    return '<button class="' + (parseFloat(s[0])===SPEED?'on':'') +
+      '" onclick="pickSpeed(this,' + s[0] + ')">' + s[1] + '</button>';
+  }).join('');
+  vMeta();
+}
+function pickVoice(el, v){
+  VOICE = v;
+  document.querySelectorAll('#v-voices .voice').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  vMeta();
+}
+function pickSpeed(el, s){
+  SPEED = s;
+  document.querySelectorAll('#v-speed button').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  vMeta();
+}
+function previewVoice(v){
+  if(PREVIEW){ PREVIEW.pause(); }
+  toast('Generating a sample takes a moment...');
+  genVoice(true, v);
+}
+
+function vMeta(){
+  var t = document.getElementById('v-script').value;
+  var words = t.trim() ? t.trim().split(/\s+/).filter(Boolean).length : 0;
+  var secs = Math.round(words / (150 * SPEED) * 60);
+  var plan = AUTH.plan || 'free';
+  var max = (plan === 'team' || plan === 'creator') ? 4000 : 2000;
+  document.getElementById('v-meta').innerHTML =
+    '<b>' + words + '</b> words &middot; <b>' + t.length + '</b> characters &middot; about <b>' +
+    (secs < 60 ? secs + 's' : Math.floor(secs/60) + 'm ' + (secs%60) + 's') + '</b>';
+  var left = max - t.length;
+  var el = document.getElementById('v-left');
+  el.textContent = left >= 0 ? left.toLocaleString() + ' characters left'
+                             : Math.abs(left).toLocaleString() + ' over';
+  el.className = 'hint' + (left < 0 ? ' over' : '');
+}
+
+function buildWave(){
+  return Array.from({length:44}, function(_, i){
+    var h = 22 + Math.sin(i/2.3)*32 + Math.sin(i/1.05)*22;
+    return '<i style="height:' + Math.max(16, Math.min(100, h)).toFixed(0) + '%"></i>';
+  }).join('');
+}
+
+async function genVoice(isPreview, previewVoiceId){
+  var script = isPreview
+    ? 'This is what my voice sounds like on Crevers.'
+    : document.getElementById('v-script').value.trim();
+  if(!script){ toast('Paste a script first.'); return; }
+
+  var plan = AUTH.plan || 'free';
+  if(plan === 'free'){ toast('Voiceover is on Pro and Creator. Upgrade on crevers.com.'); return; }
+
+  var btn = document.getElementById('v-btn');
+  var out = document.getElementById('v-out');
+  if(!isPreview){
+    btn.disabled = true; btn.textContent = 'Generating...';
+    out.innerHTML = '<div class="loading"><div class="spin"></div><p>Recording in ' + VOICE + '...</p></div>';
+  }
+
+  try {
+    var r = await fetch(API + '/ai/tts', {
+      method  : 'POST',
+      credentials : 'include',
+      headers : { 'Content-Type':'application/json',
+                  'Authorization':'Bearer ' + AUTH.token },
+      body    : JSON.stringify({ text:script, voice: previewVoiceId || VOICE, speed: SPEED }),
+    });
+    if(!r.ok){
+      var err = {};
+      try { err = await r.json(); } catch(e){}
+      throw new Error(err.error || 'Could not generate audio.');
+    }
+    var blob = await r.blob();
+    var url  = URL.createObjectURL(blob);
+
+    if(isPreview){
+      PREVIEW = new Audio(url);
+      PREVIEW.play().catch(function(){});
+      return;
+    }
+
+    var name = script.slice(0,32).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'voiceover';
+    out.innerHTML = '<div class="player">' +
+      '<div class="pl-top">' +
+        '<button class="pl-play" id="v-toggle"><svg id="v-ic-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+        '<svg id="v-ic-pause" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></button>' +
+        '<div class="pl-i"><b>' + esc(name) + '.mp3</b><span id="v-time">&nbsp;</span></div>' +
+      '</div>' +
+      '<div class="wave" id="v-wave">' + buildWave() + '</div>' +
+      '<div class="out-a">' +
+        '<a class="act key" style="text-decoration:none;text-align:center;line-height:1.6;" href="' + url + '" download="' + name + '.mp3">Download</a>' +
+        '<button class="act" onclick="genVoice()">Redo</button>' +
+      '</div></div>';
+
+    wireAudio(url);
+    loadUsage();
+  } catch(e){
+    if(!isPreview) out.innerHTML = '<div class="empty"><h4>Could not generate</h4><p>' + esc(e.message) + '</p></div>';
+    else toast(e.message);
+  }
+  if(!isPreview){ btn.disabled = false; btn.textContent = 'Generate voiceover'; }
+}
+
+function wireAudio(url){
+  var a = document.getElementById('v-audio');
+  a.src = url;
+  var toggle = document.getElementById('v-toggle');
+  var play = document.getElementById('v-ic-play');
+  var pause = document.getElementById('v-ic-pause');
+  toggle.onclick = function(){ a.paused ? a.play() : a.pause(); };
+  a.onplay  = function(){ play.style.display='none'; pause.style.display=''; };
+  a.onpause = function(){ play.style.display='';     pause.style.display='none'; };
+  a.onended = function(){
+    play.style.display=''; pause.style.display='none';
+    document.querySelectorAll('#v-wave i').forEach(function(b){ b.classList.remove('p'); });
+  };
+  /* bars fill from the audio itself, not a timer */
+  a.ontimeupdate = function(){
+    if(!isFinite(a.duration) || !a.duration) return;
+    var bars = document.querySelectorAll('#v-wave i');
+    var upto = Math.floor(a.currentTime / a.duration * bars.length);
+    bars.forEach(function(b,i){ b.classList.toggle('p', i < upto); });
+    var t = document.getElementById('v-time');
+    if(t) t.textContent = fmt(a.currentTime) + ' / ' + fmt(a.duration);
+  };
+  var wave = document.getElementById('v-wave');
+  wave.onclick = function(e){
+    if(!isFinite(a.duration)) return;
+    var r = wave.getBoundingClientRect();
+    a.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left)/r.width)) * a.duration;
+  };
+  a.play().catch(function(){});
+}
+function fmt(s){
+  if(!isFinite(s) || s < 0) s = 0;
+  var m = Math.floor(s/60), r = Math.floor(s%60);
+  return m + ':' + (r<10?'0':'') + r;
+}
+
+/* ══════════ CHAT ══════════ */
+var CHAT = [];
+var STARTERS = [
+  'Why do my Reels stop at 3 seconds?',
+  'What should I post this week?',
+  'How often should I actually post?',
+  'My engagement dropped. What changed?',
+];
+
+function drawChat(){
+  var log = document.getElementById('chat-log');
+  if(CHAT.length) return;
+  log.innerHTML =
+    '<div class="msg bot"><div class="msg-av"><svg viewBox="0 0 24 24"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></div>' +
+    '<div class="bub">Ask me anything about content. What to post, why something flopped, how to open a Reel so people stay.</div></div>' +
+    '<div class="starters">' + STARTERS.map(function(s){
+      return '<button class="starter" onclick="chatAsk(' + JSON.stringify(s).replace(/"/g,'&quot;') + ')">' + s + '</button>';
+    }).join('') + '</div>';
+}
+
+function chatBubble(text, who){
+  var log = document.getElementById('chat-log');
+  var d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.innerHTML = (who==='bot'
+    ? '<div class="msg-av"><svg viewBox="0 0 24 24"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></div>'
+    : '') + '<div class="bub">' + esc(text) + '</div>';
+  log.appendChild(d);
+  d.scrollIntoView({ behavior:'smooth', block:'end' });
+  return d;
+}
+
+function chatAsk(q){
+  var s = document.querySelector('.starters');
+  if(s) s.remove();
+  document.getElementById('chat-in').value = q;
+  chatSend();
+}
+
+async function chatSend(){
+  var el = document.getElementById('chat-in');
+  var q = el.value.trim();
+  if(!q) return;
+  var s = document.querySelector('.starters');
+  if(s) s.remove();
+  el.value = '';
+  chatBubble(q, 'me');
+  CHAT.push({ role:'user', content:q });
+
+  var t = document.createElement('div');
+  t.className = 'msg bot';
+  t.innerHTML = '<div class="msg-av"><svg viewBox="0 0 24 24"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg></div>' +
+    '<div class="bub typing"><i></i><i></i><i></i></div>';
+  document.getElementById('chat-log').appendChild(t);
+  t.scrollIntoView({ behavior:'smooth', block:'end' });
+
+  try {
+    var niche = localStorage.getItem('cos_niche') || 'content creation';
+    var d = await api('POST','/ai/chat',{ messages: CHAT.slice(-10), niche: niche });
+    t.remove();
+    var reply = d.reply || 'Sorry, could not get a response.';
+    chatBubble(reply, 'bot');
+    CHAT.push({ role:'assistant', content:reply });
+  } catch(e){
+    t.remove();
+    chatBubble(e.message, 'bot');
+  }
+}
+
+/* ══════════ SETTINGS ══════════ */
+var NICHES = ['Fitness','Business','Tech','Fashion','Food','Travel','Beauty','Finance',
+              'Education','Real Estate','Health','Music','Gaming','Photography','Design'];
+
+async function drawMe(){
+  var u = AUTH.user || {};
+  var plan = AUTH.plan || 'free';
+  var names = { free:'Free', pro:'Pro', team:'Creator', creator:'Creator' };
+  var initial = esc((u.name || u.email || 'C').charAt(0).toUpperCase());
+
+  document.getElementById('me-out').innerHTML =
+    '<div style="display:flex;align-items:center;gap:.9rem;padding:.2rem 0 1.3rem;">' +
+      '<div class="avatar" style="width:56px;height:56px;flex:0 0 56px;border-radius:20px;font-size:1.4rem;">' + initial + '</div>' +
+      '<div style="min-width:0;"><b style="font-family:Outfit,sans-serif;font-size:1.05rem;display:block;">' +
+        esc(u.name || 'You') + '</b><span style="font-size:.78rem;color:var(--dim);word-break:break-all;">' +
+        esc(u.email || '') + '</span></div></div>' +
+
+    '<div style="background:linear-gradient(140deg,var(--s2),var(--s1));border:1px solid var(--line);' +
+      'border-radius:20px;padding:1rem 1.05rem;margin-bottom:1rem;display:flex;align-items:center;' +
+      'justify-content:space-between;gap:.75rem;">' +
+      '<div><b style="font-family:Outfit,sans-serif;font-size:1.02rem;display:block;">' + (names[plan]||'Free') + ' plan</b>' +
+      '<span style="font-size:.73rem;color:var(--dim);">Resets at midnight</span></div>' +
+      (plan==='free'
+        ? '<a href="https://crevers.com/#pricing" style="background:var(--violet);color:#fff;border-radius:11px;padding:.55rem 1.05rem;font-family:Outfit,sans-serif;font-weight:700;font-size:.78rem;text-decoration:none;">Upgrade</a>'
+        : '') +
+    '</div>' +
+    '<div class="usage" id="me-usage"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
+
+    '<div class="set-sec"><h3>Content defaults</h3><p>The starting point whenever you generate something.</p></div>' +
+    '<div class="lbl">Your niche</div>' +
+    '<div class="field"><input id="set-niche" placeholder="e.g. Fitness coaching" value="' +
+      esc(localStorage.getItem('cos_niche') || '') + '"></div>' +
+    '<div class="lbl" style="margin-top:.8rem;">Display name</div>' +
+    '<div class="field"><input id="set-name" value="' + esc(u.name || '') + '"></div>' +
+    '<button class="go" style="margin-top:.9rem;" onclick="saveSettings(this)">Save changes</button>' +
+
+    '<div class="set-sec"><h3>Brand Voice</h3><p>Teach Crevers how you write, so output sounds like you.</p></div>' +
+    '<div id="me-voice"><div class="loading" style="padding:.6rem 0;"><div class="spin"></div></div></div>' +
+
+    '<div class="set-sec"><h3>Have a code?</h3></div>' +
+    '<div class="field"><input id="set-coupon" placeholder="Enter your code" autocapitalize="characters"></div>' +
+    '<button class="go ghost" onclick="redeem(this)">Redeem</button>' +
+
+    '<div class="set-sec"><h3>Account</h3></div>' +
+    '<button class="go ghost" onclick="logout()">Log out</button>' +
+    '<p style="font-size:.72rem;color:var(--faint);text-align:center;margin-top:1.2rem;line-height:1.6;">' +
+      'Billing and video resizing are on <a href="https://crevers.com" style="color:var(--dim);">crevers.com</a>.</p>';
+
+  drawUsageBars();
+  drawBrandVoice();
+}
+
+async function drawUsageBars(){
+  var el = document.getElementById('me-usage');
+  if(!el) return;
+  try {
+    var d = await api('GET','/ai/usage');
+    if(!d || !d.usage){ el.style.display = 'none'; return; }
+    var labels = { ideas:'Ideas', create:'Content', repurpose:'Repurpose' };
+    el.innerHTML = Object.keys(labels).map(function(k){
+      var u = d.usage[k];
+      if(!u) return '';
+      var pct = u.unlimited ? 0 : Math.round(u.used / Math.max(1,u.limit) * 100);
+      return '<div class="use-row"><span>' + labels[k] + '</span>' +
+        '<div class="use-bar"><i style="width:' + Math.min(100,pct) + '%"></i></div>' +
+        '<b>' + (u.unlimited ? '&#8734;' : u.remaining + ' of ' + u.limit) + '</b></div>';
+    }).join('');
+  } catch(e){ el.style.display = 'none'; }
+}
+
+async function drawBrandVoice(){
+  var el = document.getElementById('me-voice');
+  if(!el) return;
+  try {
+    var d = await api('GET','/voice');
+    if(d && d.trained){
+      el.innerHTML = '<div class="rp"><div class="rp-h"><b>Trained</b>' +
+        '<button class="act" style="flex:0 0 auto;padding:3px 10px;" onclick="forgetVoice(this)">Forget</button></div>' +
+        '<div class="rp-t" style="font-size:.78rem;">' + esc(d.profile || '') + '</div></div>';
+    } else {
+      el.innerHTML = '<div class="area"><textarea id="bv-in" placeholder="Paste 3 to 5 of your own posts here.&#10;&#10;Leave a blank line between each one."></textarea></div>' +
+        '<button class="go ghost" onclick="trainVoice(this)">Learn my voice</button>';
+    }
+  } catch(e){ el.innerHTML = ''; }
+}
+
+async function trainVoice(btn){
+  var el = document.getElementById('bv-in');
+  var samples = el ? el.value.trim() : '';
+  if(samples.length < 200){ toast('Paste a bit more of your own writing first.'); return; }
+  btn.disabled = true; btn.textContent = 'Reading your writing...';
+  try {
+    await api('POST','/voice/train',{ samples: samples });
+    toast('Done. Everything will match this now.');
+    drawBrandVoice();
+  } catch(e){
+    btn.disabled = false; btn.textContent = 'Learn my voice';
+    toast(e.message);
+  }
+}
+
+async function forgetVoice(btn){
+  btn.disabled = true;
+  try { await api('DELETE','/voice'); toast('Forgotten.'); drawBrandVoice(); }
+  catch(e){ btn.disabled = false; toast(e.message); }
+}
+
+async function saveSettings(btn){
+  var niche = document.getElementById('set-niche').value.trim();
+  var name  = document.getElementById('set-name').value.trim();
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    await api('POST','/auth/update-profile',{ name:name, niche:niche });
+    if(niche) localStorage.setItem('cos_niche', niche);
+    if(name){
+      AUTH.user = Object.assign({}, AUTH.user, { name:name });
+      localStorage.setItem('cos_user', JSON.stringify(AUTH.user));
+      document.getElementById('av').textContent = name.charAt(0).toUpperCase();
+    }
+    toast('Saved.');
+  } catch(e){ toast(e.message); }
+  btn.disabled = false; btn.textContent = 'Save changes';
+}
+
+async function redeem(btn){
+  var code = document.getElementById('set-coupon').value.trim().toUpperCase();
+  if(!code){ toast('Enter a code first.'); return; }
+  btn.disabled = true; btn.textContent = 'Checking...';
+  try {
+    var d = await api('POST','/coupons/redeem',{ code: code });
+    AUTH.plan = d.plan || AUTH.plan;
+    localStorage.setItem('cos_plan', AUTH.plan);
+    toast('Unlocked. Enjoy.');
+    drawMe();
+  } catch(e){ toast(e.message); }
+  btn.disabled = false; btn.textContent = 'Redeem';
 }
 </script>
 </body>
